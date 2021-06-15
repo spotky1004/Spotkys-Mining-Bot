@@ -6,5 +6,7 @@ module.exports = {
 
     // datas
     commandCounter: 0,
+    commandCounterToday: [],
     users: [],
+    usersToday: {}
 };

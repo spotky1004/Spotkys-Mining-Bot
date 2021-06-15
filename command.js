@@ -11,11 +11,12 @@ const Command = class {
     func = new Function();
     permissionReq = new Number();
 
-    execute({msg, rawParameter}) {
+    execute({msg, rawParameter, guildData, permission}) {
+        if (this.permissionReq > permission) return {message: "`Missing permission!`"};
         if (
             this.regex !== null &&
             rawParameter.length === 0
-        ) return;
+        ) return {message: "`Missing Parameters!`"};
 
         const content = rawParameter;
         let params;
@@ -24,7 +25,7 @@ const Command = class {
             params = content.match(this.regex).slice(1);
         }
         
-        return this.func({msg, params});
+        return this.func({msg, params, guildData, permission});
     }
 }
 

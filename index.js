@@ -7,8 +7,9 @@ const Decimal = require("decimal.js");
 global.D = Decimal;
 const bot = new Discord.Client();
 
-// 
 const config = JSON.parse(fs.readFileSync("./config.json",'utf-8'));
+
+const Permission = require("./Enums/permissionEnum.js");
 
 const commands = require("./commandManager.js");
 const commandDict = new Map(Object.entries(commands).map(e => e[1].keyWords.map(keyWord => [keyWord, e[0]])).flat());
@@ -17,7 +18,8 @@ const commandKeyWords = [...commandDict.keys()];
 
 const defaulatDatas = {
     guildData: require("./saveDatas/Defaults/guildData.js")
-}
+};
+const userPermissions = JSON.parse(fs.readFileSync("./saveDatas/permissions.json"));
 
 
 let sessionData = {};
@@ -26,10 +28,14 @@ bot.on("message", (msg) => {
     if (msg.author.bot) return;
 
 
-    
-    // message
+
+    // init
     const guildData = checkGuildData(msg);
     const prefix = guildData.prefix;
+    const time = new Date().getTime();
+    let permissionStr = msg.guild.members.cache.get(msg.author.id).hasPermission("ADMINISTRATOR") ? "GuildAdmin" : "User";
+    permissionStr = userPermissions[msg.author.id];
+    const permission = Permission[permissionStr];
 
     if (msg.content.startsWith(prefix)) {
         // parse message
@@ -42,19 +48,50 @@ bot.on("message", (msg) => {
             const commandToExecute = commands[commandDict.get(keyWord)];
             const result = commandToExecute.execute({
                 msg: msg,
+                permission: permission,
+                guildData: guildData,
                 rawParameter: rawParameter
             });
 
-            if (result && result.message) {
-                msg.channel.send(result.message);
+            guildData.commandCounter++;
+            guildData.commandCounterToday.push(Math.floor(time/1000));
+            guildData.commandCounterToday = guildData.commandCounterToday.filter(e => e > time/1000-86400);
+            guildData.users.push(msg.author.id);
+            guildData.users = [...new Set(guildData.users)];
+            guildData.usersToday[msg.author.id] = time/1000;
+            for (const id in guildData.usersToday) if (guildData.usersToday[id] < time/1000-86400) delete guildData.usersToday[id];
 
-                guildData.commandCounter++;
-                guildData.users.push(msg.author.id);
-                guildData.users = [...new Set(guildData.users)];
+            if (result && result.message) {
+                if (typeof result.message === "object") {
+                    // set short name varible
+                    const data = result.message;
+
+                    // apply style
+                    switch (data.style) {
+                        case "list":
+                            data.fields = data.fields.map(e => e = {
+                                name: "· " + e.name,
+                                value: "`" + e.value + "`"
+                            });
+                            break;
+                    }
+
+                    // send message
+                    msg.channel.send(
+                        new Discord.MessageEmbed()
+                        .setColor(data.color)
+                        .setAuthor(data.command, data.image)
+                        .addFields(...data.fields)
+                        .setFooter(data.description)
+                        .setTimestamp()
+                    );
+                } else {
+                    msg.channel.send(result.message);
+                }
             }
         }
-    } else if (msg.content.match(/<@&?!?763833293044711436>/)) {
-        msg.channel.send(commands.help.execute({}).message);
+    } else if (msg.content.match(/<@&?!?763833293044711436>/) || msg.content.match(/<@&?!?763830703141945404>/)) {
+        msg.channel.send(commands.help.execute({permission: permission}).message);
     }
 
 
