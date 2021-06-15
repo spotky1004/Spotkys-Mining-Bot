@@ -58,6 +58,7 @@ bot.on("message", async (msg) => {
             if (commandKeyWords.includes(keyWord)) {
                 const commandToExecute = commands[commandDict.get(keyWord)];
                 const result = await commandToExecute.execute({
+                    bot: bot,
                     msg: msg,
                     permission: permission,
                     guildData: guildData,

@@ -27,7 +27,7 @@ function evalCommand({msg, params, guildData, permission}) {
     return {
         message: {
             command: "Eval",
-            color: "#000",
+            color: "#000000",
             image: "https://i.imgur.com/ihsB9OK.png",
             fields: [
                 {
@@ -48,5 +48,5 @@ module.exports = new Command({
     keyWords: ["eval"],
     regex: /((?:```js)?\n?((.|\n)+?)\n?(?:```))/,
     func: evalCommand,
-    permissionReq: Permission.RootAdmin
+    permissionReq: Permission.CoAdmin
 });
