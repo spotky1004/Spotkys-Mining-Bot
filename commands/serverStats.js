@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const D = require("decimal.js");
 const Command = require("../command.js");
-const Permission = require("../Enums/permissionEnum.js");
+const Permission = require("../enums/permission.js");
 
 function serverStatsCommand({msg, params, guildData}) {
     return {
@@ -27,7 +27,7 @@ function serverStatsCommand({msg, params, guildData}) {
 }
 
 module.exports = new Command({
-    keyWords: ["serverStats", "server"],
+    keyWords: ["serverStats", "server", "serverstats"],
     regex: null,
     func: serverStatsCommand,
     permissionReq: Permission.User

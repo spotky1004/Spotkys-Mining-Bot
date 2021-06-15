@@ -1,5 +1,5 @@
 const Command = require("../command.js");
-const Permission = require("../Enums/permissionEnum.js");
+const Permission = require("../Enums/permission.js");
 
 function testCommand({params}) {
     return {
