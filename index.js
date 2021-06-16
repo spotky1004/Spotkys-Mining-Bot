@@ -39,8 +39,8 @@ bot.on("message", async (msg) => {
 
     try {
         // init
-        const guildData = checkGuildData(msg);
-        const playerData = checkPlayerData(msg);
+        let guildData = checkGuildData(msg);
+        let playerData = checkPlayerData(msg);
 
         const prefix = guildData.prefix;
         const time = new Date().getTime();
@@ -60,10 +60,13 @@ bot.on("message", async (msg) => {
                 const result = await commandToExecute.execute({
                     bot: bot,
                     msg: msg,
+                    playerData: playerData,
                     permission: permission,
                     guildData: guildData,
                     rawParameter: rawParameter
                 });
+
+                playerData = result.playerData ?? playerData;
 
                 guildData.commandCounter++;
                 guildData.commandCounterToday.push(Math.floor(time/100000));
@@ -102,6 +105,8 @@ bot.on("message", async (msg) => {
                     }
                 }
             }
+            
+            fs.writeFileSync(`./saveDatas/playerData/${msg.author.id}.json`, JSON.stringify(playerData));
         } else if (msg.content.match(/<@&?!?763833293044711436>/) || msg.content.match(/<@&?!?763830703141945404>/)) {
             await msg.channel.send(commands.help.execute({permission: permission}).message);
         }
@@ -150,6 +155,20 @@ function checkGuildData(msg) {
 
 function checkPlayerData(msg) {
     const path = `./saveDatas/playerData/${msg.author.id}.json`;
+
+    // load file
+    let data;
+    if (fs.existsSync(path)) {
+        data = JSON.parse(fs.readFileSync(path));
+    } else {
+        data = {};
+    }
+
+    // check file
+    data = mergeObject(data, defaulatDatas.userData);
+
+    // return
+    return data;
 }
 
 function mergeObject(target, source) {

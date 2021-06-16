@@ -1,7 +1,7 @@
 config.json
 Old
 saveDatas/guildData/*
-saveDatas/userData/*
+saveDatas/playerData/*
 saveDatas/permissions.json
 Images/*
 

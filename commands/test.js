@@ -11,5 +11,5 @@ module.exports = new Command({
     keyWords: ["test", "t"],
     regex: /^(.+)/,
     func: testCommand,
-    permissionReq: Permission.User
+    permissionReq: Permission.Admin
 });

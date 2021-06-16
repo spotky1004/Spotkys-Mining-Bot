@@ -17,7 +17,9 @@ function evalCommand({msg, params, guildData, permission}) {
                 }
             }
             output = JSON.stringify(output,null,'\t');
-        }
+        } else if (typeof output === "string") [
+            output = `"${output}"`
+        ]
     } catch (e) {
         output = e;
     }
@@ -48,5 +50,5 @@ module.exports = new Command({
     keyWords: ["eval"],
     regex: /((?:```js)?\n?((.|\n)+?)\n?(?:```))/,
     func: evalCommand,
-    permissionReq: Permission.CoAdmin
+    permissionReq: Permission.Admin
 });
