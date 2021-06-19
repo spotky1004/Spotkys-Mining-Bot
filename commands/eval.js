@@ -1,9 +1,12 @@
+const fs = require("fs");
 const Discord = require("discord.js");
 const D = require("decimal.js");
+
 const Command = require("../command.js");
 const Permission = require("../Enums/permission.js");
+const util = require("../util.js");
 
-function evalCommand({msg, params, guildData, permission}) {
+function evalCommand({msg, params, playerData, guildData, permission}) {
     let input = params[1];
     let output;
     try {
@@ -17,9 +20,11 @@ function evalCommand({msg, params, guildData, permission}) {
                 }
             }
             output = JSON.stringify(output,null,'\t');
-        } else if (typeof output === "string") [
-            output = `"${output}"`
-        ]
+        } else if (typeof output === "string") {
+            output = `"${output}"`;
+        } else if (typeof output === "undefined") {
+            output = "undefined";
+        }
     } catch (e) {
         output = e;
     }
@@ -48,7 +53,7 @@ function evalCommand({msg, params, guildData, permission}) {
 
 module.exports = new Command({
     keyWords: ["eval"],
-    regex: /((?:```js)?\n?((.|\n)+?)\n?(?:```))/,
+    regex: /^((?:```js)?\n?((.|\n)+?)\n?(?:```))/,
     func: evalCommand,
     permissionReq: Permission.Admin
 });

@@ -3,7 +3,10 @@ const D = require("decimal.js");
 const Command = require("../command.js");
 const Permission = require("../enums/permission.js");
 
-function serverStatsCommand({msg, params, guildData}) {
+function serverStatsCommand({msg, params, guildData, isDM}) {
+    if (isDM) return {
+        message: "Unable to use this command on DM!"
+    }
     return {
         message: {
             style: "list",
@@ -27,7 +30,7 @@ function serverStatsCommand({msg, params, guildData}) {
 }
 
 module.exports = new Command({
-    keyWords: ["serverStats", "server", "serverstats"],
+    keyWords: ["serverStats", "serverstats", "serverstat", "serverStat", "server"],
     regex: null,
     func: serverStatsCommand,
     permissionReq: Permission.User

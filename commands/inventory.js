@@ -1,0 +1,58 @@
+const D = require("decimal.js");
+const Command = require("../command.js");
+const Permission = require("../Enums/permission.js");
+
+const oreEnum = require("../enums/ore.js");
+
+const emojiList = require("../data/emojiList.js");
+const util = require("../util.js");
+
+const oreEmoji = emojiList.ore;
+const oreSet = util.enumToSets(oreEnum);
+
+const randomDescriptions = [
+    "Inventory.",
+    "This is your Inventory",
+    "Opened your inventory",
+    "inventory / inv / i",
+    "Welcome to your inventory",
+];
+
+function inventoryCommand({playerData, params}) {
+    const [type, idx] = params;
+
+    const fields = [];
+
+    switch (type) {
+        case "o":
+            fields.push(
+                {
+                    name: "Your Ores:",
+                    value: util.oreSetToMessage({
+                        oreEmoji: oreEmoji[miningRegion],
+                        reginOreSet: oreSet[playerData.miningRegion],
+                        displayMode: playerData.options.displayMode
+                    })
+                }
+            );
+            break;
+    }
+
+    return {
+        playerData: playerData,
+        message: {
+            command: `Inventory`,
+            color: "#e0931f",
+            image: "https://i.imgur.com/xAZJT1w.png",
+            fields: [...fields],
+            description: util.randomPick(randomDescriptions)
+        }
+    }
+}
+
+module.exports = new Command({
+    keyWords: ["inventory", "inv", "i", "I", "INV"],
+    regex: /^(o|ore) ([0-9])/,
+    func: inventoryCommand,
+    permissionReq: Permission.User
+});

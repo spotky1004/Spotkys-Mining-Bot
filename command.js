@@ -11,21 +11,21 @@ const Command = class {
     func = new Function();
     permissionReq = new Number();
 
-    execute({msg, rawParameter, guildData, playerData, permission, bot}) {
+    execute({msg, rawParameter, guildData, playerData, permission, bot, time, isDM}) {
         if (this.permissionReq > permission) return {message: "`Missing permission!`"};
         if (
             this.regex !== null &&
             rawParameter.length === 0
-        ) return {message: "`Missing Parameters!`"};
+        ) return {message: "`Missing Parameter(s)!`"};
 
         const content = rawParameter;
         let params;
         if (this.regex !== null) {
-            if (content.match(this.regex).length === 0) return;
+            if (content.match(this.regex).length === 0) return {message: "`Wrong Parameter(s)!`"};
             params = content.match(this.regex).slice(1);
         }
         
-        return this.func({msg, params, guildData, playerData, permission, bot});
+        return this.func({msg, params, guildData, playerData, permission, bot, time, isDM});
     }
 }
 

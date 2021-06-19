@@ -4,49 +4,41 @@ const Permission = require("../Enums/permission.js");
 
 const oreEnum = require("../enums/ore.js");
 
-const emojiList = require("../data/emojiList.js")
-const blankEmoji = emojiList.blank;
+const emojiList = require("../data/emojiList.js");
+const util = require("../util.js");
+
 const oreEmoji = emojiList.ore;
+const oreSet = util.enumToSets(oreEnum);
 
-let oreSet = [];
-for (const oreName in oreEnum) {
-    const oreId = oreEnum[oreName];
-    const [set, setId] = [Math.floor(oreId/100)-1, oreId%100];
-    if (typeof oreSet[set] === "undefined") oreSet[set] = [];
-    oreSet[set][setId] = oreName;
-}
+const randomDescriptions = [
+    "Pick!",
+    "pick",
+    "Mine!",
+    "mine",
+    "You got these ores",
+    "mine / m / ㅡ",
+    "much ore",
+    "many ore",
+    "that's a lot of ore",
+];
 
-function mineCommand({msg, playerData}) {
-    const miningRegion = 0;
-    const reginOreSet = oreSet[miningRegion];
+function mineCommand({playerData, time}) {
+    const reginOreSet = oreSet[playerData.miningRegion];
 
 
-    
-    let minedOre = Array.from({length: reginOreSet.length}, (_, i) => Math.random() > 0.5 ? new D(i+1) : new D(0));
+    if (time - playerData.behaveTimes.mine < 3000) return {
+        message: `\`Cooldown! ${(3 - (time - playerData.behaveTimes.mine)/1000).toFixed(3)} second(s) left\``
+    }
+    playerData.behaveTimes.mine = time;
+
+    let minedOre = Array.from({length: reginOreSet.length}, (_, i) => i === 0 ? new D(playerData.ores.Stone.mul(Math.random()*1000)) : new D(0));
     /* TODO: ore mine formula */
 
 
 
-    let oreMsg = "";
-    for (let p = 0, l = minedOre.length; p < l; p++) {
-        const i = (p%3*7)+Math.floor(p/3);
-        const oreName = reginOreSet[i];
-
-        // oreMsg
-        const oreCount = minedOre[i];
-        if (!oreCount.eq(0)) {
-            const count = `${playerData.ores[oreName].padEnd(6, " ")}(+${oreCount.toString().padEnd(6, " ")})`;
-            oreMsg += `${oreEmoji[oreName]}\`${count}\` `;
-        } else {
-            oreMsg += blankEmoji + " ".repeat(15);
-        }
-        if ((p+1)%3 === 0) oreMsg += "\n";
-        
-        // playerData
-        
+    for (let i = 0, l = minedOre.length; i < l; i++) {
+        playerData.ores[reginOreSet[i]] = playerData.ores[reginOreSet[i]].add(minedOre[i]);
     }
-    oreMsg = oreMsg.trim();
-    console.log(oreMsg.length);
 
 
 
@@ -57,12 +49,19 @@ function mineCommand({msg, playerData}) {
             color: "#e0931f",
             image: "https://i.imgur.com/xAZJT1w.png",
             fields: [
+                // Mined ore display
                 {
                     name: "You got:",
-                    value: oreMsg
+                    value: util.oreSetToMessage({
+                        playerData: playerData,
+                        ores: minedOre,
+                        oreEmoji: oreEmoji,
+                        reginOreSet: reginOreSet,
+                        displayMode: playerData.options.displayMode
+                    })
                 }
             ],
-            description: "Mine!"
+            description: util.randomPick(randomDescriptions)
         }
     }
 }

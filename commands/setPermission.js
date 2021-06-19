@@ -36,7 +36,7 @@ function setPermissionCommand({msg, params, bot}) {
 
 module.exports = new Command({
     keyWords: ["setPermission", "setpermission"],
-    regex: /(\d+) (\w+)/,
+    regex: /^(\d+) (\w+)/,
     func: setPermissionCommand,
-    permissionReq: Permission.RootAdmin
+    permissionReq: Permission.Admin
 });

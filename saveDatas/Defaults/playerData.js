@@ -4,7 +4,9 @@ const Ores = require("../../enums/ore.js");
 const Loots = require("../../enums/loot.js");
 const Skills = require("../../enums/skill.js");
 
-module.exports = {
+const DisplayModes = require("../../enums/displayMode.js");
+
+const playerData = {
     // resources
     coin: new Decimal(0),
     gem: new Decimal(0),
@@ -35,8 +37,13 @@ module.exports = {
     
     
     // configs
+    miningRegion: 0,
     oreLock: Object.fromEntries(Object.keys(Ores).map(e => [e, false])),
     infuse: {},
+    options: {
+        displayMode: "Desktop",
+        notation: "Standard"
+    },
     
     
     // stats
@@ -67,3 +74,5 @@ module.exports = {
     backupSaved: 0,
     backupPointer: 0
 }
+
+module.exports = playerData;
