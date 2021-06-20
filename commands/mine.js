@@ -20,21 +20,26 @@ const randomDescriptions = [
     "much ore",
     "many ore",
     "that's a lot of ore",
+    "these ores are sent to your inventory",
+    "there are total of 21 ores now",
+    "=m"
 ];
 
 function mineCommand({playerData, time}) {
-    const reginOreSet = oreSet[playerData.miningRegion];
-
-
     if (time - playerData.behaveTimes.mine < 3000) return {
         message: `\`Cooldown! ${(3 - (time - playerData.behaveTimes.mine)/1000).toFixed(3)} second(s) left\``
     }
     playerData.behaveTimes.mine = time;
-
-    let minedOre = Array.from({length: reginOreSet.length}, (_, i) => i === 0 ? new D(playerData.ores.Stone.mul(Math.random()*1000)) : new D(0));
-    /* TODO: ore mine formula */
+    
 
 
+    const reginOreSet = oreSet[playerData.miningRegion];
+
+    minedOre = util.rollMine({
+        reginOreSet: reginOreSet,
+        luck: Math.random()*20+1,
+        roll: new D(new D(10).pow(Math.random()*10))}
+    );
 
     for (let i = 0, l = minedOre.length; i < l; i++) {
         playerData.ores[reginOreSet[i]] = playerData.ores[reginOreSet[i]].add(minedOre[i]);
@@ -49,6 +54,8 @@ function mineCommand({playerData, time}) {
             color: "#e0931f",
             image: "https://i.imgur.com/xAZJT1w.png",
             fields: [
+                // Boosts display
+                // {},
                 // Mined ore display
                 {
                     name: "You got:",
@@ -59,7 +66,9 @@ function mineCommand({playerData, time}) {
                         reginOreSet: reginOreSet,
                         displayMode: playerData.options.displayMode
                     })
-                }
+                },
+                // Rare resources display
+                // {},
             ],
             description: util.randomPick(randomDescriptions)
         }

@@ -16,8 +16,8 @@ const Permission = require("./enums/permission.js");
 const util = require("./util.js");
 
 const commands = require("./commandManager.js");
-const commandDict = new Map(Object.entries(commands).map(e => e[1].keyWords.map(keyWord => [keyWord, e[0]])).flat());
-const commandKeyWords = [...commandDict.keys()];
+const commandDict = util.dataToKeywordDictionary(commands).Dictionary;
+const commandKeyWords = util.dataToKeywordDictionary(commands).KeyWords;
 
 
 const defaulatDatas = {

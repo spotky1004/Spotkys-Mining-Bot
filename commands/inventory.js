@@ -25,12 +25,13 @@ function inventoryCommand({playerData, params}) {
 
     switch (type) {
         case "o":
+            const miningRegion = idx;
             fields.push(
                 {
                     name: "Your Ores:",
                     value: util.oreSetToMessage({
                         oreEmoji: oreEmoji[miningRegion],
-                        reginOreSet: oreSet[playerData.miningRegion],
+                        reginOreSet: oreSet[miningRegion],
                         displayMode: playerData.options.displayMode
                     })
                 }

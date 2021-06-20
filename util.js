@@ -84,7 +84,7 @@ function notation(x=new D(0), maxLength=6, type="Standard") {
         return "0".padEnd(maxLength, " ");
     }
 
-    if (x.gt(1e90)) type = "Scientific";
+    if (x.gt("1e3000")) type = "Scientific";
 
     let out;
     switch (notationTypes[type]) {
@@ -115,6 +115,35 @@ function enumToSets(e) {
         sets[set][setId] = name;
     }
     return sets;
+}
+function dataToKeywordDictionary(data) {
+    const Dictionary =  new Map(Object.entries(data).map(e => e[1].keyWords.map(keyWord => [keyWord, e[0]])).flat());
+    const KeyWords = [...Dictionary.keys()];
+
+    return {
+        Dictionary,
+        KeyWords
+    };
+}
+
+
+
+/** Game Functions */
+function rollMine({playerData={}, reginOreSet=[], roll=new D(1), luck=1}) {
+    const minedOre = Array.from({length: reginOreSet.length}, new D(0));
+
+    minedOre[0] = roll;
+
+    oreDistribution = 2;
+    luck = 1;
+    for (let i = 1; i < luck; i++) {
+        const tmpDistribution = Math.max(1, oreDistribution*(1+Math.random()*0.03)+(Math.random()*0.05));
+        minedOre[i] = minedOre[i-1].div(tmpDistribution).mul(Math.min(1, luck-i));
+    }
+    
+    minedOre[i].map(e => e.gt(1) || e.gt(Math.random()) ? e.floor(0) : new D(0));
+
+    return minedOre;
 }
 
 
@@ -159,18 +188,22 @@ function oreSetToMessage({playerData, ores=[], reginOreSet=[], oreEmoji={}, disp
 
 module.exports = {
     /** Useful Functions */
-    randomPick: randomPick,
-    mergeObject: mergeObject,
-    mergeArray: mergeArray,
+    randomPick,
+    mergeObject,
+    mergeArray,
+
+    /** Game Functions */
+    rollMine,
 
     /** Number Functions*/
-    calcStandardPrefix: calcStandardPrefix,
-    numToScientDigit: numToScientDigit,
-    notation: notation,
+    calcStandardPrefix,
+    numToScientDigit,
+    notation,
 
     /** Init Functions */
-    enumToSets: enumToSets,
+    enumToSets,
+    dataToKeywordDictionary,
 
     /** Display Functions */
-    oreSetToMessage: oreSetToMessage,
+    oreSetToMessage,
 }
