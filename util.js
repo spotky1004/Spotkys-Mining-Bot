@@ -1,7 +1,9 @@
 const Decimal = require("decimal.js");
 const D = Decimal;
 
+const pickaxeEnum = require("./enums/pickaxe.js");
 const displayModeEnum = require("./enums/displayMode.js");
+
 const emojiList = require("./data/emojiList.js");
 
 
@@ -10,7 +12,6 @@ const emojiList = require("./data/emojiList.js");
 function randomPick(arr=[]) {
     return arr[Math.floor(Math.random()*arr.length)];
 }
-
 function mergeObject(target, source) {
     target = target ?? {};
     for (const i in source) {
@@ -27,7 +28,6 @@ function mergeObject(target, source) {
     }
     return target;
 }
-
 function mergeArray(target, source) {
     for (let i = 0, l = source.length; i < l; i++) {
         if (source[i] instanceof Decimal) {
@@ -42,6 +42,8 @@ function mergeArray(target, source) {
     }
     return target;
 }
+keyNameToWord = (str) => str.replace(/([A-Z])/g, " $1").trim(); 
+
 
 
 
@@ -67,10 +69,10 @@ function numToScientDigit(x, maxLength=6) {
 
     const fixedNum = x.div(new D(1000).pow(x.log(1000).floor(0)));
     const int = fixedNum.floor(0).toNumber()+"";
-    const dec = fixedNum.mod(1).mul(1e10).toNumber()+"";
+    const dec = fixedNum.mod(1).mul(1e6).toNumber()+"";
 
     let out = int;
-    if (out.length+1 < maxLength) out = (out + "." + dec.substr(1, maxLength-int.length-1)).padEnd(maxLength, "0");
+    if (out.length+1 < maxLength) out = (out + "." + dec.substr(0, maxLength-int.length-1)).replace(/0+$/, "").padEnd(maxLength, " ");
     else out = out.padEnd(maxLength, " ");
 
     return out;
@@ -110,9 +112,13 @@ function enumToSets(e) {
     let sets = [];
     for (const name in e) {
         const id = e[name];
-        const [set, setId] = [Math.floor(id/100)-1, id%100];
-        if (typeof sets[set] === "undefined") sets[set] = [];
-        sets[set][setId] = name;
+        if (id >= 100) {
+            const [set, setId] = [Math.floor(id/100)-1, id%100];
+            if (typeof sets[set] === "undefined") sets[set] = [];
+            sets[set][setId] = name;
+        } else {
+            sets[id] = name;
+        }
     }
     return sets;
 }
@@ -130,21 +136,27 @@ function dataToKeywordDictionary(data) {
 
 /** Game Functions */
 function rollMine({playerData={}, reginOreSet=[], roll=new D(1), luck=1}) {
-    const minedOre = Array.from({length: reginOreSet.length}, new D(0));
+    roll = new D(roll);
+
+    const minedOre = Array.from({length: reginOreSet.length}, e => new D(0));
 
     minedOre[0] = roll;
 
     oreDistribution = 2;
-    luck = 1;
+    luck = luck ?? 1;
     for (let i = 1; i < luck; i++) {
         const tmpDistribution = Math.max(1, oreDistribution*(1+Math.random()*0.03)+(Math.random()*0.05));
         minedOre[i] = minedOre[i-1].div(tmpDistribution).mul(Math.min(1, luck-i));
     }
     
-    minedOre[i].map(e => e.gt(1) || e.gt(Math.random()) ? e.floor(0) : new D(0));
+    minedOre = minedOre.map(e => e.gt(1) || e.gt(Math.random()) ? e.floor(0) : new D(0));
 
     return minedOre;
 }
+const pickaxeLevels = [10, 30, 60, 100, 150, 250];
+const pickaxeName = Object.keys(pickaxeEnum).map(keyNameToWord);
+calcPickaxeTier = (level) => pickaxeLevels.filter(e => e < level).length;
+getPickaxeName  = (level) => pickaxeName[calcPickaxeTier(level)];
 
 
 
@@ -183,6 +195,24 @@ function oreSetToMessage({playerData, ores=[], reginOreSet=[], oreEmoji={}, disp
     }
     return message;
 }
+toShopNameSpace = ({emoji, shortName, level, levelMax, name}) => `${emoji} **\`${shortName}-${level}/${levelMax} ${name}\`**`;
+upgradeEffectMessage = (upgrade, level) => {
+    const effects = upgrade.effects(level);
+    
+    let message = "";
+    for (const name in effects) message += `${keyNameToWord(name)}: \`${notation(effects[name]).trim()}\`\n`;
+
+    return message.trim();
+}
+upgradeNextEffectMessage = (upgrade, level) => {
+    const effectsNow  = upgrade.effects(level);
+    const effectsNext = upgrade.effects(level+1);
+    
+    let message = "";
+    for (const name in effectsNow) message += `${keyNameToWord(name)}: \`${notation(effectsNow[name]).trim()}\` -> \`${notation(effectsNext[name]).trim()}\`\n`;
+
+    return message.trim();
+}
 
 
 
@@ -191,19 +221,25 @@ module.exports = {
     randomPick,
     mergeObject,
     mergeArray,
-
-    /** Game Functions */
-    rollMine,
-
+    
     /** Number Functions*/
     calcStandardPrefix,
     numToScientDigit,
     notation,
-
+    
     /** Init Functions */
     enumToSets,
     dataToKeywordDictionary,
 
+    /** Game Functions */
+    rollMine,
+    pickaxeLevels,
+    calcPickaxeTier,
+    getPickaxeName,
+    
     /** Display Functions */
     oreSetToMessage,
+    toShopNameSpace,
+    upgradeEffectMessage,
+    upgradeNextEffectMessage,
 }

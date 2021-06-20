@@ -11,7 +11,12 @@ const oreEmoji = emojiList.ore;
 const oreSet = util.enumToSets(oreEnum);
 
 const randomDescriptions = [
-    "Upgrade yourself!"
+    "Upgrade yourself!",
+    "pick, Pick, PICK!",
+    "I wanna have your golds",
+    "Please buy them :D",
+    "Upgrade them to unlock more upgrades",
+    "That costs " + util.notation(new D(10).pow(Math.random()*40+20)) + " golds!"
 ];
 
 function upgradeommand({playerData, params}) {
@@ -20,9 +25,9 @@ function upgradeommand({playerData, params}) {
     return {
         playerData: playerData,
         message: {
-            command: `Upgrade`,
-            color: null,
-            image: null,
+            command: "Upgrade" + (type ?? ""),
+            color: "e8cf2a",
+            image: "https://i.imgur.com/WOndRAd.png",
             fields: [...fields],
             description: util.randomPick(randomDescriptions)
         }

@@ -15,7 +15,9 @@ const randomDescriptions = [
     "This is your Inventory",
     "Opened your inventory",
     "inventory / inv / i",
+    "=i",
     "Welcome to your inventory",
+    "Can I have some of them? :O"
 ];
 
 function inventoryCommand({playerData, params}) {

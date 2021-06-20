@@ -1,5 +1,14 @@
 const emojis = {
     blank: "<:blank:854741674022010912>",
+    coin: "<:coin:742182153533522012>",
+    pickaxe: {
+        BeginnerPickaxe: '<:BeginnerPickaxe:742043069301391490>',
+        StonePickaxe: '<:StonePickaxe:742043069142270014>',
+        UpgradedStonePickaxe: '<:UpgradedStonePickaxe:742043070257823814>',
+        IronPickaxe: '<:IronPickaxe:742043070102503444>',
+        SteelPickaxe: '<:SteelPickaxe:742043069486071919>',
+        GiantPickaxe: '<:GiantPickaxe:745549423660105788>'
+    },
     ore: {
         Stone: "<:Stone:742063116799574126>",
         Iron: "<:Iron:742063116384338030>",
@@ -31,7 +40,7 @@ const emojis = {
         LegendaryBox: "<:LegendaryBox:742444238997946468>",
         UltimateBox: "<:UltimateBox:742606473271574569>",
         DailyBag: "<:DailyBag:764193845792997407>"
-    }
+    },
 };
 
 module.exports = emojis;
