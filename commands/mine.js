@@ -1,5 +1,5 @@
 const D = require("decimal.js");
-const Command = require("../command.js");
+const Command = require("../class/command.js");
 const Permission = require("../Enums/permission.js");
 
 const oreEnum = require("../enums/ore.js");
@@ -7,7 +7,7 @@ const oreEnum = require("../enums/ore.js");
 const emojiList = require("../data/emojiList.js");
 const util = require("../util.js");
 
-const oreEmoji = emojiList.ore;
+const oreEmoji = emojiList.ores;
 const oreSet = util.enumToSets(oreEnum);
 
 const randomDescriptions = [
@@ -35,11 +35,13 @@ function mineCommand({playerData, time}) {
 
     const reginOreSet = oreSet[playerData.miningRegion];
 
+    const rollStat = util.calcStat("roll", playerData);
+
     minedOre = util.rollMine({
         reginOreSet: reginOreSet,
-        luck: Math.random()*20+1,
-        roll: new D(new D(10).pow(Math.random()*10))}
-    );
+        luck: util.calcStat("luck", playerData),
+        roll: rollStat.max.sub(rollStat.min).mul(Math.random()).add(rollStat.min)
+    });
 
     for (let i = 0, l = minedOre.length; i < l; i++) {
         playerData.ores[reginOreSet[i]] = playerData.ores[reginOreSet[i]].add(minedOre[i]);

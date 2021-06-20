@@ -1,5 +1,5 @@
 const D = require("decimal.js");
-const Command = require("../command.js");
+const Command = require("../class/command.js");
 const Permission = require("../Enums/permission.js");
 
 const oreEnum = require("../enums/ore.js");
@@ -7,7 +7,7 @@ const oreEnum = require("../enums/ore.js");
 const emojiList = require("../data/emojiList.js");
 const util = require("../util.js");
 
-const oreEmoji = emojiList.ore;
+const oreEmoji = emojiList.ores;
 const oreSet = util.enumToSets(oreEnum);
 
 const randomDescriptions = [

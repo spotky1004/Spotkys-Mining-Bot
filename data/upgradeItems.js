@@ -1,16 +1,23 @@
 const D = require("decimal.js");
 
-const emojiList = require("../data/emojiList.js");
+const Upgrade = require("../class/upgrade.js");
+
+const emojiList = require("./emojiList.js");
 const util = require("../util.js");
 
 const pickaxeEnum = require("../enums/pickaxe.js");
 const pickaxeSet = util.enumToSets(pickaxeEnum);
 
+const oreSet = util.enumToSets(require("../enums/ore.js")).flat();
 
 
-const shopItems = [
-    {
-        mainKeyWord: "pic",
+
+const upgradeItems = [
+    new Upgrade({
+        parentKey: "upgrade",
+        key: "pickaxe",
+        shortName: "pic",
+        maxLevel: 250,
         namespace: function(level) {
             const tier = util.calcPickaxeTier(level);
 
@@ -20,11 +27,16 @@ const shopItems = [
             
             return util.toShopNameSpace({
                 emoji    : emojiList.pickaxe[pickaxeSet[tier]],
-                shortName: this.mainKeyWord,
+                shortName: this.shortName,
                 level    : level - sub,
-                levelMax : util.pickaxeLevels[tier] - sub,
+                maxLevel : util.pickaxeLevels[tier] - sub,
                 name     : `(tot lv.${level}) ${util.getPickaxeName(level)}`
             });
+        },
+        effectsDisplay: {
+            RollMin: "$",
+            RollMax: "$",
+            Luck   : "$"
         },
         effects: function(level) {
             const tier = util.calcPickaxeTier(level);
@@ -93,7 +105,39 @@ const shopItems = [
                 cost    : cost
             };
         },
-    }
+        unlocked: function(playerData) {return true}
+    }),
+    new Upgrade({
+        parentKey: "upgrade",
+        key: "autominerSpeed",
+        shortName: "asp",
+        maxLevel: 24,
+        namespace: function(level) {
+            return util.toShopNameSpace({
+                emoji    : emojiList.auto,
+                shortName: this.shortName,
+                level    : level,
+                maxLevel : this.maxLevel,
+                name     : "Autominer Speed" 
+            })
+        },
+        effectsDisplay: {
+            Interval: "$sec",
+        },
+        effects: function(level) {
+            return {
+                Interval: 60-level*2
+            }
+        },
+        keyWords: ["Autominer_Speed", "AutominerSpeed", "autominerSpeed", "autominerspeed", "asp", "as"],
+        calcCost: function(level) {
+            return {
+                resource: ["ores", oreSet[Math.floor(level/2)]],
+                cost: new D(100).mul(new D(1.5).pow(level%2).mul(new D(level/2+1).floor(0).pow(0.4)))
+            }
+        },
+        unlocked: function(playerData) {return true}
+    })
 ];
 
-module.exports = shopItems;
+module.exports = upgradeItems;

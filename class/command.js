@@ -1,9 +1,10 @@
 const Command = class {
-    constructor({keyWords, regex, func, permissionReq}) {
+    constructor({keyWords, regex, func, permissionReq, canAcceptEmpty}) {
         this.keyWords = keyWords;
         this.regex = regex;
         this.func = func;
         this.permissionReq = permissionReq;
+        this.canAcceptEmpty = canAcceptEmpty ?? false;
     }
 
     keyWords = new Array();
@@ -15,7 +16,8 @@ const Command = class {
         if (this.permissionReq > permission) return {message: "`Missing permission!`"};
         if (
             this.regex !== null &&
-            rawParameter.length === 0
+            rawParameter.length === 0 &&
+            !this.canAcceptEmpty
         ) return {message: "`Missing Parameter(s)!`"};
 
         const content = rawParameter;

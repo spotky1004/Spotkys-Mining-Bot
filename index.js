@@ -16,7 +16,7 @@ const Permission = require("./enums/permission.js");
 const util = require("./util.js");
 
 const commands = require("./commandManager.js");
-const commandDict = util.dataToKeywordDictionary(commands).Dictionary;
+const commandDict     = util.dataToKeywordDictionary(commands).Dictionary;
 const commandKeyWords = util.dataToKeywordDictionary(commands).KeyWords;
 
 

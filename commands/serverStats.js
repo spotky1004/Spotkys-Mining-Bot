@@ -1,6 +1,6 @@
 const Discord = require("discord.js");
 const D = require("decimal.js");
-const Command = require("../command.js");
+const Command = require("../class/command.js");
 const Permission = require("../enums/permission.js");
 
 function serverStatsCommand({msg, params, guildData, isDM}) {

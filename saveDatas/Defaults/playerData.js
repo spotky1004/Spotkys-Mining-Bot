@@ -19,8 +19,8 @@ const playerData = {
     
     
     // upgrades
-    upgrades: {
-        pickaxe: 0,
+    upgrade: {
+        pickaxe: 1,
         autominerSpeed: 0,
         autominerTime: 0,
         amulet: 0,

@@ -3,6 +3,7 @@ const D = Decimal;
 
 const pickaxeEnum = require("./enums/pickaxe.js");
 const displayModeEnum = require("./enums/displayMode.js");
+const upgradeItemsEnum = require("./enums/upgradeItems.js");
 
 const emojiList = require("./data/emojiList.js");
 
@@ -42,7 +43,15 @@ function mergeArray(target, source) {
     }
     return target;
 }
-keyNameToWord = (str) => str.replace(/([A-Z])/g, " $1").trim(); 
+keyNameToWord = (str) => str.replace(/([A-Z])/g, " $1").trim();
+function searchObject(obj, toSearch) {
+    let tmp = obj;
+    for (let i = 0, l = toSearch.length; i < l; i++) {
+        if (typeof tmp === "object") tmp = tmp[toSearch[i]];
+        else return undefined;
+    }
+    return tmp;
+}
 
 
 
@@ -135,10 +144,10 @@ function dataToKeywordDictionary(data) {
 
 
 /** Game Functions */
-function rollMine({playerData={}, reginOreSet=[], roll=new D(1), luck=1}) {
+function rollMine({reginOreSet=[], roll=new D(1), luck=1}) {
     roll = new D(roll);
 
-    const minedOre = Array.from({length: reginOreSet.length}, e => new D(0));
+    let minedOre = Array.from({length: reginOreSet.length}, e => new D(0));
 
     minedOre[0] = roll;
 
@@ -157,6 +166,28 @@ const pickaxeLevels = [10, 30, 60, 100, 150, 250];
 const pickaxeName = Object.keys(pickaxeEnum).map(keyNameToWord);
 calcPickaxeTier = (level) => pickaxeLevels.filter(e => e < level).length;
 getPickaxeName  = (level) => pickaxeName[calcPickaxeTier(level)];
+function calcStat(statName, playerData) {
+    let stat;
+
+    let pickaxeEffects;
+    switch (statName) {
+        case "roll":
+            pickaxeEffects = upgradeItems[upgradeItemsEnum.pickaxe].effects(playerData.upgrade.pickaxe);
+            let min = pickaxeEffects.RollMin;
+            let max = pickaxeEffects.RollMax;
+            stat = {
+                min,
+                max
+            }
+            break;
+        case "luck":
+            pickaxeEffects = upgradeItems[upgradeItemsEnum.pickaxe].effects(playerData.upgrade.pickaxe);
+            stat = pickaxeEffects.Luck;
+            break;
+    }
+
+    return stat;
+}
 
 
 
@@ -180,7 +211,7 @@ function oreSetToMessage({playerData, ores=[], reginOreSet=[], oreEmoji={}, disp
                 
                 if (!playerData.ores[oreName].eq(0)) {
                     const oreCount = ores[i] ?? new D(0);
-                    const count = `${notation(playerData.ores[oreName]).padEnd(6, " ")}` + (!oreCount.eq(0) ? `(+${notation(oreCount).padEnd(6, " ")})`: " ".repeat(6));
+                    const count = `${notation(playerData.ores[oreName]).padEnd(6, " ")}` + (!oreCount.eq(0) ? `(+${notation(oreCount).padEnd(6, " ")})`: " ".repeat(9));
                     message += `${oreEmoji[oreName]}\`${count}\` `;
                 } else {
                     message += emojiList.blank + " ".repeat(15);
@@ -195,21 +226,22 @@ function oreSetToMessage({playerData, ores=[], reginOreSet=[], oreEmoji={}, disp
     }
     return message;
 }
-toShopNameSpace = ({emoji, shortName, level, levelMax, name}) => `${emoji} **\`${shortName}-${level}/${levelMax} ${name}\`**`;
-upgradeEffectMessage = (upgrade, level) => {
+toShopNameSpace = ({emoji, shortName, level, maxLevel, name}) => `${emoji} **\`${shortName}-${level}/${maxLevel} ${name}\`**`;
+function upgradeListMessage(upgrade, level, playerData, next=false) {
     const effects = upgrade.effects(level);
+    let nextEffect;
+    if (next) nextEffect = upgrade.effects(level+1);
     
     let message = "";
-    for (const name in effects) message += `${keyNameToWord(name)}: \`${notation(effects[name]).trim()}\`\n`;
+    for (const name in effects) {
+        message += `${keyNameToWord(name)}: `; // effect name
+        message += `\`${upgrade.effectsDisplay[name].replace(/\$/, notation(effects[name]).trim())}\`` // first effect
+        if (next) message += ` -> \`${upgrade.effectsDisplay[name].replace(/\$/, notation(nextEffect[name]).trim())}\``;
+        message += `\n`;
+    }
 
-    return message.trim();
-}
-upgradeNextEffectMessage = (upgrade, level) => {
-    const effectsNow  = upgrade.effects(level);
-    const effectsNext = upgrade.effects(level+1);
-    
-    let message = "";
-    for (const name in effectsNow) message += `${keyNameToWord(name)}: \`${notation(effectsNow[name]).trim()}\` -> \`${notation(effectsNext[name]).trim()}\`\n`;
+    const cost = upgrade.calcCost(level);
+    message += `Cost: \`${notation(searchObject(playerData, cost.resource))}\` / \`${notation(cost.cost)}\` ${searchObject(emojiList, cost.resource)}`;
 
     return message.trim();
 }
@@ -221,6 +253,7 @@ module.exports = {
     randomPick,
     mergeObject,
     mergeArray,
+    searchObject,
     
     /** Number Functions*/
     calcStandardPrefix,
@@ -236,10 +269,14 @@ module.exports = {
     pickaxeLevels,
     calcPickaxeTier,
     getPickaxeName,
+    calcStat,
     
     /** Display Functions */
     oreSetToMessage,
     toShopNameSpace,
-    upgradeEffectMessage,
-    upgradeNextEffectMessage,
-}
+    upgradeListMessage,
+};
+
+
+// TODO: locate this require to top of this file
+const upgradeItems = require("./data/upgradeItems.js");

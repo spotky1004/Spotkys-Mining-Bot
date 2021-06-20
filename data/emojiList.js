@@ -1,6 +1,7 @@
 const emojis = {
     blank: "<:blank:854741674022010912>",
     coin: "<:coin:742182153533522012>",
+    auto: "<:auto:742407470533574678>",
     pickaxe: {
         BeginnerPickaxe: '<:BeginnerPickaxe:742043069301391490>',
         StonePickaxe: '<:StonePickaxe:742043069142270014>',
@@ -9,7 +10,7 @@ const emojis = {
         SteelPickaxe: '<:SteelPickaxe:742043069486071919>',
         GiantPickaxe: '<:GiantPickaxe:745549423660105788>'
     },
-    ore: {
+    ores: {
         Stone: "<:Stone:742063116799574126>",
         Iron: "<:Iron:742063116384338030>",
         Gold: "<:Gold:742063116895911986>",
@@ -32,7 +33,7 @@ const emojis = {
         NanoOrb: "<:NanoOrb:745545372419752006>",
         TranscendenceOrb: "<:TranscendenceOrb:745545372159705109>"
     },
-    loot: {
+    loots: {
         CommonBox: "<:CommonBox:742444238934900895>",
         UncommonBox: "<:UncommonBox:742444238909866124>",
         RareBox: "<:RareBox:742444238762934473>",
