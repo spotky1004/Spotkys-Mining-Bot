@@ -41,17 +41,17 @@ bot.on("message", async (msg) => {
     }
     sessionData.waiting.add(msg.author.id);
 
-    const isDM = !(msg.guild);
-    let guildData, prefix;
-    if (!isDM) {
-        guildData = checkGuildData(msg);
-        prefix = guildData.prefix;
-    } else {
-        guildData = null;
-        prefix = "+";
-    }
-
     try {
+        const isDM = !(msg.guild);
+        let guildData, prefix;
+        if (!isDM) {
+            guildData = checkGuildData(msg);
+            prefix = guildData.prefix;
+        } else {
+            guildData = null;
+            prefix = "+";
+        }
+
         // init
         if (msg.content.startsWith(prefix)) {
             let playerData = checkPlayerData(msg);
@@ -84,12 +84,12 @@ bot.on("message", async (msg) => {
 
                 if (!isDM) {
                     guildData.commandCounter++;
-                    guildData.commandCounterToday.push(Math.floor(time/100000));
-                    guildData.commandCounterToday = guildData.commandCounterToday.filter(e => e > time/100000-86400);
+                    guildData.commandCounterToday.push(Math.floor(time/1000));
+                    guildData.commandCounterToday = guildData.commandCounterToday.filter(e => e > time/1000-86400);
                     guildData.users.push(msg.author.id);
                     guildData.users = [...new Set(guildData.users)];
-                    guildData.usersToday[msg.author.id] = Math.floor(time/100000);
-                    for (const id in guildData.usersToday) if (guildData.usersToday[id] < time/100000-86400) delete guildData.usersToday[id];
+                    guildData.usersToday[msg.author.id] = Math.floor(time/1000);
+                    for (const id in guildData.usersToday) if (guildData.usersToday[id] < time/1000-86400) delete guildData.usersToday[id];
                 }
                 
 
@@ -124,12 +124,12 @@ bot.on("message", async (msg) => {
             }
             
             fs.writeFileSync(`./saveDatas/playerData/${msg.author.id}.json`, JSON.stringify(playerData));
+            if (!isDM) fs.writeFileSync(`./saveDatas/guildData/${msg.guild.id}.json`, JSON.stringify(guildData));
         } else if (msg.content.match(/<@&?!?763833293044711436>/) || msg.content.match(/<@&?!?763830703141945404>/)) {
             await msg.channel.send(commands.help.execute({permission: 0}).message);
         }
 
         // save
-        if (!isDM) fs.writeFileSync(`./saveDatas/guildData/${msg.guild.id}.json`, JSON.stringify(guildData));
     } catch (e) {
         console.log(e);
     }

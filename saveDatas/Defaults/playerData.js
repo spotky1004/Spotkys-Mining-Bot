@@ -22,7 +22,7 @@ const playerData = {
     upgrade: {
         pickaxe: 1,
         autominerSpeed: 0,
-        autominerTime: 0,
+        autominerCap: 0,
         amulet: 0,
         ring: 0,
         rope: 0

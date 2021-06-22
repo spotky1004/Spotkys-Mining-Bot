@@ -2,6 +2,7 @@ const emojis = {
     blank: "<:blank:854741674022010912>",
     coin: "<:coin:742182153533522012>",
     auto: "<:auto:742407470533574678>",
+
     pickaxe: {
         BeginnerPickaxe: '<:BeginnerPickaxe:742043069301391490>',
         StonePickaxe: '<:StonePickaxe:742043069142270014>',

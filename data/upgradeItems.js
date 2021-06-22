@@ -126,7 +126,7 @@ const upgradeItems = [
         },
         effects: function(level) {
             return {
-                Interval: 60-level*2
+                Interval: level > 0 ? 60-level*2 : Infinity
             }
         },
         keyWords: ["Autominer_Speed", "AutominerSpeed", "autominerSpeed", "autominerspeed", "asp", "as"],

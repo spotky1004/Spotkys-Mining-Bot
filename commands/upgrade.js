@@ -8,9 +8,10 @@ const upgradeItems = require("../data/upgradeItems.js");
 const upgradeItemsDict     = util.dataToKeywordDictionary(upgradeItems).Dictionary;
 const upgradeItemsKeyWords = util.dataToKeywordDictionary(upgradeItems).KeyWords;
 
+const imageList = require("../data/imageList.js");
 const emojiList = require("../data/emojiList.js");
-const oreEnum = require("../enums/ore.js");
 
+const oreEnum = require("../enums/ore.js");
 const oreEmoji = emojiList.ore;
 const oreSet = util.enumToSets(oreEnum);
 
@@ -62,7 +63,7 @@ function upgradeommand({playerData, params}) {
         message: {
             command: "Upgrade" + (type ? " 》 " + type : ""),
             color: color ?? "#e8cf2a",
-            image: "https://i.imgur.com/WOndRAd.png",
+            image: imageList.coin,
             fields: [...fields],
             description: util.randomPick(randomDescriptions)
         }

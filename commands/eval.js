@@ -6,7 +6,9 @@ const Command = require("../class/command.js");
 const Permission = require("../Enums/permission.js");
 const util = require("../util.js");
 
-function evalCommand({msg, params, playerData, guildData, permission}) {
+const imageList = require("../data/imageList.js");
+
+function evalCommand({msg, params, playerData, guildData, permission, isDM}) {
     let input = params[1];
     let output;
     try {
@@ -35,7 +37,7 @@ function evalCommand({msg, params, playerData, guildData, permission}) {
         message: {
             command: "Eval",
             color: "#000000",
-            image: "https://i.imgur.com/ihsB9OK.png",
+            image: imageList.auto,
             fields: [
                 {
                     name: "Input",

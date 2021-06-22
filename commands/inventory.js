@@ -4,6 +4,7 @@ const Permission = require("../Enums/permission.js");
 
 const oreEnum = require("../enums/ore.js");
 
+const imageList = require("../data/imageList.js");
 const emojiList = require("../data/emojiList.js");
 const util = require("../util.js");
 
@@ -46,7 +47,7 @@ function inventoryCommand({playerData, params}) {
         message: {
             command: `Inventory`,
             color: "#e0931f",
-            image: "https://i.imgur.com/xAZJT1w.png",
+            image: imageList.cubeStone,
             fields: [...fields],
             description: util.randomPick(randomDescriptions)
         }

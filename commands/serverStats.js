@@ -2,6 +2,7 @@ const Discord = require("discord.js");
 const D = require("decimal.js");
 const Command = require("../class/command.js");
 const Permission = require("../enums/permission.js");
+const imageList = require("../data/imageList.js");
 
 function serverStatsCommand({msg, params, guildData, isDM}) {
     if (isDM) return {
@@ -12,7 +13,7 @@ function serverStatsCommand({msg, params, guildData, isDM}) {
             style: "list",
 
             command: "Server Stats",
-            image: "https://i.imgur.com/LMJtv0D.png",
+            image: imageList.trophy,
             description: "Stats about this server (today/total)",
             color: "#e6126e",
             fields: [
@@ -30,7 +31,7 @@ function serverStatsCommand({msg, params, guildData, isDM}) {
 }
 
 module.exports = new Command({
-    keyWords: ["serverStats", "serverstats", "serverstat", "serverStat", "server"],
+    keyWords: ["serverStats", "serverstats", "serverstat", "serverStat", "server", "ss"],
     regex: null,
     func: serverStatsCommand,
     permissionReq: Permission.User

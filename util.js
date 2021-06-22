@@ -19,7 +19,7 @@ function mergeObject(target, source) {
         if (source[i] instanceof Decimal) {
             target[i] = new D(target[i] ?? source[i]);
         } else if (Array.isArray(source[i])) {
-            target[i] = [];
+            target[i] = target[i] ?? [];
             mergeArray(target[i], source[i])
         } else if (typeof source[i] === "object") {
             target[i] = mergeObject(target[i], source[i]);
@@ -88,11 +88,13 @@ function numToScientDigit(x, maxLength=6) {
 }
 function notation(x=new D(0), maxLength=6, type="Standard") {
     x = new D(x);
-
+    
     if (x.lt(1000) && x.floor(0).eq(x)) {
         return (x.toNumber()+"").padEnd(maxLength, " ");
     } else if (x.eq(0)) {
         return "0".padEnd(maxLength, " ");
+    } else if (x.eq(new D(Infinity))) {
+        return "Inf.".padEnd(maxLength, " ");
     }
 
     if (x.gt("1e3000")) type = "Scientific";
@@ -167,22 +169,29 @@ const pickaxeName = Object.keys(pickaxeEnum).map(keyNameToWord);
 calcPickaxeTier = (level) => pickaxeLevels.filter(e => e < level).length;
 getPickaxeName  = (level) => pickaxeName[calcPickaxeTier(level)];
 function calcStat(statName, playerData) {
-    let stat;
-
-    let pickaxeEffects;
+    let stat, effect;
     switch (statName) {
         case "roll":
-            pickaxeEffects = upgradeItems[upgradeItemsEnum.pickaxe].effects(playerData.upgrade.pickaxe);
-            let min = pickaxeEffects.RollMin;
-            let max = pickaxeEffects.RollMax;
-            stat = {
-                min,
-                max
-            }
+            effect = upgradeItems[upgradeItemsEnum.pickaxe].effects(playerData.upgrade.pickaxe);
+            let min = effect.RollMin;
+            let max = effect.RollMax;
+            stat = {min, max};
             break;
         case "luck":
-            pickaxeEffects = upgradeItems[upgradeItemsEnum.pickaxe].effects(playerData.upgrade.pickaxe);
-            stat = pickaxeEffects.Luck;
+            effect = upgradeItems[upgradeItemsEnum.pickaxe].effects(playerData.upgrade.pickaxe).Luck;
+            stat = effect;
+            break;
+        case "miningCool":
+            stat = 3000;
+            break;
+        case "autominerSpeed":
+            effect = upgradeItems[upgradeItemsEnum.autominerSpeed].effects(playerData.upgrade.autominerSpeed).Interval;
+            effect *= 1000; // s -> ms
+            stat = effect;
+            break;
+        case "autominerCap":
+            effect = 1;
+            stat = effect;
             break;
     }
 

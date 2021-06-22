@@ -12,57 +12,43 @@ const oreEmoji = emojiList.ores;
 const oreSet = util.enumToSets(oreEnum);
 
 const randomDescriptions = [
-    "Pick!",
-    "pick",
-    "Mine!",
-    "mine",
-    "You got these ores",
-    "mine / m / ㅡ",
-    "much ore",
-    "many ore",
-    "that's a lot of ore",
-    "these ores are sent to your inventory",
-    "there are total of 21 ores now",
-    "=m"
+    "chuff chuff",
+    "it's diligent",
+    "\*gear rotation sound*"
 ];
 
 function mineCommand({playerData, time}) {
-    const cooldown = util.calcStat("mineCool", playerData);
-    if (time - playerData.behaveTimes.mine < cooldown) return {
-        message: `\`Cooldown! ${(cooldown/1000 - (time - playerData.behaveTimes.mine)/1000).toFixed(3)} second(s) left\``
-    }
-    playerData.behaveTimes.mine = time;
+    playerData.behaveTimes.autominer = Math.min(playerData.behaveTimes.autominer, time);
+
+    const timeSpent = Math.min(time-playerData.behaveTimes.autominer, util.calcStat("autominerCap", playerData)*3600*1000);
+    const rollCount = Math.floor(timeSpent/util.calcStat("autominerSpeed", playerData));
     
-
-
-    const reginOreSet = oreSet[playerData.miningRegion];
-
     const rollStat = util.calcStat("roll", playerData);
 
+    const reginOreSet = oreSet[playerData.miningRegion];
+    const efficiency = Math.random()*0.1 + 0.9;
     const minedOre = util.rollMine({
         reginOreSet: reginOreSet,
         luck: util.calcStat("luck", playerData),
-        roll: rollStat.max.sub(rollStat.min).mul(Math.random()).add(rollStat.min)
+        roll: rollStat.max.mul(efficiency).add(rollStat.min.mul(1-efficiency)).div(2).mul(rollCount)
     });
 
     for (let i = 0, l = minedOre.length; i < l; i++) {
         playerData.ores[reginOreSet[i]] = playerData.ores[reginOreSet[i]].add(minedOre[i]);
     }
 
+    if (rollCount >= 1) playerData.behaveTimes.autominer = time;
 
 
     return {
         playerData: playerData,
         message: {
-            command: "Mine",
-            color: "#e0931f",
-            image: "https://i.imgur.com/xAZJT1w.png",
+            command: "Collect",
+            color: "#7d7d7d",
+            image: imageList.auto,
             fields: [
-                // Boosts display
-                // {},
-                // Mined ore display
                 {
-                    name: "You got:",
+                    name: `Mined \`${util.notation(rollCount)}\` times (${(timeSpent/1000).toFixed(3)}sec spent)`,
                     value: util.oreSetToMessage({
                         playerData: playerData,
                         ores: minedOre,
@@ -70,9 +56,7 @@ function mineCommand({playerData, time}) {
                         reginOreSet: reginOreSet,
                         displayMode: playerData.options.displayMode
                     })
-                },
-                // Rare resources display
-                // {},
+                }
             ],
             description: util.randomPick(randomDescriptions)
         }
@@ -80,8 +64,9 @@ function mineCommand({playerData, time}) {
 }
 
 module.exports = new Command({
-    keyWords: ["mine", "m", "M", "MINE", "ㅡ"],
-    regex: null,
+    keyWords: ["collect", "COLLECT", "c", "C", "ㅊ", "col", "COL"],
+    regex: /^(now)?/,
+    canAcceptEmpty: true,
     func: mineCommand,
     permissionReq: Permission.User
 });
