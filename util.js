@@ -193,6 +193,10 @@ function calcStat(statName, playerData) {
             effect = 1;
             stat = effect;
             break;
+        case "coinMult":
+            effect = new D(1);
+            stat = effect;
+            break;
     }
 
     return stat;
@@ -201,6 +205,19 @@ function calcStat(statName, playerData) {
 
 
 /** Display Functions */
+function itemMessage({have=new D(0), got=new D(0), emoji="", isBlank=false}) {
+    if (isBlank) return emojiList.blank + " ".repeat(15);
+
+    have = new D(have);
+    got  = new D(got);
+
+    let message = emoji;
+    message += "`";
+    message += `${notation(have).padEnd(6, " ")}`
+    message += !got.eq(0) ? `(+${notation(got).padEnd(6, " ")})`: " ".repeat(9);
+    message += "`";
+    return message;
+}
 function oreSetToMessage({playerData, ores=[], reginOreSet=[], oreEmoji={}, displayMode="Desktop"}) {
     displayMode = displayModeEnum[displayMode];
 
@@ -218,13 +235,13 @@ function oreSetToMessage({playerData, ores=[], reginOreSet=[], oreEmoji={}, disp
                 
                 const oreName = reginOreSet[i];
                 
-                if (!playerData.ores[oreName].eq(0)) {
-                    const oreCount = ores[i] ?? new D(0);
-                    const count = `${notation(playerData.ores[oreName]).padEnd(6, " ")}` + (!oreCount.eq(0) ? `(+${notation(oreCount).padEnd(6, " ")})`: " ".repeat(9));
-                    message += `${oreEmoji[oreName]}\`${count}\` `;
-                } else {
-                    message += emojiList.blank + " ".repeat(15);
-                }
+                message += itemMessage({
+                    have : playerData.ores[oreName],
+                    got  : ores[i] ?? new D(0),
+                    emoji: oreEmoji[oreName],
+                    isBlank: playerData.ores[oreName].eq(0)
+                }) + " ";
+
                 if ((p+1)%3 === 0 || displayMode === displayModeEnum.Mobile) message += "\n";
             }
             
@@ -281,6 +298,7 @@ module.exports = {
     calcStat,
     
     /** Display Functions */
+    itemMessage,
     oreSetToMessage,
     toShopNameSpace,
     upgradeListMessage,

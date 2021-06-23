@@ -17,7 +17,7 @@ const randomDescriptions = [
     "\*gear rotation sound*"
 ];
 
-function mineCommand({playerData, time}) {
+function collectCommand({playerData, time}) {
     playerData.behaveTimes.autominer = Math.min(playerData.behaveTimes.autominer, time);
 
     const timeSpent = Math.min(time-playerData.behaveTimes.autominer, util.calcStat("autominerCap", playerData)*3600*1000);
@@ -67,6 +67,6 @@ module.exports = new Command({
     keyWords: ["collect", "COLLECT", "c", "C", "ㅊ", "col", "COL"],
     regex: /^(now)?/,
     canAcceptEmpty: true,
-    func: mineCommand,
+    func: collectCommand,
     permissionReq: Permission.User
 });

@@ -56,7 +56,7 @@ function mineCommand({playerData, time}) {
         message: {
             command: "Mine",
             color: "#e0931f",
-            image: "https://i.imgur.com/xAZJT1w.png",
+            image: imageList.pickaxe[util.getPickaxeName(playerData.upgrade.pickaxe)],
             fields: [
                 // Boosts display
                 // {},
