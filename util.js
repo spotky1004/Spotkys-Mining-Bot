@@ -168,38 +168,43 @@ const pickaxeLevels = [10, 30, 60, 100, 150, 250];
 const pickaxeName = Object.keys(pickaxeEnum).map(keyNameToWord);
 calcPickaxeTier = (level) => pickaxeLevels.filter(e => e < level).length;
 getPickaxeName  = (level) => pickaxeName[calcPickaxeTier(level)];
-function calcStat(statName, playerData) {
-    let stat, effect;
-    switch (statName) {
-        case "roll":
-            effect = upgradeItems[upgradeItemsEnum.pickaxe].effects(playerData.upgrade.pickaxe);
-            let min = effect.RollMin;
-            let max = effect.RollMax;
-            stat = {min, max};
-            break;
-        case "luck":
-            effect = upgradeItems[upgradeItemsEnum.pickaxe].effects(playerData.upgrade.pickaxe).Luck;
-            stat = effect;
-            break;
-        case "miningCool":
-            stat = 3000;
-            break;
-        case "autominerSpeed":
-            effect = upgradeItems[upgradeItemsEnum.autominerSpeed].effects(playerData.upgrade.autominerSpeed).Interval;
-            effect *= 1000; // s -> ms
-            stat = effect;
-            break;
-        case "autominerCap":
-            effect = 1;
-            stat = effect;
-            break;
-        case "coinMult":
-            effect = new D(1);
-            stat = effect;
-            break;
-    }
+const calcStat = {
+    // Mining
+    Roll: (playerData) => {
+        const pickaxeEffect = upgradeItems[upgradeItemsEnum.pickaxe].effects(playerData.upgrade.pickaxe);
 
-    return stat;
+        let min = pickaxeEffect.RollMin;
+        let max = pickaxeEffect.RollMax;
+
+        return {min, max};
+    },
+    Luck: (playerData) => {
+        return upgradeItems[upgradeItemsEnum.pickaxe].effects(playerData.upgrade.pickaxe).Luck;
+    },
+    MiningCooldown: (playerData) => {
+        return 3000;
+    },
+
+    // Autominer
+    AutominerSpeed: (playerData) => {
+        let speed = upgradeItems[upgradeItemsEnum.autominerSpeed].effects(playerData.upgrade.autominerSpeed).Interval;
+
+        speed *= 1000;
+        return speed;
+    },
+    AutominerCap: (playerData) => {
+        let cap = 1;
+
+        cap *= 3600*1000;
+        return cap;
+    },
+
+    // Resource
+    CoinMult: (playerData) => {
+        let mult = new D(1);
+
+        return mult;
+    }
 }
 
 
@@ -307,3 +312,4 @@ module.exports = {
 
 // TODO: locate this require to top of this file
 const upgradeItems = require("./data/upgradeItems.js");
+const playerData = require("./saveDatas/Defaults/playerData.js");

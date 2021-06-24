@@ -20,7 +20,7 @@ const randomDescriptions = [
 ];
 
 function sellCommand({playerData}) {
-    const coinMult = util.calcStat("coinMult", playerData);
+    const coinMult = util.calcStat.CoinMult(playerData);
 
     let coinGot = new D(0);
     for (const name in oreEnum) {

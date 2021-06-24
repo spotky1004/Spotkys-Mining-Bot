@@ -20,16 +20,16 @@ const randomDescriptions = [
 function collectCommand({playerData, time}) {
     playerData.behaveTimes.autominer = Math.min(playerData.behaveTimes.autominer, time);
 
-    const timeSpent = Math.min(time-playerData.behaveTimes.autominer, util.calcStat("autominerCap", playerData)*3600*1000);
-    const rollCount = Math.floor(timeSpent/util.calcStat("autominerSpeed", playerData));
+    const timeSpent = Math.min(time-playerData.behaveTimes.autominer, util.calcStat.AutominerCap(playerData));
+    const rollCount = Math.floor(timeSpent/util.calcStat.AutominerSpeed(playerData));
     
-    const rollStat = util.calcStat("roll", playerData);
+    const rollStat = util.calcStat.Roll(playerData);
 
     const reginOreSet = oreSet[playerData.miningRegion];
     const efficiency = Math.random()*0.1 + 0.9;
     const minedOre = util.rollMine({
         reginOreSet: reginOreSet,
-        luck: util.calcStat("luck", playerData),
+        luck: util.calcStat.Luck(playerData),
         roll: rollStat.max.mul(efficiency).add(rollStat.min.mul(1-efficiency)).div(2).mul(rollCount)
     });
 
