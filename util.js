@@ -2,6 +2,7 @@ const Decimal = require("decimal.js");
 const D = Decimal;
 
 const pickaxeEnum = require("./enums/pickaxe.js");
+const lootEnum = require("./enums/loot.js");
 const displayModeEnum = require("./enums/displayMode.js");
 const upgradeItemsEnum = require("./enums/upgradeItems.js");
 
@@ -43,7 +44,7 @@ function mergeArray(target, source) {
     }
     return target;
 }
-keyNameToWord = (str) => str.replace(/([A-Z])/g, " $1").trim();
+keyNameToWord = (str="") => (str.charAt(0).toUpperCase() + str.slice(1)).replace(/([A-Z])/g, " $1").trim();
 function searchObject(obj, toSearch) {
     let tmp = obj;
     for (let i = 0, l = toSearch.length; i < l; i++) {
@@ -52,7 +53,6 @@ function searchObject(obj, toSearch) {
     }
     return tmp;
 }
-
 
 
 
@@ -81,7 +81,7 @@ function numToScientDigit(x, maxLength=6) {
     const dec = fixedNum.mod(1).mul(1e6).toNumber()+"";
 
     let out = int;
-    if (out.length+1 < maxLength) out = (out + "." + dec.substr(0, maxLength-int.length-1)).replace(/0+$/, "").padEnd(maxLength, " ");
+    if (out.length+1 < maxLength) out = (out + "." + dec.substr(0, maxLength-int.length-1)).replace(/0+$/, "").padEnd(maxLength, " ").replace(". ", "  ");
     else out = out.padEnd(maxLength, " ");
 
     return out;
@@ -146,28 +146,7 @@ function dataToKeywordDictionary(data) {
 
 
 /** Game Functions */
-function rollMine({reginOreSet=[], roll=new D(1), luck=1}) {
-    roll = new D(roll);
-
-    let minedOre = Array.from({length: reginOreSet.length}, e => new D(0));
-
-    minedOre[0] = roll;
-
-    oreDistribution = 2;
-    luck = luck ?? 1;
-    for (let i = 1; i < luck; i++) {
-        const tmpDistribution = Math.max(1, oreDistribution*(1+Math.random()*0.03)+(Math.random()*0.05));
-        minedOre[i] = minedOre[i-1].div(tmpDistribution).mul(Math.min(1, luck-i));
-    }
-    
-    minedOre = minedOre.map(e => e.gt(1) || e.gt(Math.random()) ? e.ceil(0) : new D(0));
-
-    return minedOre;
-}
-const pickaxeLevels = [10, 30, 60, 100, 150, 250];
-const pickaxeName = Object.keys(pickaxeEnum).map(keyNameToWord);
-calcPickaxeTier = (level) => pickaxeLevels.filter(e => e < level).length;
-getPickaxeName  = (level) => pickaxeName[calcPickaxeTier(level)];
+// global
 const calcStat = {
     // Mining
     Roll: (playerData) => {
@@ -198,6 +177,11 @@ const calcStat = {
         cap *= 3600*1000;
         return cap;
     },
+    LootProgressMult: (playerData) => {
+        let mult = playerData.upgrade.pickaxe;
+        
+        return mult;
+    },
 
     // Resource
     CoinMult: (playerData) => {
@@ -206,12 +190,45 @@ const calcStat = {
         return mult;
     }
 }
+// mine
+function rollMine({reginOreSet=[], roll=new D(1), luck=1}) {
+    roll = new D(roll);
+
+    let minedOre = Array.from({length: reginOreSet.length}, e => new D(0));
+
+    minedOre[0] = roll;
+
+    oreDistribution = 2;
+    luck = luck ?? 1;
+    for (let i = 1; i < luck; i++) {
+        const tmpDistribution = Math.max(1, oreDistribution*(1+Math.random()*0.03)+(Math.random()*0.05));
+        minedOre[i] = minedOre[i-1].div(tmpDistribution).mul(Math.min(1, luck-i));
+    }
+    
+    minedOre = minedOre.map(e => e.gt(1) || e.gt(Math.random()) ? e.ceil(0) : new D(0));
+
+    return minedOre;
+}
+const pickaxeLevels = [10, 30, 60, 100, 150, 250];
+const pickaxeName = Object.keys(pickaxeEnum).map(keyNameToWord);
+calcPickaxeTier = (level) => pickaxeLevels.filter(e => e < level).length;
+getPickaxeName  = (level) => pickaxeName[calcPickaxeTier(level)];
+// collect
+const lootProgressThreshold = [2e3, 5e3, 20e3, 50e3, 200e3, 1e6, Infinity];
+calcLootTier = (lootProgress) => lootProgressThreshold.filter(e => e <= lootProgress).length-1;
+
 
 
 
 /** Display Functions */
-function itemMessage({have=new D(0), got=new D(0), emoji="", isBlank=false}) {
-    if (isBlank) return emojiList.blank + " ".repeat(15);
+function itemMessage({have=new D(0), got=new D(0), emoji="", isBlank=false, blankFiller=""}) {
+    if (isBlank) {
+        if (blankFiller) {
+            return `❌\`${blankFiller.padEnd(15, " ")}\``;
+        } else {
+            return emojiList.blank + " ".repeat(15);
+        }
+    }
 
     have = new D(have);
     got  = new D(got);
@@ -223,7 +240,7 @@ function itemMessage({have=new D(0), got=new D(0), emoji="", isBlank=false}) {
     message += "`";
     return message;
 }
-function oreSetToMessage({playerData, ores=[], reginOreSet=[], oreEmoji={}, displayMode="Desktop"}) {
+function oreSetToMessage({playerData, ores=[], reginOreSet=[], displayMode="Desktop"}) {
     displayMode = displayModeEnum[displayMode];
 
     ores = ores ?? [];
@@ -243,7 +260,7 @@ function oreSetToMessage({playerData, ores=[], reginOreSet=[], oreEmoji={}, disp
                 message += itemMessage({
                     have : playerData.ores[oreName],
                     got  : ores[i] ?? new D(0),
-                    emoji: oreEmoji[oreName],
+                    emoji: emojiList.ores[oreName],
                     isBlank: playerData.ores[oreName].eq(0)
                 }) + " ";
 
@@ -285,23 +302,34 @@ module.exports = {
     mergeObject,
     mergeArray,
     searchObject,
+    keyNameToWord,
     
+
+
     /** Number Functions*/
     calcStandardPrefix,
     numToScientDigit,
     notation,
     
+
+
     /** Init Functions */
     enumToSets,
     dataToKeywordDictionary,
 
+
+
     /** Game Functions */
+    calcStat,
     rollMine,
     pickaxeLevels,
     calcPickaxeTier,
     getPickaxeName,
-    calcStat,
+    lootProgressThreshold,
+    calcLootTier,
     
+
+
     /** Display Functions */
     itemMessage,
     oreSetToMessage,

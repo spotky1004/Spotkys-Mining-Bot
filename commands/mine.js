@@ -66,7 +66,6 @@ function mineCommand({playerData, time}) {
                     value: util.oreSetToMessage({
                         playerData: playerData,
                         ores: minedOre,
-                        oreEmoji: oreEmoji,
                         reginOreSet: reginOreSet,
                         displayMode: playerData.options.displayMode
                     })
