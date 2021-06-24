@@ -160,7 +160,7 @@ function rollMine({reginOreSet=[], roll=new D(1), luck=1}) {
         minedOre[i] = minedOre[i-1].div(tmpDistribution).mul(Math.min(1, luck-i));
     }
     
-    minedOre = minedOre.map(e => e.gt(1) || e.gt(Math.random()) ? e.floor(0) : new D(0));
+    minedOre = minedOre.map(e => e.gt(1) || e.gt(Math.random()) ? e.ceil(0) : new D(0));
 
     return minedOre;
 }
@@ -260,9 +260,9 @@ function upgradeListMessage(upgrade, level, playerData, next=false) {
     
     let message = "";
     for (const name in effects) {
-        message += `${keyNameToWord(name)}: `; // effect name
-        message += `\`${upgrade.effectsDisplay[name].replace(/\$/, notation(effects[name]).trim())}\`` // first effect
-        if (next) message += ` -> \`${upgrade.effectsDisplay[name].replace(/\$/, notation(nextEffect[name]).trim())}\``;
+        message += `${keyNameToWord(name)}: `;
+        message += `\`${upgrade.effectsFormer[name].replace(/\$/, notation(effects[name]).trim())}\``;
+        if (next) message += ` -> \`${upgrade.effectsFormer[name].replace(/\$/, notation(nextEffect[name]).trim())}\``;
         message += `\n`;
     }
 

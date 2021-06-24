@@ -33,7 +33,7 @@ const upgradeItems = [
                 name     : `(tot lv.${level}) ${util.getPickaxeName(level)}`
             });
         },
-        effectsDisplay: {
+        effectsFormer: {
             RollMin: "$",
             RollMax: "$",
             Luck   : "$"
@@ -105,7 +105,8 @@ const upgradeItems = [
                 cost    : cost
             };
         },
-        unlocked: function(playerData) {return true}
+        unlocked: function(playerData) {return true},
+        unlockMessage: "what"
     }),
     new Upgrade({
         parentKey: "upgrade",
@@ -121,7 +122,7 @@ const upgradeItems = [
                 name     : "Autominer Speed" 
             })
         },
-        effectsDisplay: {
+        effectsFormer: {
             Interval: "$sec",
         },
         effects: function(level) {
@@ -129,14 +130,15 @@ const upgradeItems = [
                 Interval: level > 0 ? 60-level*2 : Infinity
             }
         },
-        keyWords: ["Autominer_Speed", "AutominerSpeed", "autominerSpeed", "autominerspeed", "asp", "as"],
+        keyWords: ["asp", "Autominer_Speed", "AutominerSpeed", "autominerSpeed", "autominerspeed", "as", "s", "S"],
         calcCost: function(level) {
             return {
                 resource: ["ores", oreSet[Math.floor(level/2)]],
-                cost: new D(100).mul(new D(1.5).pow(level%2).mul(new D(level/2+1).floor(0).pow(0.4)))
+                cost: new D(100).mul(new D(1.5).pow(level%2).mul(new D(level/2+1).floor(0).pow(0.4))).ceil(0)
             }
         },
-        unlocked: function(playerData) {return true}
+        unlocked: function(playerData) {return playerData.upgrade.pickaxe > util.pickaxeLevels[0]},
+        unlockMessage: "next pickaxe tier"
     })
 ];
 

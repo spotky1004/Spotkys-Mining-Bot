@@ -8,7 +8,7 @@ function helpCommand({}) {
 }
 
 module.exports = new Command({
-    keyWords: ["help", "Help", "h"],
+    keyWords: ["help", "HELP", "h", "H"],
     regex: null,
     func: helpCommand,
     permissionReq: Permission.User

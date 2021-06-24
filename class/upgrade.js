@@ -7,7 +7,7 @@ class Upgrade {
         // string & number
         parentKey, key, shortName, unlockMessage, maxLevel,
         // data
-        effectsDisplay, keyWords,
+        effectsFormer, keyWords,
         // function
         namespace, calcCost, effects, unlocked
     }) {
@@ -17,7 +17,7 @@ class Upgrade {
         this.unlockMessage = unlockMessage ?? "Buy something to unlock this";
         this.maxLevel = maxLevel;
 
-        this.effectsDisplay = effectsDisplay;
+        this.effectsFormer = effectsFormer;
         this.keyWords = keyWords;
 
         this.namespace = namespace;
@@ -28,14 +28,17 @@ class Upgrade {
     parentKey = new String();
     key = new String();
     shortName = new String();
+    unlockMessage = new String();
     maxLevel = new Number();
-    effectsDisplay = new Object();
+    effectsFormer = new Object();
     keyWords = new Array();
     namespace = new Function();
     effects = new Function();
     unlocked = new Function();
 
     buy(playerData) {
+        if (playerData[this.parentKey][this.key] >= this.maxLevel) return false;
+
         const cost = this.calcCost(playerData[this.parentKey][this.key]);
 
         const parent = util.searchObject(playerData, cost.resource.splice(0, cost.resource.length-1));

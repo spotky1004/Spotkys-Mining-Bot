@@ -17,6 +17,8 @@ const oreSet = util.enumToSets(oreEnum);
 
 const randomDescriptions = [
     "Upgrade yourself!",
+    "Upgrade your tools!",
+    "Upgrade your machines!",
     "pick, Pick, PICK!",
     "Can I have your golds?",
     "Please buy them :D",
@@ -30,8 +32,16 @@ function upgradeommand({playerData, params}) {
     if (typeof type === "undefined") {
         for (let i = 0, l = upgradeItems.length; i < l; i++) {
             const item  = upgradeItems[i];
-            const level = playerData.upgrade[item.key];
 
+            if (!item.unlocked(playerData)) {
+                fields.push({
+                    name : `:lock: Reach ${item.unlockMessage} to unlock more upgrade`,
+                    value: "** **"
+                });
+                break;
+            }
+
+            const level = playerData.upgrade[item.key];
             fields.push({
                 name : item.namespace(level),
                 value: util.upgradeListMessage(item, level, playerData, true)
@@ -39,6 +49,9 @@ function upgradeommand({playerData, params}) {
         }
     } else if (upgradeItemsKeyWords.includes(type)) {
         const item = upgradeItems[upgradeItemsDict.get(type)];
+
+        if (!item.unlocked(playerData)) return { message: `:lock: \`That upgrade is locked!\`\n\`req: ${item.unlockMessage}\``}
+
         const result = item.buy(playerData);
         if (result) {
             color = "#1dad1f";

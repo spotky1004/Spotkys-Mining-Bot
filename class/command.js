@@ -6,13 +6,22 @@ const Command = class {
         this.permissionReq = permissionReq;
         this.canAcceptEmpty = canAcceptEmpty ?? false;
     }
-
     keyWords = new Array();
     regex = new RegExp();
     func = new Function();
     permissionReq = new Number();
+    canAcceptEmpty = new Boolean();
 
-    execute({msg, rawParameter, guildData, playerData, permission, bot, time, isDM}) {
+    execute({
+        // message
+        msg, rawParameter,
+        // saveData
+        guildData, playerData,
+        // data
+        permission, bot, isDM,
+        // constant
+        time
+    }) {
         if (this.permissionReq > permission) return {message: "`Missing permission!`"};
         if (
             this.regex !== null &&

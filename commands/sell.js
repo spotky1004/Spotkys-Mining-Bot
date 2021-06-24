@@ -55,7 +55,7 @@ function sellCommand({playerData}) {
 }
 
 module.exports = new Command({
-    keyWords: ["sell", "SELL", "s"],
+    keyWords: ["sell", "SELL", "s", "ㄴ"],
     regex: null,
     func: sellCommand,
     permissionReq: Permission.User
