@@ -10,7 +10,7 @@ function serverStatsCommand({msg, params, guildData, permission}) {
 }
 
 module.exports = new Command({
-    keyWords: ["permission", "checkPermission", "checkpermission"],
+    keyWords: ["permission", "checkPermission", "checkpermission", "cp"],
     regex: null,
     func: serverStatsCommand,
     permissionReq: Permission.Ban

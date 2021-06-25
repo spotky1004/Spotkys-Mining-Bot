@@ -2,6 +2,7 @@ const emojis = {
     blank: "<:blank:854741674022010912>",
     coin: "<:coin:742182153533522012>",
     auto: "<:auto:742407470533574678>",
+    ancientCoin: "<:AncientCoin:766242917714100257>",
 
     pickaxe: {
         BeginnerPickaxe: '<:BeginnerPickaxe:742043069301391490>',
@@ -43,6 +44,31 @@ const emojis = {
         UltimateBox: "<:UltimateBox:742606473271574569>",
         DailyBag: "<:DailyBag:764193845792997407>"
     },
+    artifact: {
+        OldCalendar: '<:Oldcalendar:764547869574823997>',
+        TinTicket: '<:TinTicket:764911827850100806>',
+        GreenCoin: '<:GreenCoin:764911828420657182>',
+        Amber: '<:Amber:765376111206596641>',
+        Onyx: '<:Onyx:765376110602092544>',
+        
+        Pearl: '<:Pearl:765376111357329468>',
+        FeohRune: '<:FeohRune:765376111244345366>',
+        Cheese: '<:Cheese:765376110455291976>',
+        BlueMushroom: '<:BlueMushroom:765376110639841320>',
+        CakePiece: '<:CakePiece:765376112070230016>',
+
+        MiningLantern: '<:MiningLantern:766490124325224448>',
+        IronRings: '<:IronRings:766490124908625920>',
+        LightPlant: '<:LightPlant:766490125106282496>',
+        CheesePiece: '<:CheesePiece:766490124745703434>',
+        SkillBook: '<:SkillBook:766490124891455498>',
+
+        PolyOrb: '<:PolyOrb:766490124363759636>',
+        Slime: '<:Slime:766490125005094962>',
+        HpPotion: '<:HPPotion:766490125726121984>',
+        SparklingPotion: '<:SparklingPotion:766490124628262933>',
+        ExpandPotion: '<:ExpandPotion:766490124896043018>'
+    }
 };
 
 module.exports = emojis;

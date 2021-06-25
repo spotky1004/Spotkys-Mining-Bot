@@ -1,8 +1,9 @@
+const fs = require("fs");
+const Discord = require("discord.js");
 const Decimal = require("decimal.js");
 const D = Decimal;
 
 const pickaxeEnum = require("./enums/pickaxe.js");
-const lootEnum = require("./enums/loot.js");
 const displayModeEnum = require("./enums/displayMode.js");
 const upgradeItemsEnum = require("./enums/upgradeItems.js");
 
@@ -145,6 +146,47 @@ function dataToKeywordDictionary(data) {
 
 
 
+/** Core Functions */
+const defaulatDatas = {
+    guildData: require("./saveDatas/Defaults/guildData.js"),
+    userData: require("./saveDatas/Defaults/playerData.js")
+};
+function checkGuildData(id) {
+    const path = `./saveDatas/guildData/${id}.json`;
+
+    // load file
+    let data;
+    if (fs.existsSync(path)) {
+        data = JSON.parse(fs.readFileSync(path));
+    } else {
+        data = {};
+    }
+
+    // check file
+    data = mergeObject(data, defaulatDatas.guildData);
+
+    // return
+    return data;
+}
+function checkPlayerData(id) {
+    const path = `./saveDatas/playerData/${id}.json`;
+
+    // load file
+    let data;
+    if (fs.existsSync(path)) {
+        data = JSON.parse(fs.readFileSync(path));
+    } else {
+        data = {};
+    }
+
+    // check file
+    data = mergeObject(data, defaulatDatas.userData);
+
+    // return
+    return data;
+}
+
+
 /** Game Functions */
 // global
 const calcStat = {
@@ -221,6 +263,39 @@ calcLootTier = (lootProgress) => lootProgressThreshold.filter(e => e <= lootProg
 
 
 /** Display Functions */
+function dataToMessage(result) {
+    let message, addidion;
+    addidion = result.addition ?? {};
+    if (result && result.message) {
+        if (typeof result.message === "object") {
+            // set short name varible
+            const data = result.message;
+
+            // apply style
+            switch (data.style) {
+                case "list":
+                    data.fields = data.fields.map(e => e = {
+                        name: "· " + e.name,
+                        value: "`" + e.value + "`"
+                    });
+                    break;
+            }
+
+            message = "";
+            addidion.embed = new Discord.MessageEmbed()
+                .setColor(data.color)
+                .setAuthor(data.command, data.image)
+                .addFields(...data.fields)
+                .setFooter(data.description)
+                .setTimestamp();
+        } else {
+            message = result.message;
+        }
+    }
+    
+
+    return [message, addidion];
+}
 function itemMessage({have=new D(0), got=new D(0), emoji="", isBlank=false, blankFiller=""}) {
     if (isBlank) {
         if (blankFiller) {
@@ -296,6 +371,19 @@ function upgradeListMessage(upgrade, level, playerData, next=false) {
 
 
 
+/** Management Function */
+function pathAllSave(callback) {
+    const defaultSave = require("./saveDatas/Defaults/playerData.js");
+    fs.readdirSync("./saveDatas/playerData").forEach(file => {
+        const path = "./saveDatas/playerData/" + file;
+        let playerData = mergeObject(JSON.parse(fs.readFileSync(path)), defaultSave);
+        playerData = callback(playerData);
+        fs.writeFileSync(path, JSON.stringify(playerData));
+    });
+}
+
+
+
 module.exports = {
     /** Useful Functions */
     randomPick,
@@ -319,6 +407,13 @@ module.exports = {
 
 
 
+    /** Core Functions */
+    defaulatDatas,
+    checkGuildData,
+    checkPlayerData,
+
+
+
     /** Game Functions */
     calcStat,
     rollMine,
@@ -331,10 +426,16 @@ module.exports = {
 
 
     /** Display Functions */
+    dataToMessage,
     itemMessage,
     oreSetToMessage,
     toShopNameSpace,
     upgradeListMessage,
+
+
+
+    /** Management Function */
+    pathAllSave,
 };
 
 

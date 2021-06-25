@@ -13,7 +13,7 @@ const playerData = {
     ores: Object.fromEntries(Object.keys(Ores).map(e => [e, new Decimal(0)])),
     loots: Object.fromEntries(Object.keys(Loots).map(e => [e, new Decimal(0)])),
     skills: Object.fromEntries(Object.keys(Skills).map(e => [e, new Decimal(0)])),
-    artifact: new Array(30),
+    artifact: new Array(30).fill(0),
     totalAncientCoin: 0,
     gemOrb: new Decimal(0),
     

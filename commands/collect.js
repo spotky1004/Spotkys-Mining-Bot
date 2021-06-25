@@ -16,7 +16,9 @@ const lootSet = util.enumToSets(lootEnum)[0];
 const randomDescriptions = [
     "chuff chuff",
     "it's diligent",
-    "\*gear rotation sound*"
+    "\*gear rotation sound*",
+    "this machine uses your pickaxe",
+    "collect / col / c / ㅊ"
 ];
 
 function collectCommand({playerData, time}) {
@@ -39,7 +41,7 @@ function collectCommand({playerData, time}) {
     });
     for (let i = 0, l = minedOre.length; i < l; i++) playerData.ores[reginOreSet[i]] = playerData.ores[reginOreSet[i]].add(minedOre[i]);
     fields.push({
-        name: `Mined \`${util.notation(mineCount)}\` times (${(timeSpent/1000).toFixed(3)}sec spent)`,
+        name: `Mined \`${util.notation(mineCount)}\` times (\`${(timeSpent/1000/3600).toFixed(3)}h\` spent)`,
         value: util.oreSetToMessage({
             playerData: playerData,
             ores: minedOre,
@@ -54,14 +56,14 @@ function collectCommand({playerData, time}) {
     const lootTier = util.calcLootTier(lootProgress);
     const lootCount = 1;
     const lootName = lootSet[lootTier];
-    if (lootTier !== -1) playerData.loots[lootName] += lootCount;
+    if (lootTier !== -1) playerData.loots[lootName] = playerData.loots[lootName].add(lootCount);
     lootMessage += util.itemMessage({
         have: playerData.loots[lootName],
         got: lootCount,
         emoji: emojiList.loots[lootName],
         isBlank: lootTier === -1,
         blankFiller: "no loot"
-    }) + `  Next tier at: \`${util.notation(lootProgress)}/${util.notation(util.lootProgressThreshold[lootTier+1])}\``;
+    }) + `\n└─ Next tier at: \`${util.notation(lootProgress)}/${util.notation(util.lootProgressThreshold[lootTier+1])}\` | \`${util.notation(util.calcStat.LootProgressMult(playerData))}/mine\``;
 
     // additional items
     fields.push({
@@ -86,7 +88,7 @@ function collectCommand({playerData, time}) {
 }
 
 module.exports = new Command({
-    keyWords: ["collect", "COLLECT", "c", "C", "ㅊ", "col", "COL"],
+    keyWords: ["collect", "COLLECT", "col", "COL", "c", "C", "ㅊ"],
     regex: /^(now)?/,
     canAcceptEmpty: true,
     func: collectCommand,

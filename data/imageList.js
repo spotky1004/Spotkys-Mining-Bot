@@ -3,6 +3,7 @@ const imageList = {
     auto: "https://i.imgur.com/ihsB9OK.png",
     trophy: "https://i.imgur.com/LMJtv0D.png",
     cubeStone: "https://i.imgur.com/SX5VGgJ.pngs",
+    artifact: "https://i.imgur.com/xPBLuCo.png",
 
     pickaxe: {
         BeginnerPickaxe: 'https://i.imgur.com/3LDqgHk.png',

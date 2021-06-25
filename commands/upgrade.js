@@ -19,10 +19,14 @@ const randomDescriptions = [
     "Upgrade yourself!",
     "Upgrade your tools!",
     "Upgrade your machines!",
-    "pick, Pick, PICK!",
+    "you feel your pickaxe is getting stronger",
     "Can I have your golds?",
+    "Can I have your items?",
     "Please buy them :D",
-    "Upgrade them to unlock more upgrades"
+    "Please buy it :D",
+    "Upgrade them to unlock more upgrades",
+    "upgrade to unlock more upgrade!",
+    "upgrade / upg / u / ㅕ"
 ];
 
 function upgradeommand({playerData, params}) {

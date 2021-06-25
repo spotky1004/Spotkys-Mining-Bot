@@ -1,13 +1,16 @@
 // import modules
 const Discord = require("discord.js");
+const bot = new Discord.Client();
+const disbut = require("discord-buttons");
 const fs = require("fs");
 const microtime = require('microtime');
 const Decimal = require("decimal.js");
 
 
 
+disbut(bot); // disbut bind
+
 const D = Decimal;
-const bot = new Discord.Client();
 
 const config = JSON.parse(fs.readFileSync("./config.json",'utf-8'));
 
@@ -19,11 +22,6 @@ const commands = require("./commandManager.js");
 const commandDict     = util.dataToKeywordDictionary(commands).Dictionary;
 const commandKeyWords = util.dataToKeywordDictionary(commands).KeyWords;
 
-
-const defaulatDatas = {
-    guildData: require("./saveDatas/Defaults/guildData.js"),
-    userData: require("./saveDatas/Defaults/playerData.js")
-};
 const userPermissions = JSON.parse(fs.readFileSync("./saveDatas/permissions.json"));
 
 
@@ -38,6 +36,7 @@ bot.on("message", async (msg) => {
 
     if (sessionData.waiting.has(msg.author.id)) {
         await msg.channel.send("Wait please!\nI'm processing your request!");
+        return;
     }
     sessionData.waiting.add(msg.author.id);
 
@@ -45,7 +44,7 @@ bot.on("message", async (msg) => {
         const isDM = !(msg.guild);
         let guildData, prefix;
         if (!isDM) {
-            guildData = checkGuildData(msg);
+            guildData = await util.checkGuildData(msg.guild.id);
             prefix = guildData.prefix;
         } else {
             guildData = null;
@@ -54,7 +53,7 @@ bot.on("message", async (msg) => {
 
         // init
         if (msg.content.startsWith(prefix)) {
-            let playerData = checkPlayerData(msg);
+            let playerData = await util.checkPlayerData(msg.author.id);
 
             const time = new Date().getTime();
             let permissionStr = !isDM&&msg.guild.members.cache.get(msg.author.id).hasPermission("ADMINISTRATOR") ? "GuildAdmin" : "User";
@@ -70,14 +69,15 @@ bot.on("message", async (msg) => {
             if (commandKeyWords.includes(keyWord)) {
                 const commandToExecute = commands[commandDict.get(keyWord)];
                 const result = await commandToExecute.execute({
-                    bot: bot,
-                    msg: msg,
+                    bot,
+                    msg,
+                    playerData,
+                    guildData,
+                    permission,
+                    isDM,
+                    rawParameter,
+                    disbut,
                     time: microtime.now()/1000,
-                    playerData: playerData,
-                    permission: permission,
-                    isDM: isDM,
-                    guildData: guildData,
-                    rawParameter: rawParameter
                 });
 
                 playerData = result.playerData ?? playerData;
@@ -92,49 +92,89 @@ bot.on("message", async (msg) => {
                     for (const id in guildData.usersToday) if (guildData.usersToday[id] < time/1000-86400) delete guildData.usersToday[id];
                 }
                 
-
-                if (result && result.message) {
-                    if (typeof result.message === "object") {
-                        // set short name varible
-                        const data = result.message;
-
-                        // apply style
-                        switch (data.style) {
-                            case "list":
-                                data.fields = data.fields.map(e => e = {
-                                    name: "· " + e.name,
-                                    value: "`" + e.value + "`"
-                                });
-                                break;
-                        }
-
-                        // send message
-                        await msg.channel.send(
-                            new Discord.MessageEmbed()
-                            .setColor(data.color)
-                            .setAuthor(data.command, data.image)
-                            .addFields(...data.fields)
-                            .setFooter(data.description)
-                            .setTimestamp()
-                        );
-                    } else {
-                        await msg.channel.send(result.message);
-                    }
-                }
+                msg.channel.send(...util.dataToMessage(result));
             }
             
+            // save
             fs.writeFileSync(`./saveDatas/playerData/${msg.author.id}.json`, JSON.stringify(playerData));
             if (!isDM) fs.writeFileSync(`./saveDatas/guildData/${msg.guild.id}.json`, JSON.stringify(guildData));
         } else if (msg.content.match(/<@&?!?763833293044711436>/) || msg.content.match(/<@&?!?763830703141945404>/)) {
             await msg.channel.send(commands.help.execute({permission: 0}).message);
         }
-
-        // save
     } catch (e) {
         console.log(e);
     }
 
     sessionData.waiting.delete(msg.author.id);
+});
+
+bot.on('clickButton', async (button) => {
+    const keyId = (button.message.embeds[0] ? button.message.embeds[0].footer.text : button.message.content).match(/id: (\d+)/);
+    await button.clicker.fetch();
+    const msg = button.message;
+    const author = button.clicker.user;
+    if (sessionData.waiting.has(author.id)) {
+        await msg.channel.send("Wait please!\nI'm processing your request!");
+        button.defer(true);
+        return;
+    }
+    if (keyId !== null && keyId[1] != author.id) {
+        await msg.channel.send(`Hey <@${author.id}>! Don't steal other's button!`);
+        button.defer(true);
+        return;
+    }
+    
+
+
+    sessionData.waiting.add(author.id);
+
+    const isDM = !(button.message.guild);
+    let guildData;
+    if (!isDM) {
+        guildData = await util.checkGuildData(msg.guild.id);
+    } else {
+        guildData = null;
+    }
+
+    let playerData = await util.checkPlayerData(author.id);
+
+    let permissionStr = !isDM&&msg.guild.members.cache.get(author.id).hasPermission("ADMINISTRATOR") ? "GuildAdmin" : "User";
+    permissionStr =  userPermissions[author.id] ?? permissionStr;
+    const permission = Permission[permissionStr];
+
+    const executeData = {
+        bot,
+        msg,
+        playerData,
+        guildData,
+        permission,
+        isDM,
+        disbut,
+        id: author.id,
+        time: microtime.now()/1000
+    };
+
+
+
+    let result = {};
+    switch (button.id) {
+        case "mine":
+            result = commands.mine.execute(executeData);
+            break;
+        case "test2":
+            result.message = "Increment: " + new D(button.message.content.split(" ").pop()).add(1).mul(2).pow(1.04).floor(0).toString();
+            break;
+    }
+
+    playerData = result.playerData ?? playerData;
+    fs.writeFileSync(`./saveDatas/playerData/${author.id}.json`, JSON.stringify(playerData));
+
+    const toEdit = util.dataToMessage(result);
+    if (toEdit[1]) delete toEdit[1].buttons;
+    button.message.edit(...toEdit)
+
+    sessionData.waiting.delete(author.id);
+    button.defer(true);
 });
 
 bot.on("ready", function() {
@@ -150,40 +190,3 @@ bot.on("ready", function() {
 });
 
 bot.login(config.token);
-
-
-function checkGuildData(msg) {
-    const path = `./saveDatas/guildData/${msg.guild.id}.json`;
-
-    // load file
-    let data;
-    if (fs.existsSync(path)) {
-        data = JSON.parse(fs.readFileSync(path));
-    } else {
-        data = {};
-    }
-
-    // check file
-    data = util.mergeObject(data, defaulatDatas.guildData);
-
-    // return
-    return data;
-}
-
-function checkPlayerData(msg) {
-    const path = `./saveDatas/playerData/${msg.author.id}.json`;
-
-    // load file
-    let data;
-    if (fs.existsSync(path)) {
-        data = JSON.parse(fs.readFileSync(path));
-    } else {
-        data = {};
-    }
-
-    // check file
-    data = util.mergeObject(data, defaulatDatas.userData);
-
-    // return
-    return data;
-}

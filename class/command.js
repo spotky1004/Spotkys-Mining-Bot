@@ -18,9 +18,11 @@ const Command = class {
         // saveData
         guildData, playerData,
         // data
-        permission, bot, isDM,
+        permission, bot, isDM, id,
         // constant
-        time
+        time,
+        // lib
+        disbut
     }) {
         if (this.permissionReq > permission) return {message: "`Missing permission!`"};
         if (
@@ -32,11 +34,11 @@ const Command = class {
         const content = rawParameter;
         let params;
         if (this.regex !== null) {
-            if (content.match(this.regex).length === 0) return {message: "`Wrong Parameter(s)!`"};
-            params = content.match(this.regex).slice(1);
+            if (content.match(this.regex) === null && this.canAcceptEmpty) return {message: "`Wrong Parameter(s)!`"};
+            params = (content.match(this.regex) ?? []).slice(1);
         }
         
-        return this.func({msg, params, guildData, playerData, permission, bot, time, isDM});
+        return this.func({msg, params, guildData, playerData, permission, bot, time, isDM, disbut, id});
     }
 }
 

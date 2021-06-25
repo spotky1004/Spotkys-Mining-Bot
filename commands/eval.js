@@ -8,11 +8,12 @@ const util = require("../util.js");
 
 const imageList = require("../data/imageList.js");
 
-function evalCommand({msg, params, playerData, guildData, permission, isDM}) {
+function evalCommand({msg, params, playerData, guildData, permission, isDM, time}) {
     let input = params[1];
     let output;
     try {
         output = eval(input);
+        // output fix
         if (typeof output === "object" && !Array.isArray(output)) {
             output = JSON.parse(JSON.stringify(output));
             for (const key in output) {
@@ -27,6 +28,8 @@ function evalCommand({msg, params, playerData, guildData, permission, isDM}) {
         } else if (typeof output === "undefined") {
             output = "undefined";
         }
+        // saveData fix
+        if (input.includes("pathAllSave")) playerData = util.checkPlayerData(msg.author.id);
     } catch (e) {
         output = e;
     }
@@ -34,6 +37,7 @@ function evalCommand({msg, params, playerData, guildData, permission, isDM}) {
     output = output.toString();
 
     return {
+        playerData: playerData,
         message: {
             command: "Eval",
             color: "#000000",

@@ -14,6 +14,7 @@ const oreSet = util.enumToSets(oreEnum);
 const randomDescriptions = [
     "Pick!",
     "pick",
+    "pick, Pick, PICK!",
     "Mine!",
     "mine",
     "You got these ores",
@@ -26,10 +27,10 @@ const randomDescriptions = [
     "=m"
 ];
 
-function mineCommand({playerData, time}) {
+function mineCommand({msg, playerData, time, disbut, id}) {
     const cooldown = util.calcStat.MiningCooldown(playerData);
     if (time - playerData.behaveTimes.mine < cooldown) return {
-        message: `\`Cooldown! ${(cooldown/1000 - (time - playerData.behaveTimes.mine)/1000).toFixed(3)} second(s) left\``
+        message: `\`Cooldown! ${(cooldown/1000 - (time - playerData.behaveTimes.mine)/1000).toFixed(3)} second(s) left\`\n\`id: ${id ?? msg.author.id}\``
     }
     playerData.behaveTimes.mine = time;
     
@@ -50,6 +51,11 @@ function mineCommand({playerData, time}) {
     }
 
 
+
+    let button = new disbut.MessageButton()
+        .setStyle("green")
+        .setLabel("Mine Again!")
+        .setID("mine");
 
     return {
         playerData: playerData,
@@ -73,7 +79,10 @@ function mineCommand({playerData, time}) {
                 // Rare resources display
                 // {},
             ],
-            description: util.randomPick(randomDescriptions)
+            description: util.randomPick(randomDescriptions) + ` - id: ${id ?? msg.author.id}`
+        },
+        addition: {
+            buttons: [button]
         }
     }
 }
