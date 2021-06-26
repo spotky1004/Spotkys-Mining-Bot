@@ -81,6 +81,8 @@ bot.on("message", async (msg) => {
                 });
 
                 playerData = result.playerData ?? playerData;
+                playerData.id = msg.author.id;
+                playerData.name = msg.author.username;
 
                 if (!isDM) {
                     guildData.commandCounter++;
@@ -92,7 +94,7 @@ bot.on("message", async (msg) => {
                     for (const id in guildData.usersToday) if (guildData.usersToday[id] < time/1000-86400) delete guildData.usersToday[id];
                 }
                 
-                msg.channel.send(...util.dataToMessage(result));
+                msg.channel.send(...util.dataToMessage({result, playerData}));
             }
             
             // save
@@ -170,7 +172,7 @@ bot.on('clickButton', async (button) => {
         playerData = result.playerData ?? playerData;
         fs.writeFileSync(`./saveDatas/playerData/${author.id}.json`, JSON.stringify(playerData));
 
-        const toEdit = util.dataToMessage(result);
+        const toEdit = util.dataToMessage({result, playerData});
         if (toEdit[1]) delete toEdit[1].buttons;
         button.message.edit(...toEdit)
 

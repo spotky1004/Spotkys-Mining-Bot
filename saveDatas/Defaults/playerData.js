@@ -72,7 +72,11 @@ const playerData = {
     // etc
     nextArtifactSelection: [10, 11, 12],
     backupSaved: 0,
-    backupPointer: 0
+    backupPointer: 0,
+
+    // author
+    id: null,
+    name: null
 }
 
 module.exports = playerData;

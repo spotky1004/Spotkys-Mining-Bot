@@ -263,7 +263,7 @@ calcLootTier = (lootProgress) => lootProgressThreshold.filter(e => e <= lootProg
 
 
 /** Display Functions */
-function dataToMessage(result) {
+function dataToMessage({result, playerData}) {
     let message, addidion;
     addidion = result.addition ?? {};
     if (result && result.message) {
@@ -286,10 +286,10 @@ function dataToMessage(result) {
                 .setColor(data.color)
                 .setAuthor(data.command, data.image)
                 .addFields(...data.fields)
-                .setFooter(data.description)
+                .setFooter(data.description + ` • id: ${playerData.id}`)
                 .setTimestamp();
         } else {
-            message = result.message;
+            message = result.message + `\n\`id: ${playerData.id}\``;
         }
     }
     

@@ -30,7 +30,7 @@ const randomDescriptions = [
 function mineCommand({msg, playerData, time, disbut, id}) {
     const cooldown = util.calcStat.MiningCooldown(playerData);
     if (time - playerData.behaveTimes.mine < cooldown) return {
-        message: `\`Cooldown! ${(cooldown/1000 - (time - playerData.behaveTimes.mine)/1000).toFixed(3)} second(s) left\`\n\`id: ${id ?? msg.author.id}\``
+        message: `\`Cooldown! ${(cooldown/1000 - (time - playerData.behaveTimes.mine)/1000).toFixed(3)} second(s) left\``
     }
     playerData.behaveTimes.mine = time;
     
@@ -79,7 +79,7 @@ function mineCommand({msg, playerData, time, disbut, id}) {
                 // Rare resources display
                 // {},
             ],
-            description: util.randomPick(randomDescriptions) + ` - id: ${id ?? msg.author.id}`
+            description: util.randomPick(randomDescriptions)
         },
         addition: {
             buttons: [button]
