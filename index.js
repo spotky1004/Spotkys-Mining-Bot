@@ -109,72 +109,77 @@ bot.on("message", async (msg) => {
 });
 
 bot.on('clickButton', async (button) => {
-    const keyId = (button.message.embeds[0] ? button.message.embeds[0].footer.text : button.message.content).match(/id: (\d+)/);
-    await button.clicker.fetch();
-    const msg = button.message;
-    const author = button.clicker.user;
-    if (sessionData.waiting.has(author.id)) {
-        await msg.channel.send("Wait please!\nI'm processing your request!");
+    try {
+        const keyId = (button.message.embeds[0] ? button.message.embeds[0].footer.text : button.message.content).match(/id: (\d+)/);
+        await button.clicker.fetch();
+        const msg = button.message;
+        const author = button.clicker.user;
+        if (sessionData.waiting.has(author.id)) {
+            await msg.channel.send("Wait please!\nI'm processing your request!");
+            button.defer(true);
+            return;
+        }
+        if (keyId !== null && keyId[1] != author.id) {
+            await bot.users.cache.get(author.id).send(`Hey <@${author.id}>! Don't steal other's button!`);
+            button.defer(true);
+            return;
+        }
+
+
+
+        sessionData.waiting.add(author.id);
+
+        const isDM = !(button.message.guild);
+        let guildData;
+        if (!isDM) {
+            guildData = await util.checkGuildData(msg.guild.id);
+        } else {
+            guildData = null;
+        }
+
+        let playerData = await util.checkPlayerData(author.id);
+
+        let permissionStr = !isDM&&msg.guild.members.cache.get(author.id).hasPermission("ADMINISTRATOR") ? "GuildAdmin" : "User";
+        permissionStr =  userPermissions[author.id] ?? permissionStr;
+        const permission = Permission[permissionStr];
+
+        const executeData = {
+            bot,
+            msg,
+            playerData,
+            guildData,
+            permission,
+            isDM,
+            disbut,
+            id: author.id,
+            time: microtime.now()/1000
+        };
+
+
+
+        let result = {};
+        switch (button.id) {
+            case "mine":
+                result = commands.mine.execute(executeData);
+                break;
+            case "test2":
+                result.message = "Increment: " + new D(button.message.content.split(" ").pop()).add(1).mul(2).pow(1.04).floor(0).toString();
+                break;
+        }
+
+        playerData = result.playerData ?? playerData;
+        fs.writeFileSync(`./saveDatas/playerData/${author.id}.json`, JSON.stringify(playerData));
+
+        const toEdit = util.dataToMessage(result);
+        if (toEdit[1]) delete toEdit[1].buttons;
+        button.message.edit(...toEdit)
+
+        sessionData.waiting.delete(author.id);
         button.defer(true);
-        return;
-    }
-    if (keyId !== null && keyId[1] != author.id) {
-        await msg.channel.send(`Hey <@${author.id}>! Don't steal other's button!`);
-        button.defer(true);
-        return;
+    } catch (e) {
+        console.log(e);
     }
     
-
-
-    sessionData.waiting.add(author.id);
-
-    const isDM = !(button.message.guild);
-    let guildData;
-    if (!isDM) {
-        guildData = await util.checkGuildData(msg.guild.id);
-    } else {
-        guildData = null;
-    }
-
-    let playerData = await util.checkPlayerData(author.id);
-
-    let permissionStr = !isDM&&msg.guild.members.cache.get(author.id).hasPermission("ADMINISTRATOR") ? "GuildAdmin" : "User";
-    permissionStr =  userPermissions[author.id] ?? permissionStr;
-    const permission = Permission[permissionStr];
-
-    const executeData = {
-        bot,
-        msg,
-        playerData,
-        guildData,
-        permission,
-        isDM,
-        disbut,
-        id: author.id,
-        time: microtime.now()/1000
-    };
-
-
-
-    let result = {};
-    switch (button.id) {
-        case "mine":
-            result = commands.mine.execute(executeData);
-            break;
-        case "test2":
-            result.message = "Increment: " + new D(button.message.content.split(" ").pop()).add(1).mul(2).pow(1.04).floor(0).toString();
-            break;
-    }
-
-    playerData = result.playerData ?? playerData;
-    fs.writeFileSync(`./saveDatas/playerData/${author.id}.json`, JSON.stringify(playerData));
-
-    const toEdit = util.dataToMessage(result);
-    if (toEdit[1]) delete toEdit[1].buttons;
-    button.message.edit(...toEdit)
-
-    sessionData.waiting.delete(author.id);
-    button.defer(true);
 });
 
 bot.on("ready", function() {
