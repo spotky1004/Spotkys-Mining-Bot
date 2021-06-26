@@ -121,7 +121,7 @@ bot.on('clickButton', async (button) => {
             button.defer(true);
             return;
         }
-        if (keyId !== null && keyId[1] != author.id) {
+        if (keyId !== null && keyId[1] != author.id && button.id !== "test2") {
             await bot.users.cache.get(author.id).send(`Hey <@${author.id}>! Don't steal other's button!`);
             button.defer(true);
             return;
@@ -165,7 +165,7 @@ bot.on('clickButton', async (button) => {
                 result = commands.mine.execute(executeData);
                 break;
             case "test2":
-                result.message = "Increment: " + new D(button.message.content.split(" ").pop()).add(1).mul(2).pow(1.04).floor(0).toString();
+                result.message = "Increment: " + new D(button.message.content.split("\n")[0].split(" ").pop()).add(1).mul(2).pow(1.04).floor(0).toString();
                 break;
         }
 
