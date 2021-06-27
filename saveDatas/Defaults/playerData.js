@@ -30,7 +30,7 @@ const playerData = {
     gemUpgrades: {
         
     },
-    artifactShop: {
+    artifactCoin: {
         ore: 0,
         gem: 0
     },

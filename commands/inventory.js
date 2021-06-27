@@ -1,12 +1,14 @@
 const D = require("decimal.js");
+
 const Command = require("../class/command.js");
 const Permission = require("../Enums/permission.js");
+const colorSet = require("../data/colorSet.js");
+const util = require("../util.js");
 
 const oreEnum = require("../enums/ore.js");
 
-const imageList = require("../data/imageList.js");
 const emojiList = require("../data/emojiList.js");
-const util = require("../util.js");
+const imageList = require("../data/imageList.js");
 
 const oreEmoji = emojiList.ores;
 const oreSet = util.enumToSets(oreEnum);
@@ -46,7 +48,7 @@ function inventoryCommand({playerData, params}) {
         playerData: playerData,
         message: {
             command: `Inventory`,
-            color: "#e0931f",
+            color: colorSet.Leaf,
             image: imageList.cubeStone,
             fields: [...fields],
             description: util.randomPick(randomDescriptions)

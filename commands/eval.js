@@ -4,6 +4,7 @@ const D = require("decimal.js");
 
 const Command = require("../class/command.js");
 const Permission = require("../Enums/permission.js");
+const colorSet = require("../data/colorSet.js");
 const util = require("../util.js");
 
 const imageList = require("../data/imageList.js");
@@ -14,20 +15,7 @@ function evalCommand({msg, params, playerData, guildData, permission, isDM, time
     try {
         output = eval(input);
         // output fix
-        if (typeof output === "object" && !Array.isArray(output)) {
-            output = JSON.parse(JSON.stringify(output));
-            for (const key in output) {
-                if (Array.isArray(output[key]) && output[key].length > 15) {
-                    const l = output[key].length;
-                    output[key] = output[key].slice(0, 15).concat([`(+ ${l-15})`]);
-                }
-            }
-            output = JSON.stringify(output,null,'\t');
-        } else if (typeof output === "string") {
-            output = `"${output}"`;
-        } else if (typeof output === "undefined") {
-            output = "undefined";
-        }
+        output = ouputTypeFixer(output);
         // saveData fix
         if (input.includes("pathAllSave")) playerData = util.checkPlayerData(msg.author.id);
     } catch (e) {
@@ -40,7 +28,7 @@ function evalCommand({msg, params, playerData, guildData, permission, isDM, time
         playerData: playerData,
         message: {
             command: "Eval",
-            color: "#000000",
+            color: colorSet.Black,
             image: imageList.auto,
             fields: [
                 {
@@ -55,6 +43,26 @@ function evalCommand({msg, params, playerData, guildData, permission, isDM, time
             description: "eval"
         }
     }
+}
+
+function ouputTypeFixer(output) {
+    if (Array.isArray(output)) {
+        output = `[ ${output.map(ouputTypeFixer)} ]`
+    } else if (typeof output === "object") {
+        output = JSON.parse(JSON.stringify(output));
+        for (const key in output) {
+            if (Array.isArray(output[key]) && output[key].length > 15) {
+                const l = output[key].length;
+                output[key] = output[key].slice(0, 15).concat([`(+ ${l-15})`]);
+            }
+        }
+        output = JSON.stringify(output,null,'\t');
+    } else if (typeof output === "string") {
+        output = `"${output}"`;
+    } else if (typeof output === "undefined") {
+        output = "undefined";
+    }
+    return output;
 }
 
 module.exports = new Command({

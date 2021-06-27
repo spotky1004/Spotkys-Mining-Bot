@@ -9,6 +9,11 @@ const upgradeItemsEnum = require("./enums/upgradeItems.js");
 
 const emojiList = require("./data/emojiList.js");
 
+const strs = {
+    blank: " ",
+    sub: "└─ "
+}
+
 
 
 /** Useful Functions */
@@ -79,11 +84,11 @@ function numToScientDigit(x, maxLength=6) {
 
     const fixedNum = x.div(new D(1000).pow(x.log(1000).floor(0)));
     const int = fixedNum.floor(0).toNumber()+"";
-    const dec = fixedNum.mod(1).mul(1e6).toNumber()+"";
+    const dec = fixedNum.mod(1).toString().substr(2);
 
     let out = int;
-    if (out.length+1 < maxLength) out = (out + "." + dec.substr(0, maxLength-int.length-1)).replace(/0+$/, "").padEnd(maxLength, " ").replace(". ", "  ");
-    else out = out.padEnd(maxLength, " ");
+    if (out.length+1 < maxLength) out = (out + "." + dec.substr(0, maxLength-int.length-1)).replace(/0+$/, "").padEnd(maxLength, strs.blank).replace("."+strs.blank, strs.blank);
+    else out = out.padEnd(maxLength, strs.blank);
 
     return out;
 }
@@ -91,11 +96,11 @@ function notation(x=new D(0), maxLength=6, type="Standard") {
     x = new D(x);
     
     if (x.lt(1000) && x.floor(0).eq(x)) {
-        return (x.toNumber()+"").padEnd(maxLength, " ");
+        return (x.toNumber()+"").padEnd(maxLength, strs.blank);
     } else if (x.eq(0)) {
-        return "0".padEnd(maxLength, " ");
+        return "0".padEnd(maxLength, strs.blank);
     } else if (x.eq(new D(Infinity))) {
-        return "Inf.".padEnd(maxLength, " ");
+        return "Inf.".padEnd(maxLength, strs.blank);
     }
 
     if (x.gt("1e3000")) type = "Scientific";
@@ -296,12 +301,34 @@ function dataToMessage({result, playerData}) {
 
     return [message, addidion];
 }
+function subCommandsToTitle(subCmds) {
+    if (typeof subCmds === "string") subCmds = [subCmds];
+    subCmds = [...(subCmds ?? [])].filter(e => e);
+    return subCmds.length ? `${strs.blank}》${strs.blank}${subCmds.join(strs.blank + "》" + strs.blank)}` : "";
+}
+function makeHelpFields({title, data, guildData}) {
+    let fields = [];
+    fields.push({
+        name: `\`\`\`${title}\`\`\``,
+        value: "** **",
+        inline: false
+    })
+    for (let i = 0, l = data.length; i < l; i++) {
+        const tmp = data[i];
+        fields.push({
+            name: `\`${guildData.prefix}${tmp.cmd}\``,
+            value: `${strs.sub}_${tmp.msg}_`,
+            inline: tmp.inline ?? true
+        })
+    }
+    return fields;
+}
 function itemMessage({have=new D(0), got=new D(0), emoji="", isBlank=false, blankFiller=""}) {
     if (isBlank) {
         if (blankFiller) {
-            return `❌\`${blankFiller.padEnd(15, " ")}\``;
+            return `❌\`${blankFiller.padEnd(15, strs.blank)}\``;
         } else {
-            return emojiList.blank + " ".repeat(15);
+            return emojiList.blank + strs.blank.repeat(15);
         }
     }
 
@@ -310,8 +337,8 @@ function itemMessage({have=new D(0), got=new D(0), emoji="", isBlank=false, blan
 
     let message = emoji;
     message += "`";
-    message += `${notation(have).padEnd(6, " ")}`
-    message += !got.eq(0) ? `(+${notation(got).padEnd(6, " ")})`: " ".repeat(9);
+    message += `${notation(have).padEnd(6, strs.blank)}`
+    message += !got.eq(0) ? `(+${notation(got).padEnd(6, strs.blank)})`: strs.blank.repeat(9);
     message += "`";
     return message;
 }
@@ -337,7 +364,7 @@ function oreSetToMessage({playerData, ores=[], reginOreSet=[], displayMode="Desk
                     got  : ores[i] ?? new D(0),
                     emoji: emojiList.ores[oreName],
                     isBlank: playerData.ores[oreName].eq(0)
-                }) + " ";
+                }) + strs.blank;
 
                 if ((p+1)%3 === 0 || displayMode === displayModeEnum.Mobile) message += "\n";
             }
@@ -349,24 +376,40 @@ function oreSetToMessage({playerData, ores=[], reginOreSet=[], displayMode="Desk
     }
     return message;
 }
-toShopNameSpace = ({emoji, shortName, level, maxLevel, name}) => `${emoji} **\`${shortName}-${level}/${maxLevel} ${name}\`**`;
-function upgradeListMessage(upgrade, level, playerData, next=false) {
+toShopNameSpace = ({emoji, shortName, level, maxLevel, name}) => `${emoji} **\`${shortName}-${level}/${maxLevel}${name ? " " + name : ""}\`**`;
+function upgradeListField(upgrade, playerData, next=false) {
+    const level = playerData[upgrade.parentKey][upgrade.key];
+
+    // name
+    let name;
+    if (typeof upgrade.namespace === "function") name = upgrade.namespace(level);
+    else name = toShopNameSpace({
+        emoji: upgrade.emoji ?? "",
+        shortName: upgrade.shortName,
+        level: level,
+        maxLevel: upgrade.maxLevel,
+        name: upgrade.shortName !== upgrade.key ? keyNameToWord(upgrade.key) : ""
+    });
+
+    // value
     const effects = upgrade.effects(level);
     let nextEffect;
     if (next) nextEffect = upgrade.effects(level+1);
     
-    let message = "";
+    let value = "";
     for (const name in effects) {
-        message += `${keyNameToWord(name)}: `;
-        message += `\`${upgrade.effectsFormer[name].replace(/\$/, notation(effects[name]).trim())}\``;
-        if (next) message += ` -> \`${upgrade.effectsFormer[name].replace(/\$/, notation(nextEffect[name]).trim())}\``;
-        message += `\n`;
+        value += `${keyNameToWord(name)}:` + strs.blank;
+        value += `\`${upgrade.effectsFormer[name].replace(/\$/, notation(effects[name]).trim())}\``;
+        if (next) value += `${strs.blank}->${strs.blank}\`${upgrade.effectsFormer[name].replace(/\$/, notation(nextEffect[name]).trim())}\``;
+        value += `\n`;
     }
 
     const cost = upgrade.calcCost(level);
-    message += `Cost: \`${notation(searchObject(playerData, cost.resource))}\` / \`${notation(cost.cost)}\` ${searchObject(emojiList, cost.resource)}`;
+    value += `Cost:${strs.blank}\`${notation(searchObject(playerData, cost.resource))}\`/\`${notation(cost.cost)}\`${strs.blank}${searchObject(emojiList, cost.resource)}`;
 
-    return message.trim();
+
+
+    return {name, value};
 }
 
 
@@ -385,6 +428,10 @@ function pathAllSave(callback) {
 
 
 module.exports = {
+    strs,
+
+
+
     /** Useful Functions */
     randomPick,
     mergeObject,
@@ -426,11 +473,13 @@ module.exports = {
 
 
     /** Display Functions */
+    subCommandsToTitle,
     dataToMessage,
+    makeHelpFields,
     itemMessage,
     oreSetToMessage,
     toShopNameSpace,
-    upgradeListMessage,
+    upgradeListField,
 
 
 

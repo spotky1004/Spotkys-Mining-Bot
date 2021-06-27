@@ -1,5 +1,3 @@
-const Discord = require("discord.js");
-
 const Command = require("../class/command.js");
 const Permission = require("../Enums/permission.js");
 

@@ -113,15 +113,7 @@ const upgradeItems = [
         key: "autominerSpeed",
         shortName: "asp",
         maxLevel: 24,
-        namespace: function(level) {
-            return util.toShopNameSpace({
-                emoji    : emojiList.auto,
-                shortName: this.shortName,
-                level    : level,
-                maxLevel : this.maxLevel,
-                name     : "Autominer Speed" 
-            })
-        },
+        emoji: emojiList.auto,
         effectsFormer: {
             Interval: "$sec",
         },
@@ -134,11 +126,11 @@ const upgradeItems = [
         calcCost: function(level) {
             return {
                 resource: ["ores", oreSet[Math.floor(level/2)]],
-                cost: new D(100).mul(new D(1.5).pow(level%2).mul(new D(level/2+1).floor(0).pow(0.4))).ceil(0)
+                cost    : new D(100).mul(new D(1.5).pow(level%2).mul(new D(level/2+1).floor(0).pow(0.4))).ceil(0)
             }
         },
         unlocked: function(playerData) {return playerData.upgrade.pickaxe > util.pickaxeLevels[0]},
-        unlockMessage: "next pickaxe tier"
+        unlockMessage: "Next pickaxe tier"
     })
 ];
 

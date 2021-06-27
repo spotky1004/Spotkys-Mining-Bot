@@ -1,6 +1,7 @@
 const fs = require("fs");
 const Command = require("../class/command.js");
 const Permission = require("../Enums/permission.js");
+const colorSet = require("../data/colorSet.js");
 const imageList = require("../data/imageList.js");
 
 function setPermissionCommand({msg, params, bot}) {
@@ -23,7 +24,7 @@ function setPermissionCommand({msg, params, bot}) {
 
     return {
         message: {
-            color: "#666666",
+            color: colorSet.Gray,
             command: "Set Permission",
             image: imageList.auto,
             fields: [

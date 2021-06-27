@@ -1,4 +1,3 @@
-const D = require("decimal.js");
 const Command = require("../class/command.js");
 const Permission = require("../Enums/permission.js");
 
@@ -9,7 +8,6 @@ const imageList = require("../data/imageList.js");
 const emojiList = require("../data/emojiList.js");
 const util = require("../util.js");
 
-const oreEmoji = emojiList.ores;
 const oreSet = util.enumToSets(oreEnum);
 const lootSet = util.enumToSets(lootEnum)[0];
 
@@ -63,7 +61,7 @@ function collectCommand({playerData, time}) {
         emoji: emojiList.loots[lootName],
         isBlank: lootTier === -1,
         blankFiller: "no loot"
-    }) + `\n└─ Next tier at: \`${util.notation(lootProgress)}/${util.notation(util.lootProgressThreshold[lootTier+1])}\` | \`${util.notation(util.calcStat.LootProgressMult(playerData))}/mine\``;
+    }) + `\n${util.strs.sub} Next tier at: \`${util.notation(lootProgress)}/${util.notation(util.lootProgressThreshold[lootTier+1])}\` | \`${util.notation(util.calcStat.LootProgressMult(playerData))}/mine\``;
 
     // additional items
     fields.push({

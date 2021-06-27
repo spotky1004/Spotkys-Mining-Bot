@@ -1,7 +1,8 @@
 const D = require("decimal.js");
+
 const Command = require("../class/command.js");
 const Permission = require("../Enums/permission.js");
-
+const colorSet = require("../data/colorSet.js");
 const util = require("../util.js");
 
 const upgradeItems = require("../data/upgradeItems.js");
@@ -32,10 +33,10 @@ const randomDescriptions = [
 function upgradeommand({playerData, params}) {
     const type = params[0];
 
-    let fields = [], color;
+    let fields = [], color, item;
     if (typeof type === "undefined") {
         for (let i = 0, l = upgradeItems.length; i < l; i++) {
-            const item  = upgradeItems[i];
+            item  = upgradeItems[i];
 
             if (!item.unlocked(playerData)) {
                 fields.push({
@@ -45,30 +46,16 @@ function upgradeommand({playerData, params}) {
                 break;
             }
 
-            const level = playerData.upgrade[item.key];
-            fields.push({
-                name : item.namespace(level),
-                value: util.upgradeListMessage(item, level, playerData, true)
-            });
+            fields.push(util.upgradeListField(item, playerData, true));
         }
     } else if (upgradeItemsKeyWords.includes(type)) {
-        const item = upgradeItems[upgradeItemsDict.get(type)];
-
-        if (!item.unlocked(playerData)) return { message: `:lock: \`That upgrade is locked!\`\n\`req: ${item.unlockMessage}\``}
-
+        item = upgradeItems[upgradeItemsDict.get(type)];
+        
         const result = item.buy(playerData);
-        if (result) {
-            color = "#1dad1f";
-            playerData = result;
-        } else {
-            color = "#ad1d1d";
-        }
+        color = result.color;
+        fields.push(result.field);
 
-        const level = playerData.upgrade[item.key];
-        fields.push({
-            name : item.namespace(level),
-            value: util.upgradeListMessage(item, level, playerData, false)
-        });
+        playerData = result.playerData;
     } else {
         return {
             message: "`That upgrade doesn't exists!`"
@@ -78,8 +65,8 @@ function upgradeommand({playerData, params}) {
     return {
         playerData,
         message: {
-            command: "Upgrade" + (type ? " 》 " + type : ""),
-            color: color ?? "#e8cf2a",
+            command: "Upgrade" + util.subCommandsToTitle(util.keyNameToWord(item.key)),
+            color: color ?? colorSet.Gold,
             image: imageList.coin,
             fields: [...fields],
             description: util.randomPick(randomDescriptions)

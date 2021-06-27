@@ -1,12 +1,14 @@
 const D = require("decimal.js");
+
 const Command = require("../class/command.js");
 const Permission = require("../Enums/permission.js");
+const colorSet = require("../data/colorSet.js");
+const util = require("../util.js");
 
 const oreEnum = require("../enums/ore.js");
 
 const imageList = require("../data/imageList.js");
 const emojiList = require("../data/emojiList.js");
-const util = require("../util.js");
 
 const oreEmoji = emojiList.ores;
 const oreSet = util.enumToSets(oreEnum);
@@ -58,10 +60,10 @@ function mineCommand({msg, playerData, time, disbut, id}) {
         .setID("mine");
 
     return {
-        playerData: playerData,
+        playerData,
         message: {
             command: "Mine",
-            color: "#e0931f",
+            color: colorSet.Brown,
             image: imageList.pickaxe[util.getPickaxeName(playerData.upgrade.pickaxe)],
             fields: [
                 // Boosts display
@@ -88,7 +90,7 @@ function mineCommand({msg, playerData, time, disbut, id}) {
 }
 
 module.exports = new Command({
-    keyWords: ["mine", "m", "M", "MINE", "ㅡ"],
+    keyWords: ["mine", "m", "M", "MINE", "ㅡ", "pick", "PICK"],
     regex: null,
     func: mineCommand,
     permissionReq: Permission.User

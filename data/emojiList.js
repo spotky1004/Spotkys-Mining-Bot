@@ -3,6 +3,7 @@ const emojis = {
     coin: "<:coin:742182153533522012>",
     auto: "<:auto:742407470533574678>",
     ancientCoin: "<:AncientCoin:766242917714100257>",
+    gem: "<:Gem:742569819395719198>",
 
     pickaxe: {
         BeginnerPickaxe: '<:BeginnerPickaxe:742043069301391490>',

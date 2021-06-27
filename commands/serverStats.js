@@ -1,7 +1,6 @@
-const Discord = require("discord.js");
-const D = require("decimal.js");
 const Command = require("../class/command.js");
 const Permission = require("../enums/permission.js");
+const colorSet = require("../data/colorSet.js");
 const imageList = require("../data/imageList.js");
 
 function serverStatsCommand({msg, params, guildData, isDM}) {
@@ -15,7 +14,7 @@ function serverStatsCommand({msg, params, guildData, isDM}) {
             command: "Server Stats",
             image: imageList.trophy,
             description: "Stats about this server (today/total)",
-            color: "#e6126e",
+            color: colorSet.Pink,
             fields: [
                 {
                     name: "Commands Executed",

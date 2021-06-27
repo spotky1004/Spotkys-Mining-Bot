@@ -1,12 +1,14 @@
 const D = require("decimal.js");
+
 const Command = require("../class/command.js");
 const Permission = require("../Enums/permission.js");
+const colorSet = require("../data/colorSet.js");
+const util = require("../util.js");
 
 const oreEnum = require("../enums/ore.js");
 
 const imageList = require("../data/imageList.js");
 const emojiList = require("../data/emojiList.js");
-const util = require("../util.js");
 
 const oreEmoji = emojiList.ores;
 const oreSet = util.enumToSets(oreEnum);
@@ -36,7 +38,7 @@ function sellCommand({playerData}) {
         playerData: playerData,
         message: {
             command: "Sell",
-            color: "#e8cf2a",
+            color: colorSet.Gold,
             image: imageList.coin,
             fields: [
                 {
