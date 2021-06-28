@@ -6,8 +6,6 @@ const colorSet = require("../data/colorSet.js");
 const util = require("../util.js");
 
 const upgradeItems = require("../data/upgradeItems.js");
-const upgradeItemsDict     = util.dataToKeywordDictionary(upgradeItems).Dictionary;
-const upgradeItemsKeyWords = util.dataToKeywordDictionary(upgradeItems).KeyWords;
 
 const imageList = require("../data/imageList.js");
 const emojiList = require("../data/emojiList.js");
@@ -33,42 +31,15 @@ const randomDescriptions = [
 function upgradeommand({playerData, params}) {
     const type = params[0];
 
-    let fields = [], color, item;
-    if (typeof type === "undefined") {
-        for (let i = 0, l = upgradeItems.length; i < l; i++) {
-            item  = upgradeItems[i];
-
-            if (!item.unlocked(playerData)) {
-                fields.push({
-                    name : `:lock: Reach ${item.unlockMessage} to unlock more upgrade`,
-                    value: "** **"
-                });
-                break;
-            }
-
-            fields.push(util.upgradeListField(item, playerData, true));
-        }
-    } else if (upgradeItemsKeyWords.includes(type)) {
-        item = upgradeItems[upgradeItemsDict.get(type)];
-        
-        const result = item.buy(playerData);
-        color = result.color;
-        fields.push(result.field);
-
-        playerData = result.playerData;
-    } else {
-        return {
-            message: "`That upgrade doesn't exists!`"
-        }
-    }
+    const result = upgradeItems.searchBuy(type, playerData);
 
     return {
-        playerData,
+        playerData: result.playerData,
         message: {
-            command: "Upgrade" + util.subCommandsToTitle(util.keyNameToWord(item.key)),
-            color: color ?? colorSet.Gold,
+            command: "Upgrade" + util.subCommandsToTitle(util.keyNameToWord((result.item ?? {}).key)),
+            color: result.color ?? colorSet.Gold,
             image: imageList.coin,
-            fields: [...fields],
+            fields: [...result.fields],
             description: util.randomPick(randomDescriptions)
         }
     }

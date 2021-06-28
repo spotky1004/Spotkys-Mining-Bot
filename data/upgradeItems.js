@@ -1,6 +1,7 @@
 const D = require("decimal.js");
 
 const Upgrade = require("../class/upgrade.js");
+const UpgradeList = require("../class/upgradeList.js");
 
 const emojiList = require("./emojiList.js");
 const util = require("../util.js");
@@ -12,7 +13,7 @@ const oreSet = util.enumToSets(require("../enums/ore.js")).flat();
 
 
 
-const upgradeItems = [
+const upgradeItems = new UpgradeList([
     new Upgrade({
         parentKey: "upgrade",
         key: "pickaxe",
@@ -132,6 +133,6 @@ const upgradeItems = [
         unlocked: function(playerData) {return playerData.upgrade.pickaxe > util.pickaxeLevels[0]},
         unlockMessage: "Next pickaxe tier"
     })
-];
+]);
 
 module.exports = upgradeItems;

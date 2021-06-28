@@ -28,7 +28,7 @@ function artifactCommand({playerData, params, guildData}) {
                 artifactCoinItems.some(e => {
                     fields.push(util.upgradeListField(e, playerData));
                     return false;
-                })
+                });
             }
             break;
         case "buy": case "b":
@@ -41,7 +41,7 @@ function artifactCommand({playerData, params, guildData}) {
             fields = util.makeHelpFields({
                 title: "Artifact Commands",
                 data: [
-                    {cmd: "artifact {page:[1-9]}", msg: "Show your Artifacts", inline: false},
+                    {cmd: "artifact {page:[1-3]}", msg: "Show your Artifacts", inline: false},
                     {cmd: "artifact coin {coin|gem}", msg: "Open Artifact Coin shop"},
                     {cmd: "artifact buy {index:[1-3]}", msg: "Buy Artifact with Artifact Coin"},
                     {cmd: "artifact refund", msg: "Refund Artifact Coin", inline: false}
@@ -56,7 +56,8 @@ function artifactCommand({playerData, params, guildData}) {
             command: `Artifact` + util.subCommandsToTitle(subCmds),
             color: colorSet.Ivory,
             image: imageList.artifact,
-            fields: [...fields]
+            fields: [...fields],
+            description: util.randomPick(randomDescriptions)
         }
     }
 }
