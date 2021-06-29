@@ -1,5 +1,4 @@
 const util = require("../util.js");
-const Upgrade = require("../class/upgrade.js");
 const colorSet = require("../data/colorSet.js");
 
 const UpgradeList = class {
@@ -19,7 +18,7 @@ const UpgradeList = class {
     keyWords = new Array();
 
     searchBuy(keyword, playerData) {
-        let fields = [], color, item;
+        let fields = [], color, item, itemName;
 
         if (typeof keyword === "undefined") {
             for (let i = 0; i < this.length; i++) {
@@ -37,6 +36,7 @@ const UpgradeList = class {
             }
         } else if (this.keyWords.includes(keyword)) {
             item = this.upgrades[this.itemDictionary.get(keyword)];
+            itemName = item.key;
 
             const result = item.buy(playerData);
             color = result.color;
@@ -46,12 +46,12 @@ const UpgradeList = class {
         } else {
             color = colorSet.Red;
             fields.push({
-                message: "`That upgrade doesn't exists!`",
+                message: "`That item doesn't exists!`",
                 value: "** **"
             });
         }
 
-        return {playerData, fields, color};
+        return {playerData, fields, color, itemName};
     }
 }
 

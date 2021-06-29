@@ -13,7 +13,7 @@ const emojiList = require("../data/emojiList.js");
 const oreEmoji = emojiList.ores;
 const oreSet = util.enumToSets(oreEnum);
 
-const randomDescriptions = [
+const randomTips = [
     "you feel your wallet getting thicker",
     "you feel your inventory getting lighter",
     "where will you use this money?",
@@ -51,7 +51,7 @@ function sellCommand({playerData}) {
                     })
                 },
             ],
-            description: util.randomPick(randomDescriptions)
+            footer: util.randomPick(randomTips)
         }
     }
 }

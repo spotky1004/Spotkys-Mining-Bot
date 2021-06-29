@@ -6,30 +6,34 @@ const util = require("../util.js");
 const artifactEnum = require("../enums/artifact.js");
 const artifactSet  = util.enumToSets(artifactEnum);
 
+const emojis = require("../data/emojiList.js");
 const imageList = require("../data/imageList.js");
 
 const artifactCoinItems = require("../data/artifactCoinItems.js");
 
-const randomDescriptions = [
-    "exchange your artifact coin for an articaft!",
+const randomTips = [
     "artifact coin is too expensive!",
     "they aren't easy to get",
     "they have mystical power",
 ];
 
 function artifactCommand({playerData, params, guildData}) {
-    const [tab, upgrade] = params;
+    const [tab, _, subTab] = params;
 
     let fields = [], subCmds = [];
     switch (tab) {
+        case "inventory": case "i":
+            subCmds.push("Inventory")
+            subCmds.push(subTab)
+            break;
         case "coin": case "c":
+            const result = artifactCoinItems.searchBuy(subTab, playerData);
+            fields = result.fields;
+
             subCmds.push("Coin");
-            if (typeof upgrade === "undefined") {
-                artifactCoinItems.some(e => {
-                    fields.push(util.upgradeListField(e, playerData));
-                    return false;
-                });
-            }
+            subCmds.push(result.itemName);
+            
+            playerData = result.playerData;
             break;
         case "buy": case "b":
             subCmds.push("Buy");
@@ -41,31 +45,34 @@ function artifactCommand({playerData, params, guildData}) {
             fields = util.makeHelpFields({
                 title: "Artifact Commands",
                 data: [
-                    {cmd: "artifact {page:[1-3]}", msg: "Show your Artifacts", inline: false},
-                    {cmd: "artifact coin {coin|gem}", msg: "Open Artifact Coin shop"},
-                    {cmd: "artifact buy {index:[1-3]}", msg: "Buy Artifact with Artifact Coin"},
-                    {cmd: "artifact refund", msg: "Refund Artifact Coin", inline: false}
+                    {cmd: "artifact inventory {page:[1-3]}", msg: "Show your Artifacts", inline: false},
+                    {cmd: "artifact coin {coin|gem}", msg: "Open Ancient Coin shop"},
+                    {cmd: "artifact buy {index:[1-3]}", msg: "Buy Artifact with Ancient Coin"},
+                    {cmd: "artifact refund", msg: "Refund Ancient Coin", inline: false}
                 ],
                 guildData
             });
     }
     
     return {
-        playerData,
+        playerData: playerData,
         message: {
             command: `Artifact` + util.subCommandsToTitle(subCmds),
             color: colorSet.Ivory,
             image: imageList.artifact,
-            fields: [...fields],
-            description: util.randomPick(randomDescriptions)
+            fields: [{
+                name: `You have \`${util.notation(util.calcStat.AncientCoinCurrent(playerData), 0)}\`/\`${util.notation(util.calcStat.AncientCoinTotal(playerData), 0)}\` ${emojis.ancientCoin}`,
+                value: "** **"
+            }, ...fields],
+            footer: util.randomPick(randomTips)
         }
     }
 }
 
 module.exports = new Command({
     keyWords: ["artifact", "ARTIFACT", "arti", "art", "a", "A", "ㅁ"],
-    regex: /^([1-9]|coin|buy|refund|c|b|r)?((?: )(?:[1-3]|ore|gem|o|g))?/,
+    regex: /^(inventory|coin|buy|refund|i|c|b|r)?((?: )([1-3]|ore|gem|o|g))?/,
     canAcceptEmpty: true,
     func: artifactCommand,
-    permissionReq: Permission.User
+    permissionReq: Permission.Admin
 });

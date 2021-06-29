@@ -14,7 +14,7 @@ const oreEnum = require("../enums/ore.js");
 const oreEmoji = emojiList.ore;
 const oreSet = util.enumToSets(oreEnum);
 
-const randomDescriptions = [
+const randomTips = [
     "Upgrade yourself!",
     "Upgrade your tools!",
     "Upgrade your machines!",
@@ -36,11 +36,11 @@ function upgradeommand({playerData, params}) {
     return {
         playerData: result.playerData,
         message: {
-            command: "Upgrade" + util.subCommandsToTitle(util.keyNameToWord((result.item ?? {}).key)),
+            command: "Upgrade" + util.subCommandsToTitle(util.keyNameToWord((result.itemName ?? ""))),
             color: result.color ?? colorSet.Gold,
             image: imageList.coin,
             fields: [...result.fields],
-            description: util.randomPick(randomDescriptions)
+            footer: util.randomPick(randomTips)
         }
     }
 }

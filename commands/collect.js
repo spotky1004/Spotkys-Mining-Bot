@@ -11,7 +11,7 @@ const util = require("../util.js");
 const oreSet = util.enumToSets(oreEnum);
 const lootSet = util.enumToSets(lootEnum)[0];
 
-const randomDescriptions = [
+const randomTips = [
     "chuff chuff",
     "it's diligent",
     "\*gear rotation sound*",
@@ -80,7 +80,7 @@ function collectCommand({playerData, time}) {
             color: "#7d7d7d",
             image: imageList.auto,
             fields: fields,
-            description: util.randomPick(randomDescriptions)
+            footer: util.randomPick(randomTips)
         }
     }
 }

@@ -87,7 +87,7 @@ function numToScientDigit(x, maxLength=6) {
     const dec = fixedNum.mod(1).toString().substr(2);
 
     let out = int;
-    if (out.length+1 < maxLength) out = (out + "." + dec.substr(0, maxLength-int.length-1)).replace(/0+$/, "").padEnd(maxLength, strs.blank).replace("."+strs.blank, strs.blank);
+    if (out.length+1 < maxLength) out = (out + "." + dec.substr(0, maxLength-int.length-1)).replace(/0+$/, "").padEnd(maxLength, strs.blank).replace("."+strs.blank, strs.blank.repeat(2));
     else out = out.padEnd(maxLength, strs.blank);
 
     return out;
@@ -235,6 +235,20 @@ const calcStat = {
         let mult = new D(1);
 
         return mult;
+    },
+
+    // Etc
+    AncientCoinTotal: (playerData) => {
+        let total = 0;
+        total += playerData.ancientCoin.ore;
+        total += playerData.ancientCoin.gem;
+
+        return total;
+    },
+    AncientCoinCurrent: (playerData) => {
+        let current = calcStat.AncientCoinTotal(playerData);
+
+        return current;
     }
 }
 // mine
@@ -289,9 +303,10 @@ function dataToMessage({result, playerData}) {
             message = "";
             addidion.embed = new Discord.MessageEmbed()
                 .setColor(data.color)
+                .setDescription(data.description ? `\`\`\`${data.description}\`\`\`` : "")
                 .setAuthor(data.command, data.image)
                 .addFields(...data.fields)
-                .setFooter(data.description + ` • id: ${playerData.id}`)
+                .setFooter(data.footer + ` • id: ${playerData.id}`)
                 .setTimestamp();
         } else {
             message = result.message + `\n\`id: ${playerData.id}\``;

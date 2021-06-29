@@ -13,7 +13,7 @@ const emojiList = require("../data/emojiList.js");
 const oreEmoji = emojiList.ores;
 const oreSet = util.enumToSets(oreEnum);
 
-const randomDescriptions = [
+const randomTips = [
     "Pick!",
     "pick",
     "pick, Pick, PICK!",
@@ -64,7 +64,7 @@ function mineCommand({msg, playerData, time, disbut, id}) {
         message: {
             command: "Mine",
             color: colorSet.Brown,
-            image: imageList.pickaxe[util.getPickaxeName(playerData.upgrade.pickaxe)],
+            image: imageList.pickaxe[util.getPickaxeName(playerData.upgrade.pickaxe).replace(/\s+/g, '')],
             fields: [
                 // Boosts display
                 // {},
@@ -81,7 +81,7 @@ function mineCommand({msg, playerData, time, disbut, id}) {
                 // Rare resources display
                 // {},
             ],
-            description: util.randomPick(randomDescriptions)
+            footer: util.randomPick(randomTips)
         },
         addition: {
             buttons: [button]

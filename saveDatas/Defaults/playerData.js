@@ -30,7 +30,7 @@ const playerData = {
     gemUpgrades: {
         
     },
-    artifactCoin: {
+    ancientCoin: {
         ore: 0,
         gem: 0
     },

@@ -184,7 +184,8 @@ bot.on('clickButton', async (button) => {
     
 });
 
-bot.on("ready", function() {
+bot.on("ready", async () => {
+    await bot.channels.fetch("853899169014087680").then(ch => ch.send("`Successfully Logged!`"));
     console.log("login!");
 
     bot.user.setPresence({

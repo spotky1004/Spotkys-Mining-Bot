@@ -13,7 +13,7 @@ const imageList = require("../data/imageList.js");
 const oreEmoji = emojiList.ores;
 const oreSet = util.enumToSets(oreEnum);
 
-const randomDescriptions = [
+const randomTips = [
     "Inventory.",
     "This is your Inventory",
     "Opened your inventory",
@@ -51,7 +51,7 @@ function inventoryCommand({playerData, params}) {
             color: colorSet.Leaf,
             image: imageList.cubeStone,
             fields: [...fields],
-            description: util.randomPick(randomDescriptions)
+            footer: util.randomPick(randomTips)
         }
     }
 }

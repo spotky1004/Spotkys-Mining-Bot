@@ -1,6 +1,7 @@
 const D = require("decimal.js");
 
 const Upgrade = require("../class/upgrade.js");
+const UpgradeList = require("../class/upgradeList.js");
 
 const emojiList = require("./emojiList.js");
 const util = require("../util.js");
@@ -10,9 +11,9 @@ const pickaxeSet = util.enumToSets(pickaxeEnum);
 
 const oreSet = util.enumToSets(require("../enums/ore.js")).flat();
 
-const artifactCoinItems = [
+const artifactCoinItems = new UpgradeList([
     new Upgrade({
-        parentKey: "artifactCoin",
+        parentKey: "ancientCoin",
         key: "ore",
         shortName: "ore",
         unlockMessage: "none",
@@ -29,7 +30,7 @@ const artifactCoinItems = [
         keyWords: ["ore", "o", "O"]
     }),
     new Upgrade({
-        parentKey: "artifactCoin",
+        parentKey: "ancientCoin",
         key: "gem",
         shortName: "gem",
         unlockMessage: "none",
@@ -45,6 +46,6 @@ const artifactCoinItems = [
         effects : function(playerData) {return {}},
         keyWords: ["gem", "g", "G"]
     })
-];
+]);
 
 module.exports = artifactCoinItems;

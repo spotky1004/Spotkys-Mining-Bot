@@ -40,7 +40,7 @@ function evalCommand({msg, params, playerData, guildData, permission, isDM, time
                     value: "```js\n" + output.substr(0, 1000) + "\n```"
                 }
             ],
-            description: "eval"
+            footer: "eval"
         }
     }
 }
