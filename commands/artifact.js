@@ -6,7 +6,7 @@ const util = require("../util.js");
 const artifactEnum = require("../enums/artifact.js");
 const artifactSet  = util.enumToSets(artifactEnum);
 
-const emojis = require("../data/emojiList.js");
+const emojiList = require("../data/emojiList.js");
 const imageList = require("../data/imageList.js");
 
 const artifactCoinItems = require("../data/artifactCoinItems.js");
@@ -18,13 +18,40 @@ const randomTips = [
 ];
 
 function artifactCommand({playerData, params, guildData}) {
-    const [tab, _, subTab] = params;
+    let [tab, _, subTab] = params;
 
     let fields = [], subCmds = [];
     switch (tab) {
         case "inventory": case "i":
-            subCmds.push("Inventory")
-            subCmds.push(subTab)
+            subCmds.push("Inventory");
+            subCmds.push(subTab);
+
+            subTab = Number(subTab)-1;
+
+            fields.push({
+                name: `You have \`${util.calcStat.ArtifactHave(playerData)}\` Artifacts`,
+                value: "** **"
+            });
+            for (let i = subTab*10; i < (subTab+1)*10; i++) {
+                const artifactName = artifactSet[i];
+                const artifactHave = playerData.artifact[artifactName];
+                const unlocked = artifactHave >= 1;
+                
+                let fieldName = "";
+                fieldName += `\`#${(i+1).toString().padStart(2, " ")}\``;
+                fieldName += " " + (unlocked ? emojiList.artifact[artifactName] : emojiList.loots.CommonBox);
+                fieldName += " " + (unlocked ? util.keyNameToWord(artifactName) : "?".repeat(util.keyNameToWord(artifactName).length));
+                fieldName += " " + (unlocked ? `(${artifactHave}/??)` : "");
+
+                let fieldValue = "";
+                fieldValue += util.strs.sub;
+                fieldValue += unlocked ? "Effect" : "Unlock";
+
+                fields.push({
+                    name : fieldName,
+                    value: fieldValue
+                });
+            }
             break;
         case "coin": case "c":
             const result = artifactCoinItems.searchBuy(subTab, playerData);
@@ -61,7 +88,7 @@ function artifactCommand({playerData, params, guildData}) {
             color: colorSet.Ivory,
             image: imageList.artifact,
             fields: [{
-                name: `You have \`${util.notation(util.calcStat.AncientCoinCurrent(playerData), 0)}\`/\`${util.notation(util.calcStat.AncientCoinTotal(playerData), 0)}\` ${emojis.ancientCoin}`,
+                name: `You have \`${util.notation(util.calcStat.AncientCoinCurrent(playerData), 0)}\`/\`${util.notation(util.calcStat.AncientCoinTotal(playerData), 0)}\` ${emojiList.ancientCoin}`,
                 value: "** **"
             }, ...fields],
             footer: util.randomPick(randomTips)

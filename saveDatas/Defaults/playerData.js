@@ -3,6 +3,7 @@ const Decimal = require("decimal.js");
 const Ores = require("../../enums/ore.js");
 const Loots = require("../../enums/loot.js");
 const Skills = require("../../enums/skill.js");
+const Artifacts = require("../../enums/artifact.js");
 
 const DisplayModes = require("../../enums/displayMode.js");
 
@@ -13,7 +14,7 @@ const playerData = {
     ores: Object.fromEntries(Object.keys(Ores).map(e => [e, new Decimal(0)])),
     loots: Object.fromEntries(Object.keys(Loots).map(e => [e, new Decimal(0)])),
     skills: Object.fromEntries(Object.keys(Skills).map(e => [e, new Decimal(0)])),
-    artifact: new Array(30).fill(0),
+    artifact: Object.fromEntries(Object.keys(Artifacts).map(e => [e, 0])),
     totalAncientCoin: 0,
     gemOrb: new Decimal(0),
     

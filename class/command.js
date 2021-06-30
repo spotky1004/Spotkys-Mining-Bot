@@ -1,4 +1,4 @@
-const Command = class {
+class Command {
     constructor({keyWords, regex, func, permissionReq, canAcceptEmpty}) {
         this.keyWords = keyWords;
         this.regex = regex;

@@ -237,7 +237,7 @@ const calcStat = {
         return mult;
     },
 
-    // Etc
+    // Artifact
     AncientCoinTotal: (playerData) => {
         let total = 0;
         total += playerData.ancientCoin.ore;
@@ -249,7 +249,12 @@ const calcStat = {
         let current = calcStat.AncientCoinTotal(playerData);
 
         return current;
-    }
+    },
+    ArtifactHave: (playerData) => {
+        let count = Object.values(playerData.artifact).reduce((a, b) => a + b, 0);
+        
+        return count;
+    },
 }
 // mine
 function rollMine({reginOreSet=[], roll=new D(1), luck=1}) {
@@ -436,6 +441,10 @@ function pathAllSave(callback) {
         const path = "./saveDatas/playerData/" + file;
         let playerData = mergeObject(JSON.parse(fs.readFileSync(path)), defaultSave);
         playerData = callback(playerData);
+        if (typeof playerData !== "object" || !playerData) {
+            console.error("Error: pathAllSave exception", {path, playerData});
+            return;
+        }
         fs.writeFileSync(path, JSON.stringify(playerData));
     });
 }

@@ -1,7 +1,7 @@
 const util = require("../util.js");
 const colorSet = require("../data/colorSet.js");
 
-const UpgradeList = class {
+class UpgradeList {
     constructor(upgrades) {
         this.upgrades = [...upgrades];
         this.length = this.upgrades.length;
