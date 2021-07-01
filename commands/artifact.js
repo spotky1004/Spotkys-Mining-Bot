@@ -40,7 +40,7 @@ function artifactCommand({playerData, params, guildData}) {
                 let fieldName = "";
                 fieldName += `\`#${(i+1).toString().padStart(2, " ")}\``;
                 fieldName += " " + (unlocked ? emojiList.artifact[artifactName] : emojiList.loots.CommonBox);
-                fieldName += " " + (unlocked ? util.keyNameToWord(artifactName) : "?".repeat(util.keyNameToWord(artifactName).length));
+                fieldName += " " + (unlocked ? util.keyNameToWord(artifactName) : util.keyNameToWord(artifactName).replace(/[^ ]/g, "?"));
                 fieldName += " " + (unlocked ? `(${artifactHave}/??)` : "");
 
                 let fieldValue = "";

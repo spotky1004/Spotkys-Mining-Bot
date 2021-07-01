@@ -16,7 +16,7 @@ const artifacts = {
     Onyx           : 14,
     Pearl          : 15,
     FeohRune       : 16,
-    Cheese         : 17,
+    CheeseCube     : 17,
     BlueMushroom   : 18,
     CakePiece      : 19,
 }

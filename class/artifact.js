@@ -21,9 +21,9 @@ class Artifact {
     effects = new Function();
     getChance = new Function();
 
-    roll(playerData) {
-        const chance = this.getChance(playerData.artifact[this.key], playerData);
-        const success = playerData.artifact[this.key] < this.maxLevel && this.getChance(playerData.artifact[this.key], playerData) > Math.random();
+    roll(playerData, chanceMult) {
+        const chance = this.getChance(playerData.artifact[this.key], playerData)*chanceMult;
+        const success = playerData.artifact[this.key] < this.maxLevel && chance > Math.random();
 
         if (success) playerData.artifact[this.key]++;
 
