@@ -48,6 +48,8 @@ function artifactCommand({playerData, params, guildData}) {
             playerData = result.playerData;
             break;
         case "buy": case "b":
+            if (util.calcStat.AncientCoinCurrent(playerData) <= 0) return {message: "`Have at last 1 Acient Coin to open this menu`"};
+
             subCmds.push("Buy");
             const selection = playerData.nextArtifactSelection;
             if (!["1", "2", "3"].includes(subTab)) {
