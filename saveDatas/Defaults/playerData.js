@@ -71,7 +71,7 @@ const playerData = {
 
 
     // etc
-    nextArtifactSelection: [10, 11, 12],
+    nextArtifactSelection: [0, 1, 2],
     backupSaved: 0,
     backupPointer: 0,
 

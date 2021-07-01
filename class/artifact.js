@@ -1,5 +1,7 @@
-const emojiList = require("../data/emojiList.js")
+const emojiList = require("../data/emojiList.js");
 const util = require("../util.js");
+
+const artifactEnum = require("../enums/artifact.js");
 
 class Artifact {
     constructor ({
@@ -21,8 +23,38 @@ class Artifact {
     effects = new Function();
     getChance = new Function();
 
-    roll(playerData, chanceMult) {
-        const chance = this.getChance(playerData.artifact[this.key], playerData)*chanceMult;
+    listField(playerData) {
+        const artifactName = this.key;
+        const artifactLevel = playerData.artifact[artifactName];
+        const unlocked = artifactLevel >= 1;
+
+        let name = "";
+        name += `\`#${(artifactEnum[this.key]+1).toString().padStart(2, " ")}\``;
+        name += " " + (unlocked ? emojiList.artifact[artifactName] : emojiList.loots.CommonBox);
+        name += " " + (unlocked ? util.keyNameToWord(artifactName) : util.keyNameToWord(artifactName).replace(/[^ ]/g, "?"));
+        name += " " + (unlocked ? `(${artifactLevel}/${this.maxLevel})` : "");
+        const chance = this.realGetChance(playerData, 1);
+        name += unlocked && chance !== 0 ? ` \`${(chance*100).toFixed(2)}%\`` : "";
+
+        let value = "";
+        value += util.strs.sub;
+        let artifactEffect = this.effects(artifactLevel);
+        if (typeof artifactEffect === "number") {
+            artifactEffect = util.notation(artifactEffect, 3, "Decimal");
+        } else {
+            artifactEffect = artifactEffect.map(e => util.notation(e, 3, "Decimal"));
+        }
+        value += unlocked ? util.textFormer(this.effectsFormer, artifactEffect) : "Unlock";
+
+        return {name, value};
+    }
+
+    realGetChance(playerData, chanceMult=1) {
+        return this.getChance(playerData.artifact[this.key], playerData)*chanceMult;
+    }
+
+    roll(playerData, chanceMult=1) {
+        const chance = this.realGetChance(playerData, chanceMult);
         const success = playerData.artifact[this.key] < this.maxLevel && chance > Math.random();
 
         if (success) playerData.artifact[this.key]++;
@@ -36,7 +68,7 @@ class Artifact {
                 got: Number(success),
                 isBlank: !success,
                 blankFiller: "no artifact"
-            }) + ` \`Chance: ${(chance*100).toFixed(2)} %\``
+            }) + chance !== 0 ? ` \`Chance: ${(chance*100).toFixed(2).padStart(6, " ")} %\`` : ""
         }
     }
 }

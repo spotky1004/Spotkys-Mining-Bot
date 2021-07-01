@@ -1,10 +1,10 @@
 const Artifact = require("../class/artifact.js");
 const artifactEnum = require("../enums/artifact.js");
 
+
+
 /** @type {artifactEnum} */
 let artifactItems = {};
-
-
 
 /**
  *  from Artifact Shop
@@ -13,7 +13,7 @@ artifactItems.MiningLantern = new Artifact({
     key: "MiningLantern",
     maxLevel: 10,
     effects: (lv) => 0.02*lv,
-    effectsFormer: "Reduce Ore Distribution by $ (-0.02 per)",
+    effectsFormer: "Reduce Ore Distribution by -$ (-0.02 per)",
     unlockMessage: "Artifact Shop",
 });
 artifactItems.IronRings = new Artifact({
@@ -27,12 +27,19 @@ artifactItems.LightPlant = new Artifact({
     key: "LightPlant",
     maxLevel: 10,
     effects: (lv) => 1+0.15*lv,
-    effectsFormer: "Multiply Daily Reward by x$ (+0.16x per artifact)",
+    effectsFormer: "Multiply Daily Reward by x$ (+0.15x per artifact)",
     unlockMessage: "Artifact Shop"
 });
-artifactItems.CheeseCube = new Artifact({
-    key: "CheeseCube",
+artifactItems.CheesePiece = new Artifact({
+    key: "CheesePiece",
     maxLevel: 10,
+    effects: (lv) => 1+0.3*lv,
+    effectsFormer: "Multiply Pickaxe Roll by x$ (+0.3x per artifact)",
+    unlockMessage: "Artifact Shop"
+});
+artifactItems.SkillBook = new Artifact({
+    key: "SkillBook",
+    maxLevel: 8,
     effects: (lv) => 1+0.2*lv,
     effectsFormer: "Multiply All Skill Effects by x$ (+0.25x per artifact)",
     unlockMessage: "Artifact Shop"
@@ -55,7 +62,7 @@ artifactItems.HpPotion = new Artifact({
     key: "HpPotion",
     maxLevel: 8,
     effects: (lv) => 0.3*lv,
-    effectsFormer: "Reduce Mining Cooldown by $sec (-0.3sec per artifact before multiply)",
+    effectsFormer: "Reduce Mining Cooldown by -$sec (-0.3sec per artifact before multiply)",
     unlockMessage: "Artifact Shop"
 });
 artifactItems.SparklingPotion = new Artifact({
@@ -69,18 +76,15 @@ artifactItems.ExpandPotion = new Artifact({
     key: "ExpandPotion",
     maxLevel: 5,
     effects: (lv) => [1+6*lv, 1+4*lv],
-    effectsFormer: "Makes Mining x$ (+6x per artifact) powerful, but Multiply Mining Cooldown by x$ (+4x per artifact)",
+    effectsFormer: "Makes Mining x$1 (+6x per artifact) powerful, but Multiply Mining Cooldown by x$2 (+4x per artifact)",
     unlockMessage: "Artifact Shop"
 });
-
-
 
 /**
  *  from Loot
  */
 artifactItems.OldCalendar = new Artifact({
     key: "OldCalendar",
-    getChance: () => 1,
     maxLevel: 50,
     effects: (lv) => 1.1**lv,
     effectsFormer: "Multiply Pickaxe Roll by x$ (x1.1 per artifact)",
@@ -88,7 +92,6 @@ artifactItems.OldCalendar = new Artifact({
 });
 artifactItems.TinTicket = new Artifact({
     key: "TinTicket",
-    getChance: () => 0.5,
     maxLevel: 50,
     effects: (lv) => 1.1**lv,
     effectsFormer: "Divide Picaxe Proce by ÷$ (x1.1 per artifact)",
@@ -96,7 +99,6 @@ artifactItems.TinTicket = new Artifact({
 });
 artifactItems.GreenCoin = new Artifact({
     key: "GreenCoin",
-    getChance: () => 0.25,
     maxLevel: 50,
     effects: (lv) => 1.1**lv,
     effectsFormer: "Multiply Gold Gain by x$ (x1.1 per artifact)",

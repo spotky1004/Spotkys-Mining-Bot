@@ -18,6 +18,7 @@ const strs = {
 
 /** Useful Functions */
 function randomPick(arr=[]) {
+    if (arr.length === 0) return -1;
     return arr[Math.floor(Math.random()*arr.length)];
 }
 function mergeObject(target, source) {
@@ -95,12 +96,14 @@ function numToScientDigit(x, maxLength=6) {
 function notation(x=new D(0), maxLength=6, type="Standard") {
     x = new D(x);
     
-    if (x.lt(1000) && x.floor(0).eq(x)) {
-        return (x.toNumber()+"").padEnd(maxLength, strs.blank);
-    } else if (x.eq(0)) {
-        return "0".padEnd(maxLength, strs.blank);
-    } else if (x.eq(new D(Infinity))) {
-        return "Inf.".padEnd(maxLength, strs.blank);
+    if (type !== "Decimal") {
+        if (x.lt(1000) && x.floor(0).eq(x)) {
+            return (x.toNumber()+"").padEnd(maxLength, strs.blank);
+        } else if (x.eq(0)) {
+            return "0".padEnd(maxLength, strs.blank);
+        } else if (x.eq(new D(Infinity))) {
+            return "Inf.".padEnd(maxLength, strs.blank);
+        }
     }
 
     if (x.gt("1e3000")) type = "Scientific";
@@ -113,6 +116,9 @@ function notation(x=new D(0), maxLength=6, type="Standard") {
             break;
         case notationTypes.Scientific:
             out = numToScientDigit(x, maxLength) + "e" + x.log(1000).floor(0).mul(3);
+            break;
+        case notationTypes.Decimal:
+            out = x.toFixed(maxLength).replace(/\.?0+$/, "");
             break;
         default:
             out = "Error.";
@@ -194,6 +200,8 @@ function checkPlayerData(id) {
 
 /** Game Functions */
 // global
+const artifactEnum = require("./enums/artifact.js");
+const artifactSet = enumToSets(artifactEnum);
 const calcStat = {
     // Mining
     Roll: (playerData) => {
@@ -247,6 +255,7 @@ const calcStat = {
     },
     AncientCoinCurrent: (playerData) => {
         let current = calcStat.AncientCoinTotal(playerData);
+        for (let i = 0; i < 10; i++) current -= playerData.artifact[artifactSet[i]];
 
         return current;
     },
@@ -342,6 +351,17 @@ function makeHelpFields({title, data, guildData}) {
         })
     }
     return fields;
+}
+function textFormer(former="", param) {
+    if (Array.isArray(param)) {
+        param.some((e, i) => {
+            former = former.replace(new RegExp(`([^ ]*)\\$${i+1}([^ ]*)`), "**$1"+e+"$2**");
+            return false;
+        });
+        return former;
+    } else {
+        return former.replace(/([^ ]*)\$([^ ]*)/, "**$1"+param+"$2**");
+    }
 }
 function itemMessage({have=new D(0), got=new D(0), emoji="", isBlank=false, blankFiller=""}) {
     if (isBlank) {
@@ -500,6 +520,7 @@ module.exports = {
     subCommandsToTitle,
     dataToMessage,
     makeHelpFields,
+    textFormer,
     itemMessage,
     oreSetToMessage,
     toShopNameSpace,

@@ -54,7 +54,7 @@ const emojis = {
         
         Pearl: '<:Pearl:765376111357329468>',
         FeohRune: '<:FeohRune:765376111244345366>',
-        Cheese: '<:Cheese:765376110455291976>',
+        CheeseCube: '<:Cheese:765376110455291976>',
         BlueMushroom: '<:BlueMushroom:765376110639841320>',
         CakePiece: '<:CakePiece:765376112070230016>',
 

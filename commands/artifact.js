@@ -9,6 +9,7 @@ const artifactSet  = util.enumToSets(artifactEnum);
 const emojiList = require("../data/emojiList.js");
 const imageList = require("../data/imageList.js");
 
+const artifactItems = require("../data/artifactItems.js");
 const artifactCoinItems = require("../data/artifactCoinItems.js");
 
 const randomTips = [
@@ -33,24 +34,8 @@ function artifactCommand({playerData, params, guildData}) {
                 value: "** **"
             });
             for (let i = subTab*10; i < (subTab+1)*10; i++) {
-                const artifactName = artifactSet[i];
-                const artifactHave = playerData.artifact[artifactName];
-                const unlocked = artifactHave >= 1;
-                
-                let fieldName = "";
-                fieldName += `\`#${(i+1).toString().padStart(2, " ")}\``;
-                fieldName += " " + (unlocked ? emojiList.artifact[artifactName] : emojiList.loots.CommonBox);
-                fieldName += " " + (unlocked ? util.keyNameToWord(artifactName) : util.keyNameToWord(artifactName).replace(/[^ ]/g, "?"));
-                fieldName += " " + (unlocked ? `(${artifactHave}/??)` : "");
-
-                let fieldValue = "";
-                fieldValue += util.strs.sub;
-                fieldValue += unlocked ? "Effect" : "Unlock";
-
-                fields.push({
-                    name : fieldName,
-                    value: fieldValue
-                });
+                const artifact = artifactItems[artifactSet[i]];
+                fields.push(artifact.listField(playerData));
             }
             break;
         case "coin": case "c":
@@ -64,9 +49,39 @@ function artifactCommand({playerData, params, guildData}) {
             break;
         case "buy": case "b":
             subCmds.push("Buy");
+            const selection = playerData.nextArtifactSelection;
+            if (!["1", "2", "3"].includes(subTab)) {
+                for (let i = 0; i < 3; i++) {
+                    if (selection[i] === -1) continue;
+                    const message = artifactItems[artifactSet[selection[i]]].listField(playerData);
+                    fields.push({
+                        name: `\`${i+1}.\` ` + message.name.replace(/`/g, ""),
+                        value: message.value
+                    });
+                }
+            } else {
+                const i = subTab-1;
+                if (selection[i] === -1) return {message: "`That Index is Empty!`"};
+
+                const artifactName = artifactSet[selection[i]];
+                playerData.artifact[artifactName]++;
+                fields.push(artifactItems[artifactName].listField(playerData));
+
+                playerData.nextArtifactSelection.fill(-1);
+                for (let i = 0; i < 3; i++) {
+                    const available = Array.from({length: 10*((i+1)/3)-Math.floor(10*(i/3))}, (_, j) => j+Math.floor(10*(i/3))).filter(e => playerData.artifact[artifactSet[e]] < artifactItems[artifactSet[e]].maxLevel);
+                    playerData.nextArtifactSelection[i] = util.randomPick(available);
+                }
+            }
             break;
         case "refund": case "r":
             subCmds.push("Refund");
+            
+            for (let i = 0; i < 10; i++) playerData.artifact[artifactSet[i]] = 0;
+            fields.push({
+                name: "Refund done!",
+                value: "** **"
+            });
             break;
         case undefined:
             fields = util.makeHelpFields({
