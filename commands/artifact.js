@@ -118,5 +118,5 @@ module.exports = new Command({
     regex: /^(inventory|coin|buy|refund|i|c|b|r)?((?: )([1-3]|ore|gem|o|g))?/,
     canAcceptEmpty: true,
     func: artifactCommand,
-    permissionReq: Permission.Admin
+    permissionReq: Permission.User
 });

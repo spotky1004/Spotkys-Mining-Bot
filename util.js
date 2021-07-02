@@ -215,6 +215,12 @@ const calcStat = {
     Luck: (playerData) => {
         return upgradeItems[upgradeItemsEnum.pickaxe].effects(playerData.upgrade.pickaxe).Luck;
     },
+    oreDistribution: (playerData) => {
+        let value = 2;
+        value -= artifactItems.MiningLantern.eff(playerData);
+
+        return value;
+    },
     MiningCooldown: (playerData) => {
         return 3000;
     },
@@ -228,14 +234,21 @@ const calcStat = {
     },
     AutominerCap: (playerData) => {
         let cap = 1;
+        cap += 3600*1000;
+        cap += artifactItems.IronRings.eff(playerData)[1]*60*1000;
 
-        cap *= 3600*1000;
         return cap;
     },
     LootProgressMult: (playerData) => {
         let mult = playerData.upgrade.pickaxe;
         
         return mult;
+    },
+    AutominerSkip: (playerData) => {
+        let effect = 0;
+        effect += artifactItems.IronRings.eff(playerData)[0]*1000;
+
+        return effect;
     },
 
     // Resource
@@ -266,14 +279,14 @@ const calcStat = {
     },
 }
 // mine
-function rollMine({reginOreSet=[], roll=new D(1), luck=1}) {
+function rollMine({reginOreSet=[], roll=new D(1), luck=1, playerData}) {
     roll = new D(roll);
 
     let minedOre = Array.from({length: reginOreSet.length}, e => new D(0));
 
     minedOre[0] = roll;
 
-    oreDistribution = 2;
+    oreDistribution = calcStat.oreDistribution(playerData);
     luck = luck ?? 1;
     for (let i = 1; i < luck; i++) {
         const tmpDistribution = Math.max(1, oreDistribution*(1+Math.random()*0.03)+(Math.random()*0.05));
@@ -535,4 +548,5 @@ module.exports = {
 
 // TODO: locate this require to top of this file
 const upgradeItems = require("./data/upgradeItems.js");
+const artifactItems = require("./data/artifactItems.js");
 const playerData = require("./saveDatas/Defaults/playerData.js");

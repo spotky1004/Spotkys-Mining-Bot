@@ -35,11 +35,12 @@ function collectCommand({playerData, time}) {
     const minedOre = util.rollMine({
         reginOreSet: reginOreSet,
         luck: util.calcStat.Luck(playerData),
-        roll: pickaxeStat.max.mul(efficiency).add(pickaxeStat.min.mul(1-efficiency)).div(2).mul(mineCount)
+        roll: pickaxeStat.max.mul(efficiency).add(pickaxeStat.min.mul(1-efficiency)).div(2).mul(mineCount),
+        playerData
     });
     for (let i = 0, l = minedOre.length; i < l; i++) playerData.ores[reginOreSet[i]] = playerData.ores[reginOreSet[i]].add(minedOre[i]);
     fields.push({
-        name: `Mined \`${util.notation(mineCount)}\` times (\`${(timeSpent/1000/3600).toFixed(3)}h\` spent)`,
+        name: `Mined \`${util.notation(mineCount)}\` times (\`${(timeSpent/1000/3600).toFixed(3)}h\`/\`${(util.calcStat.AutominerCap(playerData)/3600/1000).toFixed(3)}h\` spent)`,
         value: util.oreSetToMessage({
             playerData: playerData,
             ores: minedOre,

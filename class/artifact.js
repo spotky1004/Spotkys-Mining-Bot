@@ -71,6 +71,10 @@ class Artifact {
             }) + chance !== 0 ? ` \`Chance: ${(chance*100).toFixed(2).padStart(6, " ")} %\`` : ""
         }
     }
+
+    eff(playerData) {
+        return this.effects(playerData.artifact[this.key]);
+    }
 }
 
 module.exports = Artifact;

@@ -29,7 +29,7 @@ const randomTips = [
     "=m"
 ];
 
-function mineCommand({msg, playerData, time, disbut, id}) {
+function mineCommand({playerData, time, disbut}) {
     const cooldown = util.calcStat.MiningCooldown(playerData);
     if (time - playerData.behaveTimes.mine < cooldown) return {
         message: `\`Cooldown! ${(cooldown/1000 - (time - playerData.behaveTimes.mine)/1000).toFixed(3)} second(s) left\``
@@ -45,12 +45,15 @@ function mineCommand({msg, playerData, time, disbut, id}) {
     const minedOre = util.rollMine({
         reginOreSet: reginOreSet,
         luck: util.calcStat.Luck(playerData),
-        roll: rollStat.max.sub(rollStat.min).mul(Math.random()).add(rollStat.min)
+        roll: rollStat.max.sub(rollStat.min).mul(Math.random()).add(rollStat.min),
+        playerData
     });
 
     for (let i = 0, l = minedOre.length; i < l; i++) {
         playerData.ores[reginOreSet[i]] = playerData.ores[reginOreSet[i]].add(minedOre[i]);
     }
+
+    playerData.behaveTimes.autominer -= util.calcStat.AutominerSkip(playerData);
 
 
 
