@@ -32,6 +32,7 @@ function sellCommand({playerData}) {
         playerData.ores[name] = new D(0);
     }
 
+    coinGot = coinGot.floor(0);
     playerData.coin = playerData.coin.add(coinGot);
 
     return {

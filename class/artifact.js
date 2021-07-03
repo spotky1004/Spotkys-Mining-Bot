@@ -50,7 +50,8 @@ class Artifact {
     }
 
     realGetChance(playerData, chanceMult=1) {
-        return this.getChance(playerData.artifact[this.key], playerData)*chanceMult;
+        if (playerData.artifact[this.key] >= this.maxLevel) return 0;
+        return this.getChance(playerData.artifact[this.key], playerData)*util.calcStat.ArtifactChanceMult(playerData)*chanceMult;
     }
 
     roll(playerData, chanceMult=1) {

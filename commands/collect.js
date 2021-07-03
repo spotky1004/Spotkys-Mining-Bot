@@ -25,7 +25,7 @@ function collectCommand({playerData, time}) {
     playerData.behaveTimes.autominer = Math.min(playerData.behaveTimes.autominer, time);
 
     const timeSpent = Math.min(time-playerData.behaveTimes.autominer, util.calcStat.AutominerCap(playerData));
-    const mineCount = Math.floor(timeSpent/util.calcStat.AutominerSpeed(playerData));
+    const mineCount = Math.floor(timeSpent/util.calcStat.AutominerTickspeed(playerData));
 
     const pickaxeStat = util.calcStat.Roll(playerData);
 

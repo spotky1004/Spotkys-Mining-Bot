@@ -53,6 +53,10 @@ function mineCommand({playerData, time, disbut}) {
         playerData.ores[reginOreSet[i]] = playerData.ores[reginOreSet[i]].add(minedOre[i]);
     }
 
+
+
+    playerData.mineCount = playerData.mineCount.add(util.calcStat.MineMult(playerData));
+
     playerData.behaveTimes.autominer -= util.calcStat.AutominerSkip(playerData);
 
 

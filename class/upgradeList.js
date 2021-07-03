@@ -46,7 +46,7 @@ class UpgradeList {
         } else {
             color = colorSet.Red;
             fields.push({
-                message: "`That item doesn't exists!`",
+                name: "`That item doesn't exists!`",
                 value: "** **"
             });
         }

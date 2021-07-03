@@ -40,7 +40,7 @@ artifactItems.CheesePiece = new Artifact({
 artifactItems.SkillBook = new Artifact({
     key: "SkillBook",
     maxLevel: 8,
-    effects: (lv) => 1+0.2*lv,
+    effects: (lv) => 1+0.25*lv,
     effectsFormer: "Multiply All Skill Effects by x$ (+0.25x per artifact)",
     unlockMessage: "Artifact Shop"
 });
@@ -48,7 +48,7 @@ artifactItems.PolyOrb = new Artifact({
     key: "PolyOrb",
     maxLevel: 20,
     effects: (lv) => 1+0.4*lv,
-    effectsFormer: "Multiply Gold Gain by x$ (+0.4x per artifact)",
+    effectsFormer: "Multiply Coin Gain by x$ (+0.4x per artifact)",
     unlockMessage: "Artifact Shop"
 });
 artifactItems.Slime = new Artifact({
@@ -94,14 +94,14 @@ artifactItems.TinTicket = new Artifact({
     key: "TinTicket",
     maxLevel: 50,
     effects: (lv) => 1.1**lv,
-    effectsFormer: "Divide Picaxe Proce by ÷$ (x1.1 per artifact)",
+    effectsFormer: "Divide Picaxe Price by ÷$ (x1.1 per artifact)",
     unlockMessage: "Daily Bag"
 });
 artifactItems.GreenCoin = new Artifact({
     key: "GreenCoin",
     maxLevel: 50,
     effects: (lv) => 1.1**lv,
-    effectsFormer: "Multiply Gold Gain by x$ (x1.1 per artifact)",
+    effectsFormer: "Multiply Coin Gain by x$ (x1.1 per artifact)",
     unlockMessage: "Daily Bag"
 })
 artifactItems.Amber = new Artifact({
@@ -125,14 +125,14 @@ artifactItems.Pearl = new Artifact({
     getChance: (lv) => 0.72*(0.97**lv),
     maxLevel: 50,
     effects: (lv) => 1+0.2*lv,
-    effectsFormer: "Multiply Gold Gain by x$ (+0.2x per artifact)",
+    effectsFormer: "Multiply Coin Gain by x$ (+0.2x per artifact)",
     unlockMessage: "Autominer Loot"
 });
 artifactItems.FeohRune = new Artifact({
     key: "FeohRune",
     getChance: (lv) => 0.63*(0.9**lv),
-    maxLevel: 20,
-    effects: (lv) => 5*lv,
+    maxLevel: 25,
+    effects: (lv) => 4*lv,
     effectsFormer: "Chance to get double loot: $% (+5% per artifact)",
     unlockMessage: "Autominer Loot"
 });

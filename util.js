@@ -205,12 +205,30 @@ const artifactSet = enumToSets(artifactEnum);
 const calcStat = {
     // Mining
     Roll: (playerData) => {
+        let mult = calcStat.RollMult(playerData);
+
         const pickaxeEffect = upgradeItems[upgradeItemsEnum.pickaxe].effects(playerData.upgrade.pickaxe);
 
-        let min = pickaxeEffect.RollMin;
-        let max = pickaxeEffect.RollMax;
+        let min = pickaxeEffect.RollMin.mul(mult);
+        let max = pickaxeEffect.RollMax.mul(mult);
 
         return {min, max};
+    },
+    RollMult: (playerData) => {
+        let mult = new D(1);
+        mult = mult.mul(artifactItems.CheesePiece.eff(playerData));
+        mult = mult.mul(artifactItems.OldCalendar.eff(playerData));
+        mult = mult.mul(artifactItems.Amber.eff(playerData));
+        
+        mult = mult.mul(calcStat.MineMult(playerData));
+
+        return mult;
+    },
+    MineMult: (playerData) => {
+        let mult = new D(1);
+        mult = mult.mul(artifactItems.ExpandPotion.eff(playerData)[0]);
+
+        return mult;
     },
     Luck: (playerData) => {
         return upgradeItems[upgradeItemsEnum.pickaxe].effects(playerData.upgrade.pickaxe).Luck;
@@ -222,38 +240,62 @@ const calcStat = {
         return value;
     },
     MiningCooldown: (playerData) => {
-        return 3000;
+        let cooldown = 3000;
+        cooldown -= artifactItems.HpPotion.eff(playerData)*1000;
+
+        cooldown *= artifactItems.ExpandPotion.eff(playerData)[1];
+
+        return cooldown;
     },
 
     // Autominer
-    AutominerSpeed: (playerData) => {
-        let speed = upgradeItems[upgradeItemsEnum.autominerSpeed].effects(playerData.upgrade.autominerSpeed).Interval;
+    AutominerTickspeed: (playerData) => {
+        let tick = upgradeItems[upgradeItemsEnum.autominerSpeed].effects(playerData.upgrade.autominerSpeed).Interval;
 
-        speed *= 1000;
-        return speed;
+        tick /= calcStat.AutominerMult(playerData);
+
+        tick *= 1000;
+        return tick;
     },
     AutominerCap: (playerData) => {
         let cap = 1;
         cap += 3600*1000;
         cap += artifactItems.IronRings.eff(playerData)[1]*60*1000;
 
+        cap /= calcStat.AutominerMult(playerData);
+
         return cap;
     },
     LootProgressMult: (playerData) => {
         let mult = playerData.upgrade.pickaxe;
-        
+        mult *= artifactItems.Slime.eff(playerData);
+
+        return mult;
+    },
+    AutominerMult: (playerData) => {
+        let mult = 1;
+        mult *= artifactItems.Onyx.eff(playerData);
+
         return mult;
     },
     AutominerSkip: (playerData) => {
         let effect = 0;
         effect += artifactItems.IronRings.eff(playerData)[0]*1000;
 
+        effect *= calcStat.MineMult(playerData).toNumber();
+
         return effect;
+    },
+    DoubleLootChanceArtifact: (playerData) => {
+        return artifactItems.FeohRune.eff(playerData)/100;
     },
 
     // Resource
     CoinMult: (playerData) => {
         let mult = new D(1);
+        mult = mult.mul(artifactItems.PolyOrb.eff(playerData));
+        mult = mult.mul(artifactItems.GreenCoin.eff(playerData));
+        mult = mult.mul(artifactItems.Pearl.eff(playerData));
 
         return mult;
     },
@@ -277,7 +319,42 @@ const calcStat = {
         
         return count;
     },
-}
+    ArtifactChanceMult: (playerData) => {
+        let mult = 1;
+        mult *= artifactItems.CakePiece.eff(playerData);
+        
+        return mult;
+    },
+
+    // Skill
+    SkillEffectMult: (playerData) => {
+        let mult = new D(1);
+        mult = mult.mul(artifactItems.SkillBook.eff(playerData));
+
+        return mult;
+    },
+    CrystalizeMult: (playerData) => {
+        let mult = new D(1);
+        mult = mult.mul(artifactItems.SparklingPotion.eff(playerData));
+
+        return mult;
+    },
+
+    // Etc
+    PickaxeDiscount: (playerData) => {
+        let div = new D(1);
+        div = div.mul(artifactItems.TinTicket.eff(playerData));
+        div = div.mul(artifactItems.CheeseCube.eff(playerData));
+
+        return div;
+    },
+    DailyRewardMult: (playerData) => {
+        let mult = 1;
+        mult *= artifactItems.LightPlant.eff(playerData);
+
+        return mult;
+    },
+};
 // mine
 function rollMine({reginOreSet=[], roll=new D(1), luck=1, playerData}) {
     roll = new D(roll);
