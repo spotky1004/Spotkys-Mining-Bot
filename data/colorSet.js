@@ -7,6 +7,7 @@ const colorSet = {
     Brown : "#d9890f",
     Pink  : "#e6126e",
     Gray  : "#3d3d3d",
+    Metal : "#7d7d7d",
     Black : "#000000"
 };
 

@@ -19,7 +19,7 @@ const randomTips = [
 ];
 
 function artifactCommand({playerData, params, guildData}) {
-    let [tab, _, subTab] = params;
+    let [tab, subTab] = params;
 
     let fields = [], subCmds = [];
     switch (tab) {
@@ -115,8 +115,7 @@ function artifactCommand({playerData, params, guildData}) {
 
 module.exports = new Command({
     keyWords: ["artifact", "ARTIFACT", "arti", "art", "a", "A", "ㅁ"],
-    regex: /^(inventory|coin|buy|refund|i|c|b|r)?((?: )([1-3]|ore|gem|o|g))?/,
-    canAcceptEmpty: true,
+    paramRegex: [/^inventory|coin|buy|refund|i|c|b|r/, /^[1-3]|ore|gem|o|g/],
     func: artifactCommand,
     permissionReq: Permission.User
 });

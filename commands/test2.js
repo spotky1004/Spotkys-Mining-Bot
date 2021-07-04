@@ -17,7 +17,6 @@ function test2Command({msg, disbut}) {
 
 module.exports = new Command({
     keyWords: ["test2"],
-    regex: null,
     func: test2Command,
     permissionReq: Permission.User
 });

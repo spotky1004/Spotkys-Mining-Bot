@@ -9,24 +9,26 @@ const util = require("../util.js");
 
 const imageList = require("../data/imageList.js");
 
-function evalCommand({msg, params, playerData, guildData, permission, isDM, time}) {
+async function evalCommand({bot, msg, params, playerData, guildData, permission, isDM, time}) {
     let input = params[1];
-    let output;
-    try {
-        output = eval(input);
+    let output = "";
+    tryStatment: try {
+        output = await eval(input);
+        if (output && output.message) break tryStatment;
         // output fix
         output = ouputTypeFixer(output);
         // saveData fix
         if (input.includes("pathAllSave")) playerData = util.checkPlayerData(msg.author.id);
+        
+        output = output.toString();
     } catch (e) {
         output = e;
+        output = output.toString();
     }
-
-    output = output.toString();
 
     return {
         playerData: playerData,
-        message: {
+        message: output.message ?? {
             command: "Eval",
             color: colorSet.Black,
             image: imageList.auto,
@@ -67,7 +69,8 @@ function ouputTypeFixer(output) {
 
 module.exports = new Command({
     keyWords: ["eval"],
-    regex: /^((?:```js)?\n?((.|\n)+?)\n?(?:```))/,
+    paramRegex: [/^```js/, /((?:[^`]|\n|``[^`]|`[^`])+)/, /```/],
+    paramIgnore: [true, false, true],
     func: evalCommand,
     permissionReq: Permission.Admin
 });

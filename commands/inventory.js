@@ -58,7 +58,7 @@ function inventoryCommand({playerData, params}) {
 
 module.exports = new Command({
     keyWords: ["inventory", "inv", "i", "I", "INV"],
-    regex: /^(o|ore) ([0-9])/,
+    paramRegex: [/^o|ore/, /^[0-9]/],
     func: inventoryCommand,
     permissionReq: Permission.User
 });

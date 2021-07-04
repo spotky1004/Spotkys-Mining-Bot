@@ -4,6 +4,7 @@ const Permission = require("../Enums/permission.js");
 const lootEnum = require("../enums/loot.js");
 const oreEnum = require("../enums/ore.js");
 
+const colorSet = require("../data/colorSet.js");
 const imageList = require("../data/imageList.js");
 const emojiList = require("../data/emojiList.js");
 const util = require("../util.js");
@@ -78,7 +79,7 @@ function collectCommand({playerData, time}) {
         playerData: playerData,
         message: {
             command: "Collect",
-            color: "#7d7d7d",
+            color: colorSet.Metal,
             image: imageList.auto,
             fields: fields,
             footer: util.randomPick(randomTips)
@@ -88,7 +89,7 @@ function collectCommand({playerData, time}) {
 
 module.exports = new Command({
     keyWords: ["collect", "COLLECT", "col", "COL", "c", "C", "ㅊ"],
-    regex: /^(now)?/,
+    paramRegex: [/^now/],
     canAcceptEmpty: true,
     func: collectCommand,
     permissionReq: Permission.User

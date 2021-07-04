@@ -63,7 +63,7 @@ bot.on("message", async (msg) => {
             // parse message
             const sentCommand = msg.content.substr(prefix.length).trim();
             const keyWord = sentCommand.split(" ")[0];
-            const rawParameter = sentCommand.substr(keyWord.length).trim();
+            const rawParameter = sentCommand.substr(keyWord.length).replace(/  /g, " ").trim();
 
             // execute command
             if (commandKeyWords.includes(keyWord)) {

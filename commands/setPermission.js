@@ -24,7 +24,7 @@ function setPermissionCommand({msg, params, bot}) {
 
     return {
         message: {
-            color: colorSet.Gray,
+            color: colorSet.Metal,
             command: "Set Permission",
             image: imageList.auto,
             fields: [
@@ -38,8 +38,8 @@ function setPermissionCommand({msg, params, bot}) {
 }
 
 module.exports = new Command({
-    keyWords: ["setPermission", "setpermission"],
-    regex: /^(\d+) (\w+)/,
+    keyWords: ["setPermission", "setpermission", "sp"],
+    paramRegex: [/^\d+/, /^\w+/],
     func: setPermissionCommand,
     permissionReq: Permission.Admin
 });

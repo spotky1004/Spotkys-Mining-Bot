@@ -35,7 +35,6 @@ function statCommand({playerData}) {
 
 module.exports = new Command({
     keyWords: ["stat", "STAT", "stats", "STATS", "st", "ST", "status", "STATUS", "stt", "STT"],
-    regex: null,
     func: statCommand,
     permissionReq: Permission.User
 });

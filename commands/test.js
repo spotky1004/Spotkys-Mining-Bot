@@ -9,7 +9,7 @@ function testCommand({params}) {
 
 module.exports = new Command({
     keyWords: ["test", "t"],
-    regex: /^(.+)/,
+    paramRegex: [/^.+/],
     func: testCommand,
     permissionReq: Permission.Admin
 });

@@ -98,7 +98,6 @@ function mineCommand({playerData, time, disbut}) {
 
 module.exports = new Command({
     keyWords: ["mine", "m", "M", "MINE", "ㅡ", "pick", "PICK"],
-    regex: null,
     func: mineCommand,
     permissionReq: Permission.User
 });

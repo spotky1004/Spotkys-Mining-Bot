@@ -47,7 +47,8 @@ function upgradeommand({playerData, params}) {
 
 module.exports = new Command({
     keyWords: ["upgrade", "upg", "u", "U", "ㅕ"],
-    regex: /^([A-z]+)?/,
+    paramRegex: [/^[A-z]+/],
+    paramIgnore: [true],
     canAcceptEmpty: true,
     func: upgradeommand,
     permissionReq: Permission.User

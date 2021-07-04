@@ -1,13 +1,14 @@
 class Command {
-    constructor({keyWords, regex, func, permissionReq, canAcceptEmpty}) {
+    constructor({keyWords, paramRegex, paramIgnore, func, permissionReq, canAcceptEmpty}) {
         this.keyWords = keyWords;
-        this.regex = regex;
+        this.paramRegex = paramRegex ?? [];
+        this.paramIgnore = paramIgnore ?? Array(this.paramRegex).fill(false);
         this.func = func;
         this.permissionReq = permissionReq;
-        this.canAcceptEmpty = canAcceptEmpty ?? false;
     }
     keyWords = new Array();
-    regex = new RegExp();
+    paramRegex = new Array();
+    paramIgnore = new Array();
     func = new Function();
     permissionReq = new Number();
     canAcceptEmpty = new Boolean();
@@ -26,16 +27,20 @@ class Command {
     }) {
         if (this.permissionReq > permission) return {message: "`Missing permission!`"};
         if (
-            this.regex !== null &&
+            this.paramRegex !== null &&
             rawParameter.length === 0 &&
             !this.canAcceptEmpty
         ) return {message: "`Missing Parameter(s)!`"};
 
-        const content = rawParameter;
-        let params;
-        if (this.regex !== null) {
-            if (content.match(this.regex) === null && this.canAcceptEmpty) return {message: "`Wrong Parameter(s)!`"};
-            params = (content.match(this.regex) ?? []).slice(1);
+        let content = rawParameter;
+        let params = [];
+        for (let i = 0, l = this.paramRegex.length; i < l; i++) {
+            /** @type {String|undefined} */
+            const match = (content.match(this.paramRegex[i]) ?? [])[0];
+            if (typeof match === "undefined" && this.paramIgnore[i]) break;
+
+            params.push(match);
+            content = content.substr((match ?? "").length).trim();
         }
         
         return this.func({msg, params, guildData, playerData, permission, bot, time, isDM, disbut, id});

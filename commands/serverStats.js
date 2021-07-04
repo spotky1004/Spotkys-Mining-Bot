@@ -31,7 +31,6 @@ function serverStatsCommand({msg, params, guildData, isDM}) {
 
 module.exports = new Command({
     keyWords: ["serverStats", "serverstats", "serverstat", "serverStat", "server", "ss"],
-    regex: null,
     func: serverStatsCommand,
     permissionReq: Permission.User
 });
