@@ -28,7 +28,7 @@ class Command {
         if (this.permissionReq > permission) return {message: "`Missing permission!`"};
         if (
             this.paramRegex !== null &&
-            rawParameter.length === 0 &&
+            (rawParameter && rawParameter.length === 0) &&
             !this.canAcceptEmpty
         ) return {message: "`Missing Parameter(s)!`"};
 
@@ -36,11 +36,14 @@ class Command {
         let params = [];
         for (let i = 0, l = this.paramRegex.length; i < l; i++) {
             /** @type {String|undefined} */
-            const match = (content.match(this.paramRegex[i]) ?? [])[0];
-            if (typeof match === "undefined" && this.paramIgnore[i]) break;
+            const match = (content.match(this.paramRegex[i]) ?? [])[0].trim();
+            if (typeof match === "undefined" && !this.paramIgnore[i]) continue;
 
-            params.push(match);
-            content = content.substr((match ?? "").length).trim();
+            params.push(match.trim());
+
+            let tmpContent = content.substr((match ?? "").length);
+            content = tmpContent.trim();
+            if (tmpContent === content) break;
         }
         
         return this.func({msg, params, guildData, playerData, permission, bot, time, isDM, disbut, id});

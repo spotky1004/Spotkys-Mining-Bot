@@ -69,7 +69,7 @@ function ouputTypeFixer(output) {
 
 module.exports = new Command({
     keyWords: ["eval"],
-    paramRegex: [/^```js/, /((?:[^`]|\n|``[^`]|`[^`])+)/, /```/],
+    paramRegex: [/^`(``)?(js)?/, /((?:[^`]|\n|``[^`]|`[^`])+)/, /^`(``)?/],
     paramIgnore: [true, false, true],
     func: evalCommand,
     permissionReq: Permission.Admin

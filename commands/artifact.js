@@ -1,5 +1,5 @@
 const Command = require("../class/command.js");
-const Permission = require("../Enums/permission.js");
+const Permission = require("../enums/permission.js");
 const colorSet = require("../data/colorSet.js");
 const util = require("../util.js");
 
@@ -24,6 +24,13 @@ function artifactCommand({playerData, params, guildData}) {
     let fields = [], subCmds = [];
     switch (tab) {
         case "inventory": case "i":
+            if (+subTab > artifactSet.length/10) {
+                fields.push({
+                    name: "\`\`\`Comming Soon!\`\`\`",
+                    value: "** **"
+                })
+                break;
+            }
             subCmds.push("Inventory");
             subCmds.push(subTab);
 
@@ -48,7 +55,13 @@ function artifactCommand({playerData, params, guildData}) {
             playerData = result.playerData;
             break;
         case "buy": case "b":
-            if (util.calcStat.AncientCoinCurrent(playerData) <= 0) return {message: "`Have at last 1 Acient Coin to open this menu`"};
+            if (util.calcStat.AncientCoinCurrent(playerData) <= 0) {
+                fields.push({
+                    name: `\`\`\`Have at last 1 artifact coin to open this menu\`\`\``,
+                    value: "** **"
+                })
+                break;
+            }
 
             subCmds.push("Buy");
             const selection = playerData.nextArtifactSelection;
@@ -89,7 +102,7 @@ function artifactCommand({playerData, params, guildData}) {
             fields = util.makeHelpFields({
                 title: "Artifact Commands",
                 data: [
-                    {cmd: "artifact inventory {page:[1-3]}", msg: "Show your Artifacts", inline: false},
+                    {cmd: "artifact inventory {page:[1-2]}", msg: "Show your Artifacts", inline: false},
                     {cmd: "artifact coin {coin|gem}", msg: "Open Ancient Coin shop"},
                     {cmd: "artifact buy {index:[1-3]}", msg: "Buy Artifact with Ancient Coin"},
                     {cmd: "artifact refund", msg: "Refund Ancient Coin", inline: false}
@@ -97,7 +110,7 @@ function artifactCommand({playerData, params, guildData}) {
                 guildData
             });
     }
-    
+
     return {
         playerData: playerData,
         message: {
