@@ -3,7 +3,7 @@ const Discord = require("discord.js");
 const D = require("decimal.js");
 
 const Command = require("../class/command.js");
-const Permission = require("../Enums/permission.js");
+const Permission = require("../enums/permission.js");
 const colorSet = require("../data/colorSet.js");
 const util = require("../util.js");
 
@@ -24,6 +24,7 @@ async function evalCommand({bot, msg, params, playerData, guildData, permission,
     } catch (e) {
         output = e;
         output = output.toString();
+        console.error(e);
     }
 
     return {

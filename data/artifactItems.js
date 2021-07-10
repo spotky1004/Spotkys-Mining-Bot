@@ -85,6 +85,8 @@ artifactItems.ExpandPotion = new Artifact({
  */
 artifactItems.OldCalendar = new Artifact({
     key: "OldCalendar",
+    getChance: () => 3/6,
+    staticChance: true,
     maxLevel: 50,
     effects: (lv) => 1.1**lv,
     effectsFormer: "Multiply Pickaxe Roll by x$ (x1.1 per artifact)",
@@ -92,6 +94,8 @@ artifactItems.OldCalendar = new Artifact({
 });
 artifactItems.TinTicket = new Artifact({
     key: "TinTicket",
+    getChance: () => 2/6,
+    staticChance: true,
     maxLevel: 50,
     effects: (lv) => 1.1**lv,
     effectsFormer: "Divide Picaxe Price by ÷$ (x1.1 per artifact)",
@@ -99,6 +103,8 @@ artifactItems.TinTicket = new Artifact({
 });
 artifactItems.GreenCoin = new Artifact({
     key: "GreenCoin",
+    getChance: () => 1/6,
+    staticChance: true,
     maxLevel: 50,
     effects: (lv) => 1.1**lv,
     effectsFormer: "Multiply Coin Gain by x$ (x1.1 per artifact)",

@@ -6,12 +6,12 @@ class Command {
         this.func = func;
         this.permissionReq = permissionReq;
     }
-    keyWords = new Array();
-    paramRegex = new Array();
-    paramIgnore = new Array();
-    func = new Function();
-    permissionReq = new Number();
-    canAcceptEmpty = new Boolean();
+    keyWords = new Array;
+    paramRegex = new Array;
+    paramIgnore = new Array;
+    func = new Function;
+    permissionReq = new Number;
+    canAcceptEmpty = new Boolean;
 
     execute({
         // message
@@ -36,14 +36,14 @@ class Command {
         let params = [];
         for (let i = 0, l = this.paramRegex.length; i < l; i++) {
             /** @type {String|undefined} */
-            const match = (content.match(this.paramRegex[i]) ?? [])[0].trim();
-            if (typeof match === "undefined" && !this.paramIgnore[i]) continue;
+            const match = (content.match(this.paramRegex[i]) ?? [""])[0].trim();
+            if ((typeof match === "undefined" || match === "") && !this.paramIgnore[i]) continue;
 
             params.push(match.trim());
 
             let tmpContent = content.substr((match ?? "").length);
             content = tmpContent.trim();
-            if (tmpContent === content) break;
+            if (tmpContent === content && !this.paramIgnore[i]) break;
         }
         
         return this.func({msg, params, guildData, playerData, permission, bot, time, isDM, disbut, id});

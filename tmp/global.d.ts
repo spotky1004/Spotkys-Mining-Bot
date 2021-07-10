@@ -3,7 +3,7 @@
  */
 
 import Decimal from "decimal.js";
-import playerData from "./saveDatas/Defaults/playerData.js"
+import playerData from "../saveDatas/Defaults/playerData.js"
 
 //declare var testVariable: object;
 //declare var playerData: object = playerData;

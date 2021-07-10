@@ -1,5 +1,5 @@
 const Command = require("../class/command.js");
-const Permission = require("../Enums/permission.js");
+const Permission = require("../enums/permission.js");
 
 const lootEnum = require("../enums/loot.js");
 const oreEnum = require("../enums/ore.js");

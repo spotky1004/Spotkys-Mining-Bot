@@ -1,41 +1,32 @@
+const ItemList = require("./itemList.js")
+
 const util = require("../util.js");
 const colorSet = require("../data/colorSet.js");
 
-class UpgradeList {
+class UpgradeList extends ItemList {
     constructor(upgrades) {
-        this.upgrades = [...upgrades];
-        this.length = this.upgrades.length;
-        for (let i = 0; i < this.length; i++) {
-            this[i] = this.upgrades[i];
-        }
-        
-        const tmp = util.dataToKeywordDictionary([...upgrades]);
-        this.itemDictionary = tmp.Dictionary;
-        this.keyWords = tmp.KeyWords;
+        super(upgrades);
     }
-    upgrades = new Array();
-    itemDictionary = new Map();
-    keyWords = new Array();
 
     searchBuy(keyword, playerData) {
-        let fields = [], color, item, itemName;
+        const item = this.search(keyword);
+        let fields = [], color, itemName;
 
-        if (typeof keyword === "undefined") {
+        if (item === null) {
             for (let i = 0; i < this.length; i++) {
-                const item = this.upgrades[i];
+                const tmpItem = this.items[i];
 
-                if (item.unlocked(playerData)) {
-                    fields.push(util.upgradeListField(item, playerData, true));
+                if (tmpItem.unlocked(playerData)) {
+                    fields.push(util.upgradeListField(tmpItem, playerData, true));
                 } else {
                     fields.push({
-                        name: `:lock: Reach ${item.unockMessage} to unlock next upgrade!`,
+                        name: `:lock: Reach ${tmpItem.unockMessage} to unlock next upgrade!`,
                         value: "** **"
                     });
                     break;
                 }
             }
-        } else if (this.keyWords.includes(keyword)) {
-            item = this.upgrades[this.itemDictionary.get(keyword)];
+        } else if (item) {
             itemName = item.key;
 
             const result = item.buy(playerData);

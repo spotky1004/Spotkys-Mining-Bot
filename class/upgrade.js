@@ -1,5 +1,6 @@
 const Decimal = require("decimal.js");
 const D = Decimal;
+
 const util = require("../util.js");
 const colorSet = require("../data/colorSet.js");
 
@@ -27,17 +28,17 @@ class Upgrade {
         this.effects = effects;
         this.unlocked = unlocked;
     }
-    parentKey = new String();
-    key = new String();
-    shortName = new String();
-    unlockMessage = new String();
-    emoji = new String();
-    maxLevel = new Number();
-    effectsFormer = new Object();
-    keyWords = new Array();
-    namespace = new Function();
-    effects = new Function();
-    unlocked = new Function();
+    parentKey = new String;
+    key = new String;
+    shortName = new String;
+    unlockMessage = new String;
+    emoji = new String;
+    maxLevel = new Number;
+    effectsFormer = new Object;
+    keyWords = new Array;
+    namespace = new Function;
+    effects = new Function;
+    unlocked = new Function;
 
     buy(playerData) {
         if (!this.unlocked(playerData)) return {

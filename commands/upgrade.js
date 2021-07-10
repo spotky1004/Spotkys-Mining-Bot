@@ -1,7 +1,7 @@
 const D = require("decimal.js");
 
 const Command = require("../class/command.js");
-const Permission = require("../Enums/permission.js");
+const Permission = require("../enums/permission.js");
 const colorSet = require("../data/colorSet.js");
 const util = require("../util.js");
 
@@ -48,8 +48,6 @@ function upgradeommand({playerData, params}) {
 module.exports = new Command({
     keyWords: ["upgrade", "upg", "u", "U", "ㅕ"],
     paramRegex: [/^[A-z]+/],
-    paramIgnore: [true],
-    canAcceptEmpty: true,
     func: upgradeommand,
     permissionReq: Permission.User
 });

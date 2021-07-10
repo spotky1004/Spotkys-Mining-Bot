@@ -1,7 +1,7 @@
 const D = require("decimal.js");
 
 const Command = require("../class/command.js");
-const Permission = require("../Enums/permission.js");
+const Permission = require("../enums/permission.js");
 const colorSet = require("../data/colorSet.js");
 const util = require("../util.js");
 

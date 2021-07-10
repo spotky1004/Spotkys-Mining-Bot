@@ -4,6 +4,7 @@ const emojis = {
     auto: "<:auto:742407470533574678>",
     ancientCoin: "<:AncientCoin:766242917714100257>",
     gem: "<:Gem:742569819395719198>",
+    skill: "<:Skill:863405243076182026>",
 
     pickaxe: {
         BeginnerPickaxe: '<:BeginnerPickaxe:742043069301391490>',
@@ -44,6 +45,15 @@ const emojis = {
         LegendaryBox: "<:LegendaryBox:742444238997946468>",
         UltimateBox: "<:UltimateBox:742606473271574569>",
         DailyBag: "<:DailyBag:764193845792997407>"
+    },
+    skills: {
+        Bomb: "<:Bomb:743017500488499221>",
+        Luck: "<:Luck:743017500681306133>",
+        TimeWarp: "<:TimeWarp:743017500890890240>",
+        Midas: "<:Midas:745532935574257724>",
+        Trade: "<:Trade:745532935595098162>",
+        Crystalize: "<:Crystalize:745532935448559759>",
+        Mechanical: "<:Mechanical:794130795471437824>",
     },
     artifact: {
         OldCalendar: '<:Oldcalendar:764547869574823997>',

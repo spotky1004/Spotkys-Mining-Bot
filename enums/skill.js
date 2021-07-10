@@ -1,8 +1,11 @@
 const skill = {
-    Boom: 100,
-    Luck: 101,
-    TimeWarp: 102,
-    Midas: 200,
-    Trade: 201,
-    Crystalize: 202
+    Bomb: 0,
+    Luck: 1,
+    TimeWarp: 2,
+    Midas: 3,
+    Trade: 4,
+    Crystalize: 5,
+    Mechanical: 6,
 }
+
+module.exports = skill;

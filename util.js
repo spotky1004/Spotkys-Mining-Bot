@@ -21,6 +21,41 @@ function randomPick(arr=[]) {
     if (arr.length === 0) return -1;
     return arr[Math.floor(Math.random()*arr.length)];
 }
+function randomRange(a, b, l=1) {
+    let distribution = new D(1).div(new D(l).abs()).toNumber();
+    let min, max;
+    if (typeof a === "object" && !(a instanceof Decimal)) {
+        if (typeof a.min !== "undefined") {
+            [min, max] = [a.min, a.max];
+        } else {
+            [min, max] = a;
+        }
+    } else {
+        [min, max] = [a, b];
+    }
+    
+    if (a instanceof Decimal) {
+        let avg = min.add(max).div(2);
+        let avgDiff = avg.abs(max.sub(avg));
+        min = min.add(avgDiff.mul(1-distribution));
+        max = max.sub(avgDiff.mul(1-distribution));
+
+        return ((max.sub(min).mul(Math.random())).add(min)).mul(l);
+    } else {
+        let avg = (min+max)/2;
+        let avgDiff = Math.abs(max-avg);
+        min = min+avgDiff*(1-distribution);
+        max = max-avgDiff*(1-distribution);
+
+        return (((max-min)*Math.random())+min)*l;
+    }
+}
+function arrayCounter(arr=[]) {
+    let base = [...new Set(arr)];
+    let cur = Object.fromEntries(base.map(e => [e, 0]));
+    arr.reduce((_, b) => cur[b]++, null);
+    return cur;
+}
 function mergeObject(target, source) {
     target = target ?? {};
     for (const i in source) {
@@ -146,7 +181,7 @@ function enumToSets(e) {
     return sets;
 }
 function dataToKeywordDictionary(data) {
-    const Dictionary =  new Map(Object.entries(data).map(e => e[1].keyWords.map(keyWord => [keyWord, e[0]])).flat());
+    const Dictionary = new Map(Object.entries(data).map(e => e[1].keyWords.map(keyWord => [keyWord, e[0]])).flat());
     const KeyWords = [...Dictionary.keys()];
 
     return {
@@ -568,6 +603,8 @@ module.exports = {
 
     /** Useful Functions */
     randomPick,
+    randomRange,
+    arrayCounter,
     mergeObject,
     mergeArray,
     searchObject,
@@ -627,3 +664,4 @@ module.exports = {
 const upgradeItems = require("./data/upgradeItems.js");
 const artifactItems = require("./data/artifactItems.js");
 const playerData = require("./saveDatas/Defaults/playerData.js");
+const { func } = require("./commands/artifact.js");
