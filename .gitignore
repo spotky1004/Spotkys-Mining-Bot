@@ -4,6 +4,7 @@ saveDatas/guildData/*
 saveDatas/playerData/*
 saveDatas/permissions.json
 Images/*
+temp/*
 
 # Logs
 logs

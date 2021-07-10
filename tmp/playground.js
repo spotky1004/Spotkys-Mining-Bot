@@ -1,3 +1,0 @@
-// practice "d.ts"
-
-playerData
