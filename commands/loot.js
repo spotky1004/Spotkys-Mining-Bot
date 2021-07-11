@@ -56,7 +56,7 @@ function commandFunction({playerData, params}) {
 }
 
 module.exports = new Command({
-    keyWords: ["loot", "l", "L"],
+    keyWords: ["loot", "l", "L", "ㅣ"],
     paramRegex: [/^([^0-9]+|[0-9]+)/, /^(open|use|o|u|[0-9]+)/],
     func: commandFunction,
     permission: Permission.Admin

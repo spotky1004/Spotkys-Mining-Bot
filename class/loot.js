@@ -17,13 +17,14 @@ const skillSet = util.enumToSets(skillEnum);
 
 class Loot {
     constructor({
-        key, keyWords,
+        key, keyWords, dynamicLoot,
         // Loots
         coinRange, mineRange, gemRange, skills, skillRange, artifacts, 
     }) {
         this.key = key;
         this.keyWords = keyWords;
 
+        this.dynamicLoot = dynamicLoot ?? false;
         this.coinRange = coinRange ?? {min: 0, max: 0};
         this.mineRange = mineRange ?? {min: 0, max: 0};
         this.gemRange = gemRange ?? {min: 0, max: 0};
@@ -44,21 +45,27 @@ class Loot {
         let fields = [];
 
         // this.mineRange
-        if (this.mineRange.max) fields.push({
-            name: emojiList.pickaxe.StonePickaxe + " Mine Roll",
-            value: `\`${util.notation(this.mineRange.min)}\` ~ \`${util.notation(this.mineRange.max)}\``
-        });
+        if (this.mineRange.max) {
+            let dynamicMultiplier = this.dynamicLoot ? util.calcStat.DynamicRollMult(playerData) : 1;
+            fields.push({
+                name: emojiList.pickaxe.StonePickaxe + " Mine Roll",
+                value: `\`${util.notation(this.mineRange.min*dynamicMultiplier)}\` ~ \`${util.notation(this.mineRange.max*dynamicMultiplier)}\``
+            });
+        }
 
         // this.gemRange
-        if (this.gemRange.max) fields.push({
-            name: emojiList.gem +  " Gem",
-            value: `\`${util.notation(this.gemRange.min)}\` ~ \`${util.notation(this.gemRange.max)}\``
-        });
+        if (this.gemRange.max) {
+            let dynamicMultiplier = this.dynamicLoot ? util.calcStat.DynamicGemMult(playerData) : 1;
+            fields.push({
+                name: emojiList.gem +  " Gem",
+                value: `\`${util.notation(this.gemRange.min*dynamicMultiplier)}\` ~ \`${util.notation(this.gemRange.max*dynamicMultiplier)}\``
+            });
+        }
 
         // this.skillRange
         if (this.skills.length > 0) fields.push({
             name: emojiList.skill +  " Skill",
-            value: Object.entries(util.arrayCounter(this.skills)).map(e => `- ${emojiList.skills[skillSet[e[0]]]} **${util.keyNameToWord(skillSet[e[0]])}** \`${(e[1]/this.skills.length*100).toFixed(2)}%\``).join("\n")
+            value: Object.entries(util.arrayCounter(this.skills)).map(e => `- ${emojiList.skills[skillSet[e[0]]]} ${util.keyNameToWord(skillSet[e[0]])} \`${(e[1]/this.skills.length*100).toFixed(2)}%\``).join("\n")
         });
 
         // this.artifacts

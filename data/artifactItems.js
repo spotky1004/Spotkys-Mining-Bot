@@ -153,15 +153,15 @@ artifactItems.CheeseCube = new Artifact({
 artifactItems.BlueMushroom = new Artifact({
     key: "BlueMushroom",
     getChance: (lv) => 0.05*(0.9**lv),
-    maxLevel: 50,
-    effects: (lv) => 1,
-    effectsFormer: "TBA",
+    maxLevel: 75,
+    effects: (lv) => 10*lv,
+    effectsFormer: "Reduce skill cooldown by $sec (10sec per artifact)",
     unlockMessage: "Autominer Loot"
 });
 artifactItems.CakePiece = new Artifact({
     key: "CakePiece",
-    getChance: (lv) => 0.01*(0.85**lv),
-    maxLevel: 32,
+    getChance: (lv) => 0.01*(0.9**lv),
+    maxLevel: 48,
     effects: (lv) => 1+0.2*lv,
     effectsFormer: "Multiply chance to get artifact by x$ (+0.2x per artifact)",
     unlockMessage: "Autominer Loot (Very rare!)"

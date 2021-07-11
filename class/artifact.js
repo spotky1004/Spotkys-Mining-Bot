@@ -36,7 +36,7 @@ class Artifact {
         name += " " + (unlocked ? util.keyNameToWord(artifactName) : util.keyNameToWord(artifactName).replace(/[^ ]/g, "?"));
         name += " " + (unlocked ? `(${artifactLevel}/${this.maxLevel})` : "");
         const chance = this.realGetChance(playerData, chanceMult);
-        name += unlocked && chance !== 0 ? ` \`${(chance*100).toFixed(2)}%\`` : "";
+        name += unlocked && chance !== 0 ? ` \`${(Math.min(1, chance)*100).toFixed(2)}${chance > 1 ? "+" : ""}%\`` : "";
 
         return name;
     }

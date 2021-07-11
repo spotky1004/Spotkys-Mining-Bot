@@ -301,6 +301,9 @@ const calcStat = {
 
         return cap;
     },
+    AutominerMaxRoll: (playerData) => {
+        return Math.floor(calcStat.AutominerCap(playerData)/calcStat.AutominerTickspeed(playerData));
+    },
     LootProgressMult: (playerData) => {
         let mult = playerData.upgrade.pickaxe;
         mult *= artifactItems.Slime.eff(playerData);
@@ -362,6 +365,12 @@ const calcStat = {
     },
 
     // Skill
+    SkillCooldown: (playerData) => {
+        let cooldown = 15*60*1000;
+        cooldown -= artifactItems.BlueMushroom.eff(playerData)*1000;
+
+        return cooldown;
+    },
     SkillEffectMult: (playerData) => {
         let mult = new D(1);
         mult = mult.mul(artifactItems.SkillBook.eff(playerData));
@@ -388,6 +397,13 @@ const calcStat = {
         mult *= artifactItems.LightPlant.eff(playerData);
 
         return mult;
+    },
+    DynamicRollMult: (playerData) => {
+        return calcStat.AutominerMaxRoll(playerData);
+    },
+    DynamicGemMult: (playerData) => {
+        let x = Math.max(1+playerData.upgrade.pickaxe/5, playerData.upgrade.pickaxe-30);
+        return x**(1.5+x**Math.max(1, Math.sqrt(x)/30)/100);
     },
 };
 // mine
@@ -662,6 +678,7 @@ module.exports = {
 
 // TODO: locate this require to top of this file
 const upgradeItems = require("./data/upgradeItems.js");
+/** @type {artifactEnum} */
 const artifactItems = require("./data/artifactItems.js");
 const playerData = require("./saveDatas/Defaults/playerData.js");
 const { func } = require("./commands/artifact.js");

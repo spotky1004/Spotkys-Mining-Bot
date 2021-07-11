@@ -10,6 +10,10 @@ const lootEnum = require("../enums/loot.js");
 let lootItems = {};
 
 
+
+/**
+ * from Autominer
+ */
 lootItems.CommonBox = new Loot({
     key: "CommonBox",
     mineRange: {min: 30, max: 60},
@@ -44,7 +48,7 @@ lootItems.EpicBox = new Loot({
     key: "EpicBox",
     mineRange: {min: 160, max: 320},
     gemRange: {min: 20, max: 45},
-    skills: [0, 1, 2, 3, 3, 4, 4, 5, 5],
+    skills: [0, 1, 2, {e: 3, c: 2}, {e: 4, c: 2}, {e: 5, c: 2}],
     artifacts: [
         artifactEnum.FeohRune,
         {nr: artifactEnum.CakePiece, mul: 5}
@@ -66,10 +70,28 @@ lootItems.UltimateBox = new Loot({
     key: "UltimateBox",
     mineRange: {min: 2000, max: 4000},
     gemRange: {min: 1000, max: 2000},
-    skills: [3, 4, 5, 6, 6],
+    skills: [3, 4, 5, {e: 6, c: 2}],
     artifacts: [
         artifactEnum.BlueMushroom,
         {nr: artifactEnum.CakePiece, mul: 9}
+    ],
+    keyWords: ["UltimateBox", "ultimatebox", "Ultimate_Box", "ultimate_box", "ub", "UB", "6", "105"]
+});
+
+
+
+/**
+ * Special
+ */
+lootItems.UltimateBox = new Loot({
+    key: "UltimateBox",
+    dynamicLoot: true,
+    mineRange: {min: 3, max: 10},
+    gemRange: {min: 5, max: 8},
+    artifacts: [
+        artifactEnum.OldCalendar,
+        artifactEnum.TinTicket,
+        artifactEnum.GreenCoin
     ],
     keyWords: ["UltimateBox", "ultimatebox", "Ultimate_Box", "ultimate_box", "ub", "UB", "6", "105"]
 });
