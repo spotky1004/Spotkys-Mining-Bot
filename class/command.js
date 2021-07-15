@@ -1,5 +1,5 @@
 class Command {
-    constructor({keyWords, paramRegex, paramIgnore, func, permissionReq, canAcceptEmpty}) {
+    constructor({keyWords, paramRegex, paramIgnore, func, permissionReq}) {
         this.keyWords = keyWords;
         this.paramRegex = paramRegex ?? [];
         this.paramIgnore = paramIgnore ?? Array(this.paramRegex).fill(false);

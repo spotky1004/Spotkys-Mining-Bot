@@ -67,7 +67,7 @@ function mergeObject(target, source) {
         } else if (typeof source[i] === "object") {
             target[i] = mergeObject(target[i], source[i]);
         } else {
-            target[i] = target[i] ?? source[i];
+            target[i] = source[i].constructor(target[i] ?? source[i]);
         }
     }
     return target;
@@ -81,7 +81,7 @@ function mergeArray(target, source) {
         } else if (typeof source[i] === "object") {
             target[i] = mergeObject(target[i], source[i]);
         } else {
-            target[i] = target[i] ?? source[i];
+            target[i] = source[i].constructor(target[i] ?? source[i]);
         }
     }
     return target;

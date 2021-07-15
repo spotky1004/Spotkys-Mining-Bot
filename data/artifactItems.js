@@ -3,7 +3,7 @@ const artifactEnum = require("../enums/artifact.js");
 
 
 
-/** @type {artifactEnum} */
+/** @type {artifactEnum.<Artifact>} */
 let artifactItems = {};
 
 /**

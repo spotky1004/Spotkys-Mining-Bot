@@ -88,16 +88,19 @@ class Loot {
     }
 
     open(count, playerData) {
+        const dynamicRollMult = this.dynamicLoot ? util.calcStat.DynamicRollMult(playerData): 1;
+        const oreRollCount = Math.floor(util.randomRange(this.mineRange.min*dynamicRollMult, this.mineRange.max*dynamicRollMult, count));
         const oreGot = util.rollMine({
-            roll: util.randomRange(this.mineRange, undefined, count),
+            roll: oreRollCount,
             playerData,
             luck: util.calcStat.Luck(playerData),
             reginOreSet: oreSet[playerData.miningRegion]
         });
 
-        const gemGot = util.randomRange(this.gemRange, undefined, count);
+        let dynamicGemMult = this.dynamicLoot ? util.calcStat.DynamicGemMult(playerData): 1;
+        const gemGot = Math.floor(util.randomRange(this.gemRange.min*dynamicGemMult, this.gemRange.max*dynamicGemMult, count));
 
-        const skillGot = Array.from({length: count}, () => util.randomPick(this.skills)).filter(e => e !== -1);
+        const skillGot = util.arrayCounter( Array.from({length: count}, () => util.randomPick(this.skills)).filter(e => e !== -1) );
 
         let artifactGot = Object.fromEntries(this.artifacts.map(e => [typeof e === "object" ? e.nr : e, 0]));
         Array.from({length: count}, () => {
@@ -114,16 +117,24 @@ class Loot {
             }
 
             if (allSuccss.length === 0) return -1;
-            const gotNr = allSuccss.sort((a, b) => b.chance - a.chance)[0].nr;
+            const gotNr = allSuccss.sort((a, b) => a.chance - b.chance)[0].nr;
             artifactGot[gotNr]++;
             return gotNr;
         }).filter(e => e !== -1);
 
-
+        /** 
+         * @param {number} oreRollCount
+         * @param {Array<number>} oreGot
+         * @param {number} gemGot
+         * @param {object<number>} skillGot
+         * @param {object<number>} artifactGot
+         * @return {object}
+         */
         return {
+            oreRollCount,
             oreGot,
             gemGot,
-            skillGot: skillGot.length > 0 ? skillGot : [],
+            skillGot,
             artifactGot
         };
     }

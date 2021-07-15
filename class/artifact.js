@@ -35,10 +35,17 @@ class Artifact {
         name += " " + (unlocked ? emojiList.artifact[artifactName] : emojiList.loots.CommonBox);
         name += " " + (unlocked ? util.keyNameToWord(artifactName) : util.keyNameToWord(artifactName).replace(/[^ ]/g, "?"));
         name += " " + (unlocked ? `(${artifactLevel}/${this.maxLevel})` : "");
-        const chance = this.realGetChance(playerData, chanceMult);
-        name += unlocked && chance !== 0 ? ` \`${(Math.min(1, chance)*100).toFixed(2)}${chance > 1 ? "+" : ""}%\`` : "";
+        name += this.chanceString(playerData, chanceMult);
 
         return name;
+    }
+
+    chanceString(playerData, chanceMult=1) {
+        const artifactName = this.key;
+        const artifactLevel = playerData.artifact[artifactName];
+        const unlocked = artifactLevel >= 1;
+        const chance = this.realGetChance(playerData, chanceMult);
+        return unlocked && chance !== 0 ? ` \`${(Math.min(1, chance)*100).toFixed(2)}${chance > 1 ? "+" : ""}%\`` : "";
     }
 
     listField(playerData) {
@@ -62,8 +69,9 @@ class Artifact {
     }
 
     realGetChance(playerData, chanceMult=1, levelShift=0) {
-        if (this.staticChance) return this.getChance(playerData.artifact[this.key], playerData);
         if (playerData.artifact[this.key]+levelShift >= this.maxLevel) return 0;
+        
+        if (this.staticChance) return this.getChance(playerData.artifact[this.key], playerData);
         return this.getChance(playerData.artifact[this.key]+levelShift, playerData) * util.calcStat.ArtifactChanceMult(playerData) * chanceMult;
     }
 

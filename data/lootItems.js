@@ -83,8 +83,8 @@ lootItems.UltimateBox = new Loot({
 /**
  * Special
  */
-lootItems.UltimateBox = new Loot({
-    key: "UltimateBox",
+lootItems.DailyBag = new Loot({
+    key: "DailyBag",
     dynamicLoot: true,
     mineRange: {min: 3, max: 10},
     gemRange: {min: 5, max: 8},
@@ -93,7 +93,7 @@ lootItems.UltimateBox = new Loot({
         artifactEnum.TinTicket,
         artifactEnum.GreenCoin
     ],
-    keyWords: ["UltimateBox", "ultimatebox", "Ultimate_Box", "ultimate_box", "ub", "UB", "6", "105"]
+    keyWords: ["DailyBag", "dailybag", "Daily_Bag", "daily_bag", "db", "DB", "7", "200"]
 });
 
 lootItems = new ItemList(lootItems);
