@@ -39,7 +39,7 @@ const commandParams = {
     /**
      * "discord-buttons" library
      */
-    disbut: new disbut,
+    disbut: disbut,
     /**
      * Discord id of the user
      */

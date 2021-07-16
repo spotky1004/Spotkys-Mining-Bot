@@ -24,7 +24,10 @@ const playerData = {
     // upgrades
     upgrade: upgradeItmes,
     gemUpgrades: gemUpgradeItems,
-    ancientCoint: {ore, gem},
+    ancientCoint: {
+        ore: new Number,
+        gem: new Number
+    },
 
     // configs
     miningRegion: new Number,
