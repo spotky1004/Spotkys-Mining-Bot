@@ -28,6 +28,11 @@ const randomTips = [
     "upgrade / upg / u / ㅕ"
 ];
 
+const [commandParams, commandReturns] = [require("../types/commandParam.js"), require("../types/commandReturns.js")];
+/**
+ * @param {commandParams}
+ * @returns {commandReturns}
+ */
 function upgradeommand({playerData, params}) {
     const type = params[0];
 

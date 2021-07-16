@@ -1,5 +1,3 @@
-const D = require("decimal.js");
-
 const Command = require("../class/command.js");
 const Permission = require("../enums/permission.js");
 const colorSet = require("../data/colorSet.js");
@@ -20,47 +18,59 @@ const artifactItems = require("../data/artifactItems.js");
 const artifactEnum = require("../enums/artifact.js");
 const artifactSet = util.enumToSets(artifactEnum);
 
+const randomTips = [
+    "Loot"
+];
+
 function commandFunction({playerData, params}) {
     const [lootKeyWord, countStr] = params;
 
     let subCmds = [], fields = [], color;
     /** @type {Loot} */
     const loot = lootItem.search(lootKeyWord);
-    if (loot === null) {
-        fields.push({
-            name: "Loot Help Message Placeholder",
-            value: "** **"
-        })
-    } else if (loot === undefined) {
-        color = colorSet.Red;
-        fields.push({
-            name: "That Loot doens't exists!",
-            value: "** **"
-        })
-    } else {
-        subCmds.push(util.keyNameToWord(loot.key));
-        let count = 0;
-        if (["open", "use", "o", "u"].includes(countStr)) count = 1;
-        else count = +countStr;
+    switch (loot) {
+        case null:
+            color = colorSet.Red;
+            fields.push({
+                name: "Loot Help Message Placeholder",
+                value: "** **"
+            });
+            break;
+        case undefined:
+            color = colorSet.Red;
+            fields.push({
+                name: "That Loot doens't exists!",
+                value: "** **"
+            });
+            break;
+        default:
+            subCmds.push(util.keyNameToWord(loot.key));
 
-        if (0 < count && count <= 10_000) {
-            subCmds.push(`Open(${util.notation(count).replace(/ /g, "")})`);
-            if (playerData.loots[loot.key] < count) {
-                color = colorSet.Red;
-                fields.push({
-                    name: "`You don't have that much loot!`",
-                    value: "** **"
-                });
-            } else {
-                const result = loot.open(count, playerData);
-                playerData.loots[loot.key] -= count;
+            let count = 0;
+            if (["open", "use", "o", "u"].includes(countStr)) count = 1;
+            else count = +countStr;
 
-                // Mine
-                const reginOreSet = oreSet[playerData.miningRegion];
-                for (let i = 0, l = result.oreGot.length; i < l; i++) {
+
+
+            if (0 < count && count <= 10_000) {
+                subCmds.push(`Open(${util.notation(count).replace(/ /g, "")})`);
+
+                if (playerData.loots[loot.key] < count) {
+                    color = colorSet.Red;
+                    fields.push({
+                        name: "`You don't have that much loot!`",
+                        value: "** **"
+                    });
+                } else {
+                    const result = loot.open(count, playerData);
+                    playerData.loots[loot.key] -= count;
+                
+                    // Mine
+                    const reginOreSet = oreSet[playerData.miningRegion];
+                    for (let i = 0, l = result.oreGot.length; i < l; i++) {
                     playerData.ores[reginOreSet[i]] = playerData.ores[reginOreSet[i]].add(result.oreGot[i]);
-                }
-                if (result.oreGot.some(e => e.gt(0))) fields.push({
+                    }
+                    if (result.oreGot.some(e => e.gt(0))) fields.push({
                     name: emojiList.pickaxe.StonePickaxe + " Mine Roll (" + util.notation(result.oreRollCount).replace(/ /g, "") + ")",
                     value: util.oreSetToMessage({
                         playerData,
@@ -68,11 +78,11 @@ function commandFunction({playerData, params}) {
                         reginOreSet: oreSet[playerData.miningRegion],
                         displayMode: playerData.options.displayMode
                     })
-                });
-
-                // Gem
-                playerData.gem = playerData.gem.add(result.gemGot);
-                if (loot.gemRange.max) fields.push({
+                    });
+                
+                    // Gem
+                    playerData.gem = playerData.gem.add(result.gemGot);
+                    if (loot.gemRange.max) fields.push({
                     name: "Gem " + util.itemMessage({
                         emoji: emojiList.gem,
                         got: result.gemGot,
@@ -81,14 +91,14 @@ function commandFunction({playerData, params}) {
                         blankFiller: "no gem"
                     }),
                     value: "** **"
-                });
-
-                // Skill
-                let skillField = {
+                    });
+                
+                    // Skill
+                    let skillField = {
                     name: emojiList.skill + " Skill",
                     value: ""
-                }
-                for (const id in result.skillGot) {
+                    }
+                    for (const id in result.skillGot) {
                     const key = skillSet[id];
                     playerData.skills[key] += result.skillGot[id];
 
@@ -99,17 +109,17 @@ function commandFunction({playerData, params}) {
                     });
                     skillField.value += " " + util.keyNameToWord(key);
                     skillField.value += "\n";
-                }
-                skillField.value.trim();
-                if (Object.keys(result.skillGot).length > 0) fields.push(skillField);
-
-                // Artifact
-                let artifactField = {
+                    }
+                    skillField.value.trim();
+                    if (Object.keys(result.skillGot).length > 0) fields.push(skillField);
+                
+                    // Artifact
+                    let artifactField = {
                     name: emojiList.ancientCoin + " Artifact",
                     value: ""
-                }
-                let i = 0;
-                for (const id in result.artifactGot) {
+                    }
+                    let i = 0;
+                    for (const id in result.artifactGot) {
                     const key = artifactSet[id];
                     playerData.artifact[key] += result.artifactGot[id];
                     
@@ -125,29 +135,31 @@ function commandFunction({playerData, params}) {
                     artifactField.value += "\n";
 
                     i++;
-                }
-                artifactField.value.trim();
-                if (Object.keys(result.skillGot).length > 0) fields.push(artifactField);
-                else fields.push({
+                    }
+                    artifactField.value.trim();
+                    if (Object.keys(result.skillGot).length > 0) fields.push(artifactField);
+                    else fields.push({
                     name: emojiList.ancientCoin + " Artifact",
                     value: util.itemMessage({
                         isBlank: true,
                         blankFiller: "no artifact"
                     })
-                })
+                    })
+                }
+            } else {
+                fields.push(...loot.lootTable(playerData));
             }
-        } else {
-            fields.push(...loot.lootTable(playerData));
-        }
+            break;
     }
 
     return {
-        playerData: playerData,
+        playerData,
         message: {
             command: "Open" + util.subCommandsToTitle(subCmds),
             fields: fields,
-            color: colorSet.Purple,
+            color: color ?? colorSet.Purple,
             image: imageList.loots[(loot ?? {}).key ?? "CommonBox"],
+            footer: util.randomPick(randomTips)
         },
     }
 }

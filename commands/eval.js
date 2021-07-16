@@ -9,6 +9,11 @@ const util = require("../util.js");
 
 const imageList = require("../data/imageList.js");
 
+const [commandParams, commandReturns] = [require("../types/commandParam.js"), require("../types/commandReturns.js")];
+/**
+ * @param {commandParams}
+ * @returns {commandReturns} 
+ */
 async function evalCommand({bot, msg, params, playerData, guildData, permission, isDM, time}) {
     let input = params[1];
     let output = "";

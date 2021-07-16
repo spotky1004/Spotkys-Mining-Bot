@@ -20,6 +20,11 @@ const randomTips = [
     "collect / col / c / ㅊ"
 ];
 
+const [commandParams, commandReturns] = [require("../types/commandParam.js"), require("../types/commandReturns.js")];
+/**
+ * @param {commandParams}
+ * @returns {commandReturns} 
+ */
 function collectCommand({playerData, time}) {
     let fields = [];
 

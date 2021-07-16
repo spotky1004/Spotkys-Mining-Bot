@@ -4,6 +4,11 @@ const Permission = require("../enums/permission.js");
 const colorSet = require("../data/colorSet.js");
 const imageList = require("../data/imageList.js");
 
+const [commandParams, commandReturns] = [require("../types/commandParam.js"), require("../types/commandReturns.js")];
+/**
+ * @param {commandParams}
+ * @returns {commandReturns} 
+ */
 function setPermissionCommand({msg, params, bot}) {
     const [id, level] = params;
     const foundUser = bot.users.cache.find(user => user.id == id);

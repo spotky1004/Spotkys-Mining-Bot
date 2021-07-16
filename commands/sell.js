@@ -21,6 +21,11 @@ const randomTips = [
     "goodbye to your ores"
 ];
 
+const [commandParams, commandReturns] = [require("../types/commandParam.js"), require("../types/commandReturns.js")];
+/**
+ * @param {commandParams}
+ * @returns {commandReturns} 
+ */
 function sellCommand({playerData}) {
     const coinMult = util.calcStat.CoinMult(playerData);
 

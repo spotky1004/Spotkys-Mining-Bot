@@ -29,6 +29,11 @@ const randomTips = [
     "=m"
 ];
 
+const [commandParams, commandReturns] = [require("../types/commandParam.js"), require("../types/commandReturns.js")];
+/**
+ * @param {commandParams}
+ * @returns {commandReturns} 
+ */
 function mineCommand({playerData, time, disbut}) {
     const cooldown = util.calcStat.MiningCooldown(playerData);
     if (time - playerData.behaveTimes.mine < cooldown) return {

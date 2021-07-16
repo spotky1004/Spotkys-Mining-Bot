@@ -7,6 +7,11 @@ const util = require("../util.js");
 
 const imageList = require("../data/imageList.js");
 
+const [commandParams, commandReturns] = [require("../types/commandParam.js"), require("../types/commandReturns.js")];
+/**
+ * @param {commandParams}
+ * @returns {commandReturns} 
+ */
 function statCommand({playerData}) {
     let fields = [];
 

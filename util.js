@@ -240,6 +240,7 @@ const artifactSet = enumToSets(artifactEnum);
 const calcStat = {
     // Mining
     Roll: (playerData) => {
+        playerData
         let mult = calcStat.RollMult(playerData);
 
         const pickaxeEffect = upgradeItems[upgradeItemsEnum.pickaxe].effects(playerData.upgrade.pickaxe);
@@ -533,7 +534,7 @@ function oreSetToMessage({playerData, ores=[], reginOreSet=[], displayMode="Desk
         case displayModeEnum.Desktop: case displayModeEnum.Mobile:
             message = "";
 
-            for (let p = 0, l = ores.length; p < l; p++) {
+            for (let p = 0, l = reginOreSet.length; p < l; p++) {
                 let i;
                 if (displayMode === displayModeEnum.Desktop) i = (p%3*7)+Math.floor(p/3);
                 else i = p;
@@ -680,5 +681,5 @@ module.exports = {
 const upgradeItems = require("./data/upgradeItems.js");
 /** @type {artifactEnum} */
 const artifactItems = require("./data/artifactItems.js");
-const playerData = require("./saveDatas/Defaults/playerData.js");
+const playerData = require("./types/playerData.js");
 const { func } = require("./commands/artifact.js");

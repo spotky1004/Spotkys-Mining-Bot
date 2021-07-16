@@ -18,6 +18,11 @@ const randomTips = [
     "they have mystical power",
 ];
 
+const [commandParams, commandReturns] = [require("../types/commandParam.js"), require("../types/commandReturns.js")];
+/**
+ * @param {commandParams}
+ * @returns {commandReturns} 
+ */
 function artifactCommand({playerData, params, guildData}) {
     let [tab, subTab] = params;
 
