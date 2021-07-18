@@ -5,7 +5,6 @@ const D = Decimal;
 
 const pickaxeEnum = require("./enums/pickaxe.js");
 const displayModeEnum = require("./enums/displayMode.js");
-const upgradeItemsEnum = require("./enums/upgradeItems.js");
 
 const emojiList = require("./data/emojiList.js");
 
@@ -87,6 +86,35 @@ function mergeArray(target, source) {
     return target;
 }
 keyNameToWord = (str="") => (str.charAt(0).toUpperCase() + str.slice(1)).replace(/([A-Z])/g, " $1").trim();
+function generateKeyWord(str="", monoChar=false) {
+    str = str[0].toUpperCase() + str.slice(1);
+
+    let words = str.match(/[A-Z][a-z]*/g);
+    
+    let keyWords = [];
+    if (monoChar) {
+        keyWords.push(str[0].toLowerCase());
+        keyWords.push(str[0].toUpperCase());
+    }
+    if (words.length > 1) {
+        const firstChars = words.map(e => e[0]).join("");
+        keyWords.push(firstChars.toLowerCase());
+        keyWords.push(firstChars.toUpperCase());
+    }
+    keyWords.push(words.join("")); // === str
+    keyWords.push(words.join("_"));
+    keyWords.push(words.join("").toLowerCase());
+    keyWords.push(words.join("").toUpperCase());
+    keyWords.push(words.join("_").toLowerCase());
+    keyWords.push(words.join("_").toUpperCase());
+    if (words[0].length > 3 && monoChar) {
+        keyWords.push(words[0].substr(0, 3));
+        keyWords.push(words[0].substr(0, 3).toLowerCase());
+        keyWords.push(words[0].substr(0, 3).toUpperCase());
+    }
+
+    return [...new Set(keyWords)];
+}
 function searchObject(obj, toSearch) {
     let tmp = obj;
     for (let i = 0, l = toSearch.length; i < l; i++) {
@@ -131,7 +159,9 @@ function numToScientDigit(x, maxLength=6) {
 function notation(x=new D(0), maxLength=6, type="Standard") {
     x = new D(x);
     
-    if (type !== "Decimal") {
+    if (x.gt(0) && x.lt(1)) {
+        return (x.toNumber()).toFixed(maxLength).replace(/0+$/g, "").padEnd(maxLength, strs.blank);
+    } if (type !== "Decimal") {
         if (x.lt(1000) && x.floor(0).eq(x)) {
             return (x.toNumber()+"").padEnd(maxLength, strs.blank);
         } else if (x.eq(0)) {
@@ -243,7 +273,7 @@ const calcStat = {
         playerData
         let mult = calcStat.RollMult(playerData);
 
-        const pickaxeEffect = upgradeItems[upgradeItemsEnum.pickaxe].effects(playerData.upgrade.pickaxe);
+        const pickaxeEffect = upgradeItems.pickaxe.eff(playerData);
 
         let min = pickaxeEffect.RollMin.mul(mult);
         let max = pickaxeEffect.RollMax.mul(mult);
@@ -267,10 +297,11 @@ const calcStat = {
         return mult;
     },
     Luck: (playerData) => {
-        return upgradeItems[upgradeItemsEnum.pickaxe].effects(playerData.upgrade.pickaxe).Luck;
+        return upgradeItems.pickaxe.eff(playerData).Luck;
     },
     oreDistribution: (playerData) => {
         let value = 2;
+        value -= upgradeItems.ring.eff(playerData).OreDistribution;
         value -= artifactItems.MiningLantern.eff(playerData);
 
         return value;
@@ -286,7 +317,7 @@ const calcStat = {
 
     // Autominer
     AutominerTickspeed: (playerData) => {
-        let tick = upgradeItems[upgradeItemsEnum.autominerSpeed].effects(playerData.upgrade.autominerSpeed).Interval;
+        let tick = upgradeItems.autominerSpeed.eff(playerData).Interval;
 
         tick /= calcStat.AutominerMult(playerData);
 
@@ -319,6 +350,7 @@ const calcStat = {
     },
     AutominerSkip: (playerData) => {
         let effect = 0;
+        effect += upgradeItems.rope.eff(playerData).AutominerSkip;
         effect += artifactItems.IronRings.eff(playerData)[0]*1000;
 
         effect *= calcStat.MineMult(playerData).toNumber();
@@ -332,6 +364,7 @@ const calcStat = {
     // Resource
     CoinMult: (playerData) => {
         let mult = new D(1);
+        mult = mult.mul(upgradeItems.amulet.eff(playerData).CoinMultiply);
         mult = mult.mul(artifactItems.PolyOrb.eff(playerData));
         mult = mult.mul(artifactItems.GreenCoin.eff(playerData));
         mult = mult.mul(artifactItems.Pearl.eff(playerData));
@@ -558,7 +591,7 @@ function oreSetToMessage({playerData, ores=[], reginOreSet=[], displayMode="Desk
     }
     return message;
 }
-toShopNameSpace = ({emoji, shortName, level, maxLevel, name}) => `${emoji} **\`${shortName}-${level}/${maxLevel}${name ? " " + name : ""}\`**`;
+toShopNameSpace = ({emoji, shortName, level, maxLevel, name}) => `${emoji} **\`${shortName}\` \`${level}/${maxLevel}${name ? " " + name : ""}\`**`;
 function upgradeListField(upgrade, playerData, next=false) {
     const level = playerData[upgrade.parentKey][upgrade.key];
 
@@ -626,6 +659,7 @@ module.exports = {
     mergeArray,
     searchObject,
     keyNameToWord,
+    generateKeyWord,
     
 
 
@@ -678,7 +712,9 @@ module.exports = {
 
 
 // TODO: locate this require to top of this file
-const upgradeItems = require("./data/upgradeItems.js");
+const upgradeItemsEnum = require("./enums/upgradeItems.js");
+/** @type {upgradeItemsEnum} */
+const upgradeItems = require("./data/upgradeItems.js").items;
 /** @type {artifactEnum} */
 const artifactItems = require("./data/artifactItems.js");
 const playerData = require("./types/playerData.js");

@@ -13,10 +13,10 @@ class Upgrade {
         // function
         namespace, calcCost, effects, unlocked
     }) {
-        this.parentKey = parentKey ?? "he";
-        this.key = key ?? "hehe";
-        this.shortName = shortName ?? "2hehe";
-        this.unlockMessage = unlockMessage ?? "Buy something to unlock this";
+        this.parentKey = parentKey ?? null;
+        this.key = key ?? null;
+        this.shortName = shortName ?? null;
+        this.unlockMessage = unlockMessage ?? "something";
         this.emoji = emoji;
         this.maxLevel = maxLevel;
 
@@ -88,6 +88,10 @@ class Upgrade {
             color: bought ? colorSet.Green : colorSet.Red,
             field: util.upgradeListField(this, playerData, false)
         }
+    }
+
+    eff(playerData) {
+        return this.effects(playerData[this.parentKey][this.key]);
     }
 }
 

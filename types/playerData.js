@@ -7,7 +7,8 @@ const artifactEnum = require("../enums/artifact.js");
 const infuseEnum = {};
 
 const upgradeItmes = require("../enums/upgradeItems.js");
-const gemUpgradeItems = {};
+const gemUpgradeItems = require("../enums/gemUpgradeItems.js");
+const artifactCoinItems = require("../enums/artifactCoinItems.js");
 
 
 const playerData = {
@@ -24,10 +25,7 @@ const playerData = {
     // upgrades
     upgrade: upgradeItmes,
     gemUpgrades: gemUpgradeItems,
-    ancientCoint: {
-        ore: new Number,
-        gem: new Number
-    },
+    ancientCoin: artifactCoinItems,
 
     // configs
     miningRegion: new Number,

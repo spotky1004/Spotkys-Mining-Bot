@@ -3,9 +3,18 @@ const util = require("../util.js");
 class ItemList {
     constructor(items) {
         this.items = items;
-        this.length = this.items.length;
-        for (let i = 0; i < this.length; i++) {
-            this[i] = this.items[i];
+        if (typeof items === "array") {
+            this.length = this.items.length;
+            for (let i = 0; i < this.length; i++) {
+                this[i] = this.items[i];
+            }
+        } else {
+            const arrItems = Object.entries(this.items);
+
+            this.length = arrItems.length;
+            for (let i = 0; i < this.length; i++) {
+                this[i] = arrItems[i][1];
+            }
         }
         
         const tmp = util.dataToKeywordDictionary(items);

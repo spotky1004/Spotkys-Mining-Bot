@@ -19,7 +19,10 @@ const artifactEnum = require("../enums/artifact.js");
 const artifactSet = util.enumToSets(artifactEnum);
 
 const randomTips = [
-    "Loot"
+    "Loot",
+    "You can get loots from Autominer",
+    "You can get loots from Daily Reward",
+    "Maximum bulk loot open count is 100k",
 ];
 
 function commandFunction({playerData, params}) {

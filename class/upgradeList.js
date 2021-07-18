@@ -4,8 +4,9 @@ const util = require("../util.js");
 const colorSet = require("../data/colorSet.js");
 
 class UpgradeList extends ItemList {
-    constructor(upgrades) {
+    constructor(upgrades, order) {
         super(upgrades);
+        this.order = order;
     }
 
     searchBuy(keyword, playerData) {
@@ -14,13 +15,13 @@ class UpgradeList extends ItemList {
 
         if (item === null) {
             for (let i = 0; i < this.length; i++) {
-                const tmpItem = this.items[i];
+                const tmpItem = this[i];
 
                 if (tmpItem.unlocked(playerData)) {
                     fields.push(util.upgradeListField(tmpItem, playerData, true));
                 } else {
                     fields.push({
-                        name: `:lock: Reach ${tmpItem.unockMessage} to unlock next upgrade!`,
+                        name: `:lock: Reach ${tmpItem.unlockMessage} to unlock next upgrade!`,
                         value: "** **"
                     });
                     break;
