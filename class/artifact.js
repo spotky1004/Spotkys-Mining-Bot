@@ -63,7 +63,7 @@ class Artifact {
         } else {
             artifactEffect = artifactEffect.map(e => util.notation(e, 3, "Decimal"));
         }
-        value += unlocked ? util.textFormer(this.effectsFormer, artifactEffect) : "Unlock";
+        value += unlocked ? util.textFormer(this.effectsFormer, artifactEffect) : "_Unlock from " + this.unlockMessage + "_";
 
         return {name, value};
     }

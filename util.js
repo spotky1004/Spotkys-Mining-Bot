@@ -10,7 +10,8 @@ const emojiList = require("./data/emojiList.js");
 
 const strs = {
     blank: " ",
-    sub: "└─ "
+    sub: "└─ ",
+    spot: "•",
 }
 
 
@@ -510,23 +511,6 @@ function subCommandsToTitle(subCmds) {
     subCmds = [...(subCmds ?? [])].filter(e => e);
     return subCmds.length ? `${strs.blank}》${strs.blank}${subCmds.join(strs.blank + "》" + strs.blank)}` : "";
 }
-function makeHelpFields({title, data, guildData}) {
-    let fields = [];
-    fields.push({
-        name: `\`\`\`${title}\`\`\``,
-        value: "** **",
-        inline: false
-    })
-    for (let i = 0, l = data.length; i < l; i++) {
-        const tmp = data[i];
-        fields.push({
-            name: `\`${guildData.prefix}${tmp.cmd}\``,
-            value: `${strs.sub}_${tmp.msg}_`,
-            inline: tmp.inline ?? true
-        })
-    }
-    return fields;
-}
 function textFormer(former="", param) {
     if (Array.isArray(param)) {
         param.some((e, i) => {
@@ -697,7 +681,6 @@ module.exports = {
     /** Display Functions */
     subCommandsToTitle,
     dataToMessage,
-    makeHelpFields,
     textFormer,
     itemMessage,
     oreSetToMessage,

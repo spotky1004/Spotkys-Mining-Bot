@@ -1,4 +1,5 @@
 const Command = require("../class/command.js");
+const SubCommandHelp = require("../class/subCommandHelp.js");
 const Permission = require("../enums/permission.js");
 const colorSet = require("../data/colorSet.js");
 const util = require("../util.js");
@@ -18,6 +19,32 @@ const randomTips = [
     "they have mystical power",
 ];
 
+const subCommandHelp = new SubCommandHelp([
+    {
+        title: "Artifact Commands",
+        data: [
+            {
+                cmd: "artifact inventory {page:[1-2]}",
+                msg: "Show your Artifacts",
+                inline: false
+            },
+            {
+                cmd: "artifact coin {coin|gem}",
+                msg: "Open Ancient Coin shop"
+            },
+            {
+                cmd: "artifact buy {index:[1-3]}",
+                msg: "Buy Artifact with Ancient Coin"
+            },
+            {
+                cmd: "artifact refund",
+                msg: "Refund Ancient Coin",
+                inline: false
+            }
+        ],
+    }
+]);
+
 const [commandParams, commandReturns] = [require("../types/commandParam.js"), require("../types/commandReturns.js")];
 /**
  * @param {commandParams}
@@ -26,8 +53,11 @@ const [commandParams, commandReturns] = [require("../types/commandParam.js"), re
 function artifactCommand({playerData, params, guildData}) {
     let [tab, subTab] = params;
 
-    let fields = [], subCmds = [];
+    let fields = [], subCmds = [], color;
     switch (tab) {
+        default:
+            fields = subCommandHelp.makeField(playerData, guildData);
+            break;
         case "inventory": case "i":
             if (+subTab > artifactSet.length/10) {
                 fields.push({
@@ -103,24 +133,13 @@ function artifactCommand({playerData, params, guildData}) {
                 value: "** **"
             });
             break;
-        case undefined:
-            fields = util.makeHelpFields({
-                title: "Artifact Commands",
-                data: [
-                    {cmd: "artifact inventory {page:[1-2]}", msg: "Show your Artifacts", inline: false},
-                    {cmd: "artifact coin {coin|gem}", msg: "Open Ancient Coin shop"},
-                    {cmd: "artifact buy {index:[1-3]}", msg: "Buy Artifact with Ancient Coin"},
-                    {cmd: "artifact refund", msg: "Refund Ancient Coin", inline: false}
-                ],
-                guildData
-            });
     }
 
     return {
         playerData: playerData,
         message: {
             command: `Artifact` + util.subCommandsToTitle(subCmds),
-            color: colorSet.Ivory,
+            color: color ?? colorSet.Ivory,
             image: imageList.artifact,
             fields: [{
                 name: `You have \`${util.notation(util.calcStat.AncientCoinCurrent(playerData), 0)}\`/\`${util.notation(util.calcStat.AncientCoinTotal(playerData), 0)}\` ${emojiList.ancientCoin}`,

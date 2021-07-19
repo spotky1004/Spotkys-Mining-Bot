@@ -1,6 +1,7 @@
 const D = require("decimal.js");
 
 const Command = require("../class/command.js");
+const SubCommandHelp = require("../class/subCommandHelp.js");
 const Permission = require("../enums/permission.js");
 const colorSet = require("../data/colorSet.js");
 const util = require("../util.js");
@@ -31,17 +32,47 @@ const randomTips = [
     "Can I have some of them? :O",
 ];
 
+const subCommandHelp = new SubCommandHelp([
+    {
+        title: "Inventory Commands",
+        data: [
+            {
+                cmd: "inventory ore/o",
+                msg: "Show your Ores",
+                inline: false
+            },
+            {
+                cmd: "inventory loot/l",
+                msg: "Show your Loots",
+                inline: false,
+                unlocked: (playerData) => playerData.upgrade.pickaxe >= 11,
+                unlockMessage: "Stone Pickaxe"
+            },
+            {
+                cmd: "inventory skill/s",
+                msg: "Show your Skills",
+                inline: false,
+                unlocked: (playerData) => playerData.upgrade.pickaxe >= 11,
+                unlockMessage: "Stone Pickaxe"
+            }
+        ],
+    }
+]);
+
 const [commandParams, commandReturns] = [require("../types/commandParam.js"), require("../types/commandReturns.js")];
 /**
  * @param {commandParams}
  * @returns {commandReturns} 
  */
-function inventoryCommand({playerData, params}) {
+function inventoryCommand({playerData, guildData, params}) {
     const [type, idx] = params;
 
     let subCmds = [], fields = [];
 
     switch (type) {
+        default:
+            fields = subCommandHelp.makeField(playerData, guildData);
+            break;
         case "o": case "ore":
             subCmds.push("Ore");
 

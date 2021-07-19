@@ -1,3 +1,5 @@
+const util = require("../util.js");
+
 const ItemList = require("../class/itemList.js");
 const Loot = require("../class/loot.js");
 
@@ -21,7 +23,7 @@ lootItems.CommonBox = new Loot({
         artifactEnum.Amber,
         {nr: artifactEnum.CakePiece, mul: 1}
     ],
-    keyWords: ["CommonBox", "commonbox", "Common_Box", "common_box", "cb", "CB", "c", "C", "1", "100"]
+    keyWords: [util.generateKeyWord("CommonBox", true), "1", "100"].flat()
 });
 lootItems.UncommonBox = new Loot({
     key: "UncommonBox",
@@ -31,7 +33,7 @@ lootItems.UncommonBox = new Loot({
         artifactEnum.Onyx,
         {nr: artifactEnum.CakePiece, mul: 2}
     ],
-    keyWords: ["UncommonBox", "uncommonbox", "Uncommon_Box", "uncommon_box", "ub", "UB", "u", "U", "2", "101"]
+    keyWords: [util.generateKeyWord("UncommonBox", true), "2", "101"].flat()
 });
 lootItems.RareBox = new Loot({
     key: "RareBox",
@@ -42,7 +44,7 @@ lootItems.RareBox = new Loot({
         artifactEnum.Pearl,
         {nr: artifactEnum.CakePiece, mul: 3}
     ],
-    keyWords: ["RareBox", "rarebox", "Rare_Box", "rare_box", "rb", "RB", "r", "R", "3", "102"]
+    keyWords: [util.generateKeyWord("RareBox", true), "3", "102"].flat()
 });
 lootItems.EpicBox = new Loot({
     key: "EpicBox",
@@ -53,7 +55,7 @@ lootItems.EpicBox = new Loot({
         artifactEnum.FeohRune,
         {nr: artifactEnum.CakePiece, mul: 5}
     ],
-    keyWords: ["EpicBox", "epicbox", "Epic_Box", "epic_box", "eb", "EB", "e", "E", "4", "103"]
+    keyWords: [util.generateKeyWord("EpicBox", true), "4", "103"].flat()
 });
 lootItems.LegendaryBox = new Loot({
     key: "LegendaryBox",
@@ -64,7 +66,7 @@ lootItems.LegendaryBox = new Loot({
         artifactEnum.CheeseCube,
         {nr: artifactEnum.CakePiece, mul: 7}
     ],
-    keyWords: ["LegendaryBox", "legendarybox", "Legandary_Box", "legandary_box", "lb", "LB", "l", "L", "5", "104"]
+    keyWords: [util.generateKeyWord("LegendaryBox", true), "5", "104"].flat()
 });
 lootItems.UltimateBox = new Loot({
     key: "UltimateBox",
@@ -75,7 +77,7 @@ lootItems.UltimateBox = new Loot({
         artifactEnum.BlueMushroom,
         {nr: artifactEnum.CakePiece, mul: 9}
     ],
-    keyWords: ["UltimateBox", "ultimatebox", "Ultimate_Box", "ultimate_box", "ub", "UB", "6", "105"]
+    keyWords: [util.generateKeyWord("UltimateBox", true), "6", "105"].flat()
 });
 
 
@@ -93,7 +95,7 @@ lootItems.DailyBag = new Loot({
         artifactEnum.TinTicket,
         artifactEnum.GreenCoin
     ],
-    keyWords: ["DailyBag", "dailybag", "Daily_Bag", "daily_bag", "db", "DB", "7", "200"]
+    keyWords: [util.generateKeyWord("DailyBag", true), "7", "200"].flat()
 });
 
 lootItems = new ItemList(lootItems);

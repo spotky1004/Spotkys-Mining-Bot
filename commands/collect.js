@@ -61,7 +61,7 @@ function collectCommand({playerData, time}) {
     const lootTier = util.calcLootTier(lootProgress);
     const lootCount = 1;
     const lootName = lootSet[lootTier];
-    if (lootTier !== -1) playerData.loots[lootName] = playerData.loots[lootName].add(lootCount);
+    if (lootTier !== -1) playerData.loots[lootName] += lootCount;
     lootMessage += util.itemMessage({
         have: playerData.loots[lootName],
         got: lootCount,

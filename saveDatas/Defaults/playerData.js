@@ -5,6 +5,10 @@ const Loots = require("../../enums/loot.js");
 const Skills = require("../../enums/skill.js");
 const Artifacts = require("../../enums/artifact.js");
 
+const UpgradeItems = require("../../enums/upgradeItems.js");
+const GemUpgradeItems = require("../../enums/gemUpgradeItems.js");
+const AncientCoinItems = require("../../enums/artifactCoinItems.js")
+
 const DisplayModes = require("../../enums/displayMode.js");
 
 const playerData = {
@@ -28,13 +32,8 @@ const playerData = {
         ring: 0,
         rope: 0
     },
-    gemUpgrades: {
-        
-    },
-    ancientCoin: {
-        ore: 0,
-        gem: 0
-    },
+    gemUpgrades: Object.fromEntries(Object.keys(GemUpgradeItems).map(e => [e, 0])),
+    ancientCoin: Object.fromEntries(Object.keys(AncientCoinItems).map(e => [e, 0])),
     
     
     // configs
