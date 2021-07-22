@@ -1,6 +1,7 @@
 const fs = require("fs");
 const Discord = require("discord.js");
 const Decimal = require("decimal.js");
+const microtime = require('microtime');
 const D = Decimal;
 
 const pickaxeEnum = require("./enums/pickaxe.js");
@@ -12,6 +13,7 @@ const strs = {
     blank: " ",
     sub: "└─ ",
     spot: "•",
+    nbsp: " "
 }
 
 
@@ -262,6 +264,47 @@ function checkPlayerData(id) {
     // return
     return data;
 }
+const userPermissions = JSON.parse(fs.readFileSync("./saveDatas/permissions.json"));
+const Permission = require("./enums/permission.js");
+function commandParams({bot, msg}) {
+    let playerData = checkPlayerData(msg.author.id);
+    const isDM = !(msg.guild);
+    let guildData, prefix;
+    if (!isDM) {
+        guildData = checkGuildData(msg.guild.id);
+        prefix = guildData.prefix;
+    } else {
+        guildData = null;
+        prefix = "+";
+    }
+    
+    let permissionStr = !isDM && msg.guild.members.cache.get(msg.author.id).permissions.has("ADMINISTRATOR") ? "GuildAdmin" : "User";
+    permissionStr =  userPermissions[msg.author.id] ?? permissionStr;
+    const permission = Permission[permissionStr];
+
+    // parse message
+    let keyWord, rawParameter;
+    if (msg.content) {
+        const sentCommand = msg.content.substr(prefix.length).trim();
+        keyWord = sentCommand.split(" ")[0];
+        rawParameter = sentCommand.substr(keyWord.length).replace(/  /g, " ").trim();
+    }
+
+    
+    return {
+        bot,
+        msg,
+        playerData,
+        guildData,
+        keyWord,
+        isDM,
+        prefix,
+        permission,
+        isDM,
+        rawParameter,
+        time: microtime.now()/1000
+    }
+}
 
 
 /** Game Functions */
@@ -472,39 +515,56 @@ calcLootTier = (lootProgress) => lootProgressThreshold.filter(e => e <= lootProg
 
 
 /** Display Functions */
-function dataToMessage({result, playerData}) {
-    let message, addidion;
-    addidion = result.addition ?? {};
-    if (result && result.message) {
-        if (typeof result.message === "object") {
+function dataToMessage({data, playerData}) {
+    /** @type {Discord.MessageOptions} */
+    let messageOptions;
+    messageOptions = {};
+    if (data && data.message) {
+        if (typeof data.message === "object") {
             // set short name varible
-            const data = result.message;
+            const embedData = data.message;
 
             // apply style
-            switch (data.style) {
+            switch (embedData.style) {
                 case "list":
-                    data.fields = data.fields.map(e => e = {
+                    embedData.fields = embedData.fields.map(e => e = {
                         name: "· " + e.name,
                         value: "`" + e.value + "`"
                     });
                     break;
             }
 
-            message = "";
-            addidion.embed = new Discord.MessageEmbed()
-                .setColor(data.color)
-                .setDescription(data.description ? `\`\`\`${data.description}\`\`\`` : "")
-                .setAuthor(data.command, data.image)
-                .addFields(...data.fields)
-                .setFooter(data.footer + ` • id: ${playerData.id}`)
-                .setTimestamp();
+            messageOptions.embeds = [new Discord.MessageEmbed()
+                .setColor(embedData.color)
+                .setDescription(embedData.description ? `\`\`\`${embedData.description}\`\`\`` : "")
+                .setAuthor(embedData.command, embedData.image)
+                .addFields(...embedData.fields)
+                .setFooter(embedData.footer + ` • id: ${playerData.id}`)
+                .setTimestamp()];
         } else {
-            message = result.message + `\n\`id: ${playerData.id}\``;
+            messageOptions.content = data.message + `\n\`id: ${playerData.id}\``;
+            messageOptions.embeds = [];
         }
     }
-    
 
-    return [message, addidion];
+    if (data && data.components) {
+        messageOptions.components = data.components.map(e => e = {
+            type: "ACTION_ROW",
+            components: e
+        });
+    } else {
+        messageOptions.components = [];
+    }
+
+    /*if (playerData.options.noEnglish) {
+        message = message.replace(/[A-Z-a-z]/g, "");
+        for (let i = 0; i < addidion.embed.fields.length; i++) {
+            addidion.embed.fields[i].name = addidion.embed.fields[i].name.replace(/[A-Za-z]/g, (m) => String.fromCharCode(m.charCodeAt(0)+12496)) + "** **";
+            addidion.embed.fields[i].value = addidion.embed.fields[i].value.replace(/[A-Za-z]/g, (m) => String.fromCharCode(m.charCodeAt(0)+12496)) + "** **";
+        }
+    }*/
+
+    return messageOptions;
 }
 function subCommandsToTitle(subCmds) {
     if (typeof subCmds === "string") subCmds = [subCmds];
@@ -522,12 +582,13 @@ function textFormer(former="", param) {
         return former.replace(/([^ ]*)\$([^ ]*)/, "**$1"+param+"$2**");
     }
 }
-function itemMessage({have=new D(0), got=new D(0), emoji="", isBlank=false, blankFiller=""}) {
+function itemMessage({have=new D(0), got=new D(0), emoji="", isBlank=false, isIncrement=false, blankFiller=""}) {
     if (isBlank) {
+        const msgLength = isIncrement ? 15 : 6;
         if (blankFiller) {
-            return `❌\`${blankFiller.padEnd(15, strs.blank)}\``;
+            return `❌\`${blankFiller.padEnd(msgLength, strs.nbsp)}\``;
         } else {
-            return emojiList.blank + strs.blank.repeat(15);
+            return emojiList.blank + strs.blank.repeat(msgLength);
         }
     }
 
@@ -536,10 +597,60 @@ function itemMessage({have=new D(0), got=new D(0), emoji="", isBlank=false, blan
 
     let message = emoji;
     message += "`";
-    message += `${notation(have).padEnd(6, strs.blank)}`
-    message += !got.eq(0) ? `(+${notation(got).padEnd(6, strs.blank)})`: strs.blank.repeat(9);
+    message += `${notation(have).padEnd(6, strs.nbsp)}`
+    if (isIncrement) message += !got.eq(0) ? `(+${notation(got).padEnd(6, strs.nbsp)})`: strs.nbsp.repeat(9);
     message += "`";
     return message;
+}
+function setToMessage({playerData, parentKey="", got=[], resourceSet=[], fieldName="** **", lineBreakPer=3, direction="right"}) {
+    const displayMode = playerData.options.displayMode;
+    const isIncrement = got.length > 0;
+    const colBreakPer = Math.ceil(resourceSet.length/lineBreakPer);
+    resourceSet = resourceSet.flat();
+
+    let field = {
+        name: fieldName,
+        value: "",
+    };
+    for (let p = 0, l = colBreakPer*lineBreakPer; p < l; p++) {
+        const i = displayMode !== "Mobile" && direction === "down" ?
+            (p%colBreakPer)*lineBreakPer+Math.floor(p/colBreakPer) :
+            p;
+
+        if (i < resourceSet.length) {
+            const resourceName = resourceSet[i];
+            const resourceHave = playerData[parentKey][resourceName];
+
+            field.value += itemMessage({
+                have: resourceHave,
+                emoji: emojiList[parentKey][resourceName],
+                got: got[i],
+                isBlank: typeof resourceHave === "number" ?
+                    resourceHave === 0 :
+                    resourceHave.eq(0),
+                isIncrement
+            });
+        }
+
+        if (displayMode === "Mobile") {
+            field.value += "\n";
+        } else if (direction === "right") {
+            if (p%lineBreakPer === lineBreakPer-1) {
+                field.value += "\n";
+            } else {
+                field.value += " ";
+            }
+        } else {
+            if (resourceSet.length <= i+lineBreakPer) {
+                field.value += "\n";
+            } else {
+                field.value += " ";
+            }
+        }
+    }
+
+    field.value = field.value.trim();
+    return field;
 }
 function oreSetToMessage({playerData, ores=[], reginOreSet=[], displayMode="Desktop"}) {
     displayMode = displayModeEnum[displayMode];
@@ -562,7 +673,8 @@ function oreSetToMessage({playerData, ores=[], reginOreSet=[], displayMode="Desk
                     have : playerData.ores[oreName],
                     got  : ores[i] ?? new D(0),
                     emoji: emojiList.ores[oreName],
-                    isBlank: playerData.ores[oreName].eq(0)
+                    isBlank: playerData.ores[oreName].eq(0),
+                    isIncrement: true
                 }) + strs.blank;
 
                 if ((p+1)%3 === 0 || displayMode === displayModeEnum.Mobile) message += "\n";
@@ -627,6 +739,17 @@ function pathAllSave(callback) {
         fs.writeFileSync(path, JSON.stringify(playerData));
     });
 }
+function pathSave(id, callback) {
+    const defaultSave = require("./saveDatas/Defaults/playerData.js");
+    const path = "./saveDatas/playerData/" + id + ".json";
+    let playerData = mergeObject(JSON.parse(fs.readFileSync(path)), defaultSave);
+    playerData = callback(playerData);
+    if (typeof playerData !== "object" || !playerData) {
+        console.error("Error: pathSave exception", {path, playerData});
+        return;
+    }
+    fs.writeFileSync(path, JSON.stringify(playerData));
+}
 
 
 
@@ -664,6 +787,7 @@ module.exports = {
     defaulatDatas,
     checkGuildData,
     checkPlayerData,
+    commandParams,
 
 
 
@@ -683,6 +807,7 @@ module.exports = {
     dataToMessage,
     textFormer,
     itemMessage,
+    setToMessage,
     oreSetToMessage,
     toShopNameSpace,
     upgradeListField,
@@ -691,6 +816,7 @@ module.exports = {
 
     /** Management Function */
     pathAllSave,
+    pathSave,
 };
 
 

@@ -53,8 +53,8 @@ const subCommandHelp = new SubCommandHelp([
                 msg: "Collect autominer (TODO: Loot Threshold)"
             },
             {
-                cmd: "open/o",
-                msg: "Open your loot"
+                cmd: "loot/l",
+                msg: "Loot related things"
             },
             {
                 cmd: "gem/g",
@@ -118,7 +118,7 @@ function helpCommand({guildData, playerData}) {
             command: "Help",
             color: colorSet.Leaf,
             fields: fields,
-            footer: "Help!"
+            footer: "Help!",
         }
     }
 }

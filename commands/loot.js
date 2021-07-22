@@ -33,7 +33,6 @@ function commandFunction({playerData, params}) {
     const loot = lootItem.search(lootKeyWord);
     switch (loot) {
         case null:
-            color = colorSet.Red;
             fields.push({
                 name: "Loot Help Message Placeholder",
                 value: "** **"

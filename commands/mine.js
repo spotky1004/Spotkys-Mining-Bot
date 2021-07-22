@@ -34,46 +34,34 @@ const [commandParams, commandReturns] = [require("../types/commandParam.js"), re
  * @param {commandParams}
  * @returns {commandReturns} 
  */
-function mineCommand({playerData, time, disbut}) {
+function mineCommand({playerData, time}) {
+    let message;
+    let reginOreSet = oreSet[playerData.miningRegion], minedOre;
+
     const cooldown = util.calcStat.MiningCooldown(playerData);
-    if (time - playerData.behaveTimes.mine < cooldown) return {
-        message: `\`Cooldown! ${(cooldown/1000 - (time - playerData.behaveTimes.mine)/1000).toFixed(3)} second(s) left\``
+    if (time - playerData.behaveTimes.mine < cooldown) {
+        message = `\`Cooldown! ${(cooldown/1000 - (time - playerData.behaveTimes.mine)/1000).toFixed(3)} second(s) left\``;
+    } else {
+        playerData.behaveTimes.mine = time;
+
+        const rollStat = util.calcStat.Roll(playerData);
+        minedOre = util.rollMine({
+            reginOreSet: reginOreSet,
+            luck: util.calcStat.Luck(playerData),
+            roll: rollStat.max.sub(rollStat.min).mul(Math.random()).add(rollStat.min),
+            playerData
+        });
+        for (let i = 0, l = minedOre.length; i < l; i++) {
+            playerData.ores[reginOreSet[i]] = playerData.ores[reginOreSet[i]].add(minedOre[i]);
+        }
+
+        playerData.mineCount = playerData.mineCount.add(util.calcStat.MineMult(playerData));
+        playerData.behaveTimes.autominer -= util.calcStat.AutominerSkip(playerData);
     }
-    playerData.behaveTimes.mine = time;
-    
-
-
-    const reginOreSet = oreSet[playerData.miningRegion];
-
-    const rollStat = util.calcStat.Roll(playerData);
-
-    const minedOre = util.rollMine({
-        reginOreSet: reginOreSet,
-        luck: util.calcStat.Luck(playerData),
-        roll: rollStat.max.sub(rollStat.min).mul(Math.random()).add(rollStat.min),
-        playerData
-    });
-
-    for (let i = 0, l = minedOre.length; i < l; i++) {
-        playerData.ores[reginOreSet[i]] = playerData.ores[reginOreSet[i]].add(minedOre[i]);
-    }
-
-
-
-    playerData.mineCount = playerData.mineCount.add(util.calcStat.MineMult(playerData));
-
-    playerData.behaveTimes.autominer -= util.calcStat.AutominerSkip(playerData);
-
-
-
-    let button = new disbut.MessageButton()
-        .setStyle("green")
-        .setLabel("Mine Again!")
-        .setID("mine");
 
     return {
         playerData,
-        message: {
+        message: message ?? {
             command: "Mine",
             color: colorSet.Brown,
             image: imageList.pickaxe[util.getPickaxeName(playerData.upgrade.pickaxe).replace(/\s+/g, '')],
@@ -81,23 +69,37 @@ function mineCommand({playerData, time, disbut}) {
                 // Boosts display
                 // {},
                 // Mined ore display
-                {
-                    name: "You got:",
-                    value: util.oreSetToMessage({
-                        playerData: playerData,
-                        ores: minedOre,
-                        reginOreSet: reginOreSet,
-                        displayMode: playerData.options.displayMode
-                    })
-                },
+                util.setToMessage({
+                    playerData,
+                    parentKey: "ores",
+                    resourceSet: reginOreSet,
+                    fieldName: "Your ores:",
+                    lineBreakPer: 7,
+                    direction: "down",
+                    got: minedOre
+                }),
                 // Rare resources display
                 // {},
             ],
             footer: util.randomPick(randomTips)
         },
-        addition: {
-            buttons: [button]
-        }
+        components: [
+            [
+                {type: "BUTTON", custom_id: "mineCommand", label: "Mine again!", style: "SUCCESS"},
+            ]
+        ],
+        /*editAfter: [
+            {
+                type: "addition",
+                time: util.calcStat.MiningCooldown(playerData),
+                content: {
+                    buttons: new disbut.MessageButton()
+                        .setID("mine")
+                        .setStyle("green")
+                        .setLabel("Mine Again!")
+                }
+            }
+        ]*/
     }
 }
 

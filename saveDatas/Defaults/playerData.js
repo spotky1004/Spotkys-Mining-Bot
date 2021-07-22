@@ -42,7 +42,8 @@ const playerData = {
     infuse: {},
     options: {
         displayMode: "Desktop",
-        notation: "Standard"
+        notation: "Standard",
+        noEnglish: false
     },
     
     

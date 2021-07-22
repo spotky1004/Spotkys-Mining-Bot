@@ -10,8 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "decimal.js": "^10.2.1",
-    "discord-buttons": "^3.2.1",
-    "discord.js": "^12.5.3",
+    "discord.js": "^13.0.0-dev.63ce065.1626653031",
     "fs": "0.0.1-security",
     "microtime": "^3.0.0",
     "typescript": "^4.3.5"

@@ -23,7 +23,7 @@ async function evalCommand({bot, msg, params, playerData, guildData, permission,
         // output fix
         output = ouputTypeFixer(output);
         // saveData fix
-        if (input.includes("pathAllSave")) playerData = util.checkPlayerData(msg.author.id);
+        if (input.includes("pathAllSave") || input.includes("pathSave")) playerData = util.checkPlayerData(msg.author.id);
         
         output = output.toString();
     } catch (e) {

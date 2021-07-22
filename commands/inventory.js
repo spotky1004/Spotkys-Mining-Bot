@@ -13,6 +13,7 @@ const oreEnum = require("../enums/ore.js");
 const oreSet = util.enumToSets(oreEnum);
 
 const lootEnum = require("../enums/loot.js");
+const lootSet = util.enumToSets(lootEnum).flat();
 
 const skillEnum = require("../enums/skill.js");
 const skillSet = util.enumToSets(skillEnum);
@@ -77,38 +78,34 @@ function inventoryCommand({playerData, guildData, params}) {
             subCmds.push("Ore");
 
             const miningRegion = idx ?? playerData.miningRegion;
-            fields.push(
-                {
-                    name: "Your Ores:",
-                    value: util.oreSetToMessage({
-                        reginOreSet: oreSet[miningRegion],
-                        displayMode: playerData.options.displayMode,
-                        playerData
-                    })
-                }
-            );
+            fields.push(util.setToMessage({
+                playerData,
+                parentKey: "ores",
+                resourceSet: oreSet[miningRegion],
+                fieldName: "Your ores:",
+                lineBreakPer: 7,
+                direction: "down"
+            }));
             break;
         case "l": case "loot":
             subCmds.push("Loot");
-
-            
+            fields.push(util.setToMessage({
+                playerData,
+                parentKey: "loots",
+                resourceSet: lootSet,
+                fieldName: "Your loots:",
+                lineBreakPer: 3
+            }));
             break;
         case "s": case "skill":
             subCmds.push("Skill");
-
-            let field = {
-                name: "Your Skills:",
-                value: ""
-            };
-            skillSet.some(e => {
-                if (playerData.skills[e] < 1) return;
-                field.value += util.itemMessage({
-                    emoji: emojiList.skills[e],
-                    have: playerData.skills[e]
-                });
-                field.value += "\n";
-            });
-            fields.push(field);
+            fields.push(util.setToMessage({
+                playerData,
+                parentKey: "skills",
+                resourceSet: skillSet,
+                fieldName: "Your Skills:",
+                lineBreakPer: 3
+            }));
             break;
     }
 

@@ -16,7 +16,20 @@ const commandReturns = {
         footer: new String,
         description: new String,
         style: new String,
-    }
+    },
+    /**
+     * components
+     */
+    components: [
+        [
+            {
+                type: new String,
+                custom_id: new String,
+                label: new String,
+                style: new String
+            }
+        ]
+    ]
 };
 
 module.exports = commandReturns;

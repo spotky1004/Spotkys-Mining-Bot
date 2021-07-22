@@ -1,5 +1,4 @@
 const Discord = require("discord.js");
-const disbut = require("discord-buttons");
 const guildData = require("../saveDatas/Defaults/guildData.js");
 const playerData = require("./playerData.js");
 
@@ -25,10 +24,6 @@ const commandParams = {
      */
     permission: new Number,
     /**
-     * The client of the bot
-     */
-    bot: new Discord.Client,
-    /**
      * The current UNIX Time in ms
      */
     time: new Number,
@@ -36,10 +31,6 @@ const commandParams = {
      * Boolean that indicates if the message sent from the DM
      */
     isDM: new Boolean,
-    /**
-     * "discord-buttons" library
-     */
-    disbut: disbut,
     /**
      * Discord id of the user
      */
