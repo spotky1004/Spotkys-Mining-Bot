@@ -1,9 +1,7 @@
 const Command = require("../class/command.js");
 const SubCommandHelp = require("../class/subCommandHelp.js");
 const Permission = require("../enums/permission.js");
-const util = require("../util.js");
 
-const imageList = require("../data/imageList.js");
 const colorSet = require("../data/colorSet.js");
 
 const subCommandHelp = new SubCommandHelp([
@@ -25,7 +23,7 @@ const subCommandHelp = new SubCommandHelp([
             },
             {
                 cmd: "inv/i",
-                msg: "Display Your Inventory (TODO: loot)"
+                msg: "Display Your Inventory"
             },
             {
                 cmd: "sell",

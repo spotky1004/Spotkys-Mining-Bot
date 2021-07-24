@@ -87,6 +87,8 @@ bot.on("messageCreate", async (msg) => {
     sessionData.waiting.delete(msg.author.id);
 });
 
+
+
 bot.on("interactionCreate", async (interaction) => {
     const msg = interaction.message;
 
@@ -98,6 +100,7 @@ bot.on("interactionCreate", async (interaction) => {
             content: "Hey! Don't steal other's button!",
             ephemeral: true
         });
+        return;
     }
 
 
@@ -114,12 +117,20 @@ bot.on("interactionCreate", async (interaction) => {
             break;
     }
 
-    msg.edit(util.dataToMessage({data: result, playerData: commandParams.playerData}));
-    interaction.deferUpdate();
+    if (result) {
+        await msg.edit(util.dataToMessage({data: result, playerData: commandParams.playerData}));
+        fs.writeFileSync(`./saveDatas/playerData/${interactionAuthorId}.json`, JSON.stringify(result.playerData));
+    }
+
+
+    interaction.deferUpdate()
+        .catch(err => console.error(err));
 })
 
+
+
 bot.on("ready", async () => {
-    await bot.channels.fetch("867438505085239346").then(ch => ch.send("`Successfully Logged!`"));
+    await bot.channels.fetch("853899169014087680").then(ch => ch.send("`Successfully Logged!`"));
     console.log("login!");
 
     bot.user.setPresence({

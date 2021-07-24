@@ -1,4 +1,5 @@
 const Decimal = require("decimal.js");
+const util = require("../../util.js");
 
 const Ores = require("../../enums/ore.js");
 const Loots = require("../../enums/loot.js");
@@ -15,10 +16,10 @@ const playerData = {
     // resources
     coin: new Decimal(0),
     gem: new Decimal(0),
-    ores: Object.fromEntries(Object.keys(Ores).map(e => [e, new Decimal(0)])),
-    loots: Object.fromEntries(Object.keys(Loots).map(e => [e, 0])),
-    skills: Object.fromEntries(Object.keys(Skills).map(e => [e, 0])),
-    artifact: Object.fromEntries(Object.keys(Artifacts).map(e => [e, 0])),
+    ores: util.fillObject(Ores, new Decimal(0)),
+    loots: util.fillObject(Loots, 0),
+    skills: util.fillObject(Skills, 0),
+    artifact: util.fillObject(Artifacts, 0),
     totalAncientCoin: 0,
     gemOrb: new Decimal(0),
     
@@ -32,8 +33,8 @@ const playerData = {
         ring: 0,
         rope: 0
     },
-    gemUpgrades: Object.fromEntries(Object.keys(GemUpgradeItems).map(e => [e, 0])),
-    ancientCoin: Object.fromEntries(Object.keys(AncientCoinItems).map(e => [e, 0])),
+    gemUpgrades: util.fillObject(GemUpgradeItems, 0),
+    ancientCoin: util.fillObject(AncientCoinItems, 0),
     
     
     // configs
@@ -63,7 +64,7 @@ const playerData = {
     behaveTimes: {
         mine: 0,
         autominer: 1e100,
-        skill: Object.fromEntries(Object.keys(Skills).map(e => [e, 0])),
+        skill: util.fillObject(Skills, 0),
         daily: 0,
         refundArtifact: 0,
         bonus: 0

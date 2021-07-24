@@ -1,3 +1,4 @@
+const embedFormer = require("./embedFormer.js");
 const playerData = require("./playerData.js");
 
 const commandReturns = {
@@ -8,15 +9,7 @@ const commandReturns = {
     /**
      * Return message
      */
-    message: {
-        command: new String,
-        color: new String,
-        image: new String,
-        fields: new Array,
-        footer: new String,
-        description: new String,
-        style: new String,
-    },
+    message: embedFormer,
     /**
      * components
      */

@@ -1,6 +1,7 @@
 const D = require("decimal.js");
 
 const Command = require("../class/command.js");
+const Cooldown = require("../class/cooldown.js");
 const Permission = require("../enums/permission.js");
 const colorSet = require("../data/colorSet.js");
 const util = require("../util.js");
@@ -38,9 +39,9 @@ function mineCommand({playerData, time}) {
     let message;
     let reginOreSet = oreSet[playerData.miningRegion], minedOre;
 
-    const cooldown = util.calcStat.MiningCooldown(playerData);
-    if (time - playerData.behaveTimes.mine < cooldown) {
-        message = `\`Cooldown! ${(cooldown/1000 - (time - playerData.behaveTimes.mine)/1000).toFixed(3)} second(s) left\``;
+    const cooldown = new Cooldown(util.calcStat.MiningCooldown(playerData));
+    if (!cooldown.isDone(playerData.behaveTimes.mine)) {
+        message = "\`Cooldown!\`\n" + cooldown.format(playerData.behaveTimes.mine);
     } else {
         playerData.behaveTimes.mine = time;
 

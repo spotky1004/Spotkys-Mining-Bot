@@ -195,6 +195,37 @@ function notation(x=new D(0), maxLength=6, type="Standard") {
 
     return out;
 }
+function timeNotation(ms=0, fitUnit=ms) {
+    let tmp = ms;
+    let output = "";
+
+    if (fitUnit >= 86400_000) {
+        output += Math.floor(tmp/86400_000) + "d "
+        tmp %= 86400_000;
+    }
+    if (fitUnit >= 3600_000) {
+        output += Math.floor(tmp/3600_000) + "h "
+        tmp %= 3600_000;
+    }
+    if (fitUnit >= 60_000) {
+        output += Math.floor(tmp/60_000) + "m "
+        tmp %= 60_000;
+    }
+    if (fitUnit >= 1_000) {
+        output += Math.floor(tmp/1_000) + "s "
+        tmp %= 1_000;
+    }
+    if (fitUnit < 3000 || ms < 3000) {
+        output += Math.floor(tmp) + "ms "
+        tmp %= 1;
+    }
+    if (fitUnit < 10 || ms < 10) {
+        output += Math.floor(tmp*1000) + "ns "
+        tmp %= 0.001;
+    }
+
+    return output.trim();
+}
 
 
 
@@ -226,10 +257,6 @@ function dataToKeywordDictionary(data) {
 
 
 /** Core Functions */
-const defaulatDatas = {
-    guildData: require("./saveDatas/Defaults/guildData.js"),
-    userData: require("./saveDatas/Defaults/playerData.js")
-};
 function checkGuildData(id) {
     const path = `./saveDatas/guildData/${id}.json`;
 
@@ -534,6 +561,7 @@ function dataToMessage({data, playerData}) {
                     break;
             }
 
+            messageOptions.content = null;
             messageOptions.embeds = [new Discord.MessageEmbed()
                 .setColor(embedData.color)
                 .setDescription(embedData.description ? `\`\`\`${embedData.description}\`\`\`` : "")
@@ -722,6 +750,9 @@ function upgradeListField(upgrade, playerData, next=false) {
 
     return {name, value};
 }
+function fillObject(obj, value) {
+    return Object.fromEntries(Object.entries(obj).map(e => [e[0], value]))
+}
 
 
 
@@ -767,6 +798,7 @@ module.exports = {
     searchObject,
     keyNameToWord,
     generateKeyWord,
+    fillObject,
     
 
 
@@ -774,6 +806,7 @@ module.exports = {
     calcStandardPrefix,
     numToScientDigit,
     notation,
+    timeNotation,
     
 
 
@@ -784,7 +817,6 @@ module.exports = {
 
 
     /** Core Functions */
-    defaulatDatas,
     checkGuildData,
     checkPlayerData,
     commandParams,
@@ -821,6 +853,10 @@ module.exports = {
 
 
 // TODO: locate this require to top of this file
+const defaulatDatas = {
+    guildData: require("./saveDatas/Defaults/guildData.js"),
+    userData: require("./saveDatas/Defaults/playerData.js")
+};
 const upgradeItemsEnum = require("./enums/upgradeItems.js");
 /** @type {upgradeItemsEnum} */
 const upgradeItems = require("./data/upgradeItems.js").items;
