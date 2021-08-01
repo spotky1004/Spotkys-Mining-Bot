@@ -52,7 +52,7 @@ const playerData = {
     mineCount: new Decimal(0),
     lootOpened: new Decimal(0),
     userName: null,
-    dailyCollected: 0,
+    dailyCollected: 1,
     bestLootLuck: -1,
     bestLootGot: -1,
     totalArtifact: 0,

@@ -499,7 +499,8 @@ const calcStat = {
     },
     DailyRewardMult: (playerData) => {
         let mult = 1;
-        mult *= artifactItems.LightPlant.eff(playerData);
+        mult += 0.25 * Math.floor(playerData.dailyCollected/31);
+        mult += artifactItems.LightPlant.eff(playerData);
 
         return mult;
     },
@@ -546,7 +547,7 @@ function dataToMessage({data, playerData}) {
     /** @type {Discord.MessageOptions} */
     let messageOptions;
     messageOptions = {};
-    if (data && data.message) {
+    if (data?.message) {
         if (typeof data.message === "object") {
             // set short name varible
             const embedData = data.message;
@@ -564,7 +565,7 @@ function dataToMessage({data, playerData}) {
             messageOptions.content = null;
             messageOptions.embeds = [new Discord.MessageEmbed()
                 .setColor(embedData.color)
-                .setDescription(embedData.description ? `\`\`\`${embedData.description}\`\`\`` : "")
+                .setDescription(embedData.description ? embedData.description : "")
                 .setAuthor(embedData.command, embedData.image)
                 .addFields(...embedData.fields)
                 .setFooter(embedData.footer + ` • id: ${playerData.id}`)

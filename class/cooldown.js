@@ -16,7 +16,10 @@ class Cooldown {
   }
 
   format(time) {
-    return `\`${util.timeNotation(this.timeLeft(time), this.cooldown)} / ${util.timeNotation(this.cooldown)}\``
+    let output = "";
+    output += `\`${util.timeNotation(this.timeLeft(time), this.cooldown)} / ${util.timeNotation(this.cooldown)}\``;
+    if (this.cooldown > 60_000) output += `\n<t:${Math.floor((time+this.cooldown)/1000)}>`;
+    return output;
   }
 }
 

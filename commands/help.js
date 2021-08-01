@@ -40,7 +40,7 @@ const subCommandHelp = new SubCommandHelp([
         data: [
             {
                 cmd: "daily/d",
-                msg: "Get a daily reward (TODO)"
+                msg: "Get a daily reward"
             },
             {
                 cmd: "artifact/a",

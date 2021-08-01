@@ -36,12 +36,15 @@ const [commandParams, commandReturns] = [require("../types/commandParam.js"), re
  * @returns {commandReturns} 
  */
 function mineCommand({playerData, time}) {
-    let message;
+    let fields = [];
     let reginOreSet = oreSet[playerData.miningRegion], minedOre;
 
-    const cooldown = new Cooldown(util.calcStat.MiningCooldown(playerData));
-    if (!cooldown.isDone(playerData.behaveTimes.mine)) {
-        message = "\`Cooldown!\`\n" + cooldown.format(playerData.behaveTimes.mine);
+    const mineCooldown = new Cooldown(util.calcStat.MiningCooldown(playerData));
+    if (!mineCooldown.isDone(playerData.behaveTimes.mine)) {
+        fields.push({
+            name: "Cooldown!",
+            value: mineCooldown.format(playerData.behaveTimes.mine)
+        });
     } else {
         playerData.behaveTimes.mine = time;
 
@@ -58,30 +61,25 @@ function mineCommand({playerData, time}) {
 
         playerData.mineCount = playerData.mineCount.add(util.calcStat.MineMult(playerData));
         playerData.behaveTimes.autominer -= util.calcStat.AutominerSkip(playerData);
+
+        fields.push(util.setToMessage({
+            playerData,
+            parentKey: "ores",
+            resourceSet: reginOreSet,
+            fieldName: "Your ores:",
+            lineBreakPer: 7,
+            direction: "down",
+            got: minedOre
+        }));
     }
 
     return {
         playerData,
-        message: message ?? {
+        message: {
             command: "Mine",
             color: colorSet.Brown,
             image: imageList.pickaxe[util.getPickaxeName(playerData.upgrade.pickaxe).replace(/\s+/g, '')],
-            fields: [
-                // Boosts display
-                // {},
-                // Mined ore display
-                util.setToMessage({
-                    playerData,
-                    parentKey: "ores",
-                    resourceSet: reginOreSet,
-                    fieldName: "Your ores:",
-                    lineBreakPer: 7,
-                    direction: "down",
-                    got: minedOre
-                }),
-                // Rare resources display
-                // {},
-            ],
+            fields: fields,
             footer: util.randomPick(randomTips)
         },
         components: [
