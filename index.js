@@ -31,10 +31,10 @@ let sessionData = {
 bot.on("messageCreate", async (msg) => {
     if (msg.author.bot) return;
 
-    if (sessionData.waiting.has(msg.author.id)) {
-        await msg.channel.send("Wait please!\nI'm processing your request!");
-        return;
-    }
+    // if (sessionData.waiting.has(msg.author.id)) {
+        // await msg.channel.send("Wait please!\nI'm processing your request!");
+        // return;
+    // }
     sessionData.waiting.add(msg.author.id);
 
     try {
@@ -130,7 +130,7 @@ bot.on("interactionCreate", async (interaction) => {
 
 
 bot.on("ready", async () => {
-    await bot.channels.fetch("853899169014087680").then(ch => ch.send("`Successfully Logged!`"));
+    // await bot.channels.fetch("853899169014087680").then(ch => ch.send("`Successfully Logged!`"));
     console.log("login!");
 
     bot.user.setPresence({
